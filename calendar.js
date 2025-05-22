@@ -72,3 +72,17 @@ function getGregorianDateOfEthiopianNewYear(ethiopianYear) {
 
     return { gregorianYear, month: 9, day: newYearDay };
 }
+
+/**
+ * Get the day of the year for given Gregorian date.
+ * Jan 1 is 1.
+ */
+function dayOfYear(year, month, day) {
+    const monthLengths = [31, isGregorianLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    let doy = 0;
+    for (let i = 0; i < month - 1; i++) {
+        doy += monthLengths[i];
+    }
+    doy += day;
+    return doy;
+}
