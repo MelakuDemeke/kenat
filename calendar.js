@@ -18,13 +18,13 @@
 
 // Start with empty function for conversion
 export function gregorianToEthiopian(year, month, day) {
-  // TODO: Implement conversion logic
-  return { year: null, month: null, day: null };
+    // TODO: Implement conversion logic
+    return { year: null, month: null, day: null };
 }
 
 export function ethiopianToGregorian(year, month, day) {
-  // TODO: Implement reverse conversion
-  return { year: null, month: null, day: null };
+    // TODO: Implement reverse conversion
+    return { year: null, month: null, day: null };
 }
 
 
@@ -37,7 +37,19 @@ export function ethiopianToGregorian(year, month, day) {
  * @param {number} year - Ethiopian calendar year (e.g., 2011)
  * @returns {boolean} - True if the year is a leap year, otherwise false.
  */
-function isEthiopianLeapYear(year){
+function isEthiopianLeapYear(year) {
     return year % 4 === 3;
 }
 
+/**
+ * Checks if the given Gregorian year is a leap year.
+ *
+ * Gregorian leap years occur every 4 years, except centuries not divisible by 400.
+ * For example: 2000 is a leap year, 1900 is not.
+ *
+ * @param {number} year - Gregorian calendar year (e.g., 2025)
+ * @returns {boolean} - True if the year is a leap year, otherwise false.
+ */
+function isGregorianLeapYear(year) {
+    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+}
