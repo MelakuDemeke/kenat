@@ -163,11 +163,11 @@ function monthDayFromDayOfYear(year, dayOfYear) {
  * Helper: Get Ethiopian New Year for a Gregorian year.
  */
 function getEthiopianNewYearForGregorian(gYear) {
-    const ethYear = gYear - 8;
-    const prevGLeap = isGregorianLeapYear(gYear - 1);
+    const prevGYear = gYear - 1;
+    const newYearDay = isGregorianLeapYear(prevGYear) ? 12 : 11;
     return {
-        year: ethYear,
+        gregorianYear: gYear,
         month: 9,
-        day: prevGLeap ? 12 : 11
+        day: newYearDay
     };
 }
