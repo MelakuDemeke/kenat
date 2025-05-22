@@ -53,6 +53,39 @@ export function ethiopianToGregorian(ethYear, ethMonth, ethDay) {
     return { year: gregorianYear, month, day };
 }
 
+/**
+ * Convert Gregorian date to Ethiopian date.
+ *
+ * @param {number} gYear - Gregorian year
+ * @param {number} gMonth - Gregorian month (1-12)
+ * @param {number} gDay - Gregorian day
+ * @returns {{year: number, month: number, day: number}} Ethiopian date
+ */
+export function gregorianToEthiopian(gYear, gMonth, gDay) {
+    const inputDayOfYear = dayOfYear(gYear, gMonth, gDay);
+
+    // Get Ethiopian New Year for this Gregorian year
+    const ethNewYearThis = getEthiopianNewYearForGregorian(gYear);
+    const newYearDayOfYear = dayOfYear(gYear, ethNewYearThis.month, ethNewYearThis.day);
+
+    let ethYear, daysSinceNewYear;
+
+    if (inputDayOfYear >= newYearDayOfYear) {
+        ethYear = gYear - 8;
+        daysSinceNewYear = inputDayOfYear - newYearDayOfYear;
+    } else {
+        ethYear = gYear - 9;
+        const prevEthNewYear = getEthiopianNewYearForGregorian(gYear - 1);
+        const daysInPrevYear = isGregorianLeapYear(gYear - 1) ? 366 : 365;
+        daysSinceNewYear = daysInPrevYear - dayOfYear(gYear - 1, prevEthNewYear.month, prevEthNewYear.day) + inputDayOfYear;
+    }
+
+    // Ethiopian months: 12 months * 30 days, last month has 5 or 6 days
+    let month = Math.floor(daysSinceNewYear / 30) + 1;
+    let day = (daysSinceNewYear % 30) + 1;
+
+    return { year: ethYear, month, day };
+}
 
 /**
  * Checks if the given Ethiopian year is a leap year.
