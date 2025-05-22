@@ -1,0 +1,2 @@
+# Ethiopian Calendar
+This is a simple implementation of the Ethiopian calendar in js. The Ethiopian calendar is a solar calendar that has 13 months: 12 months of 30 days each and an additional month called Pagumē, which has 5 days in a common year and 6 days in a leap year.
