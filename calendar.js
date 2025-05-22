@@ -28,8 +28,16 @@ export function ethiopianToGregorian(year, month, day) {
 }
 
 
-// check if Ethiopia year is leep
-
+/**
+ * Checks if the given Ethiopian year is a leap year.
+ *
+ * Ethiopian leap years occur every 4 years, when the year modulo 4 equals 3.
+ * This means years like 2011, 2015, 2019 (in Ethiopian calendar) are leap years.
+ *
+ * @param {number} year - Ethiopian calendar year (e.g., 2011)
+ * @returns {boolean} - True if the year is a leap year, otherwise false.
+ */
 function isEthiopianLeapYear(year){
     return year % 4 === 3;
 }
+
