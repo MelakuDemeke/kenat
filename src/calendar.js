@@ -125,3 +125,16 @@ function monthDayFromDayOfYear(year, dayOfYear) {
     }
     return { month, day: dayOfYear };
 }
+
+/**
+ * Helper: Get Ethiopian New Year for a Gregorian year.
+ */
+function getEthiopianNewYearForGregorian(gYear) {
+    const ethYear = gYear - 8;
+    const prevGLeap = isGregorianLeapYear(gYear - 1);
+    return {
+        year: ethYear,
+        month: 9,
+        day: prevGLeap ? 12 : 11
+    };
+}
