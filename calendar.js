@@ -26,3 +26,10 @@ export function ethiopianToGregorian(year, month, day) {
   // TODO: Implement reverse conversion
   return { year: null, month: null, day: null };
 }
+
+
+// check if Ethiopia year is leep
+
+function isEthiopianLeapYear(year){
+    return year % 4 === 3;
+}
