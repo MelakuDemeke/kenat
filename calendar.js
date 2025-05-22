@@ -86,3 +86,16 @@ function dayOfYear(year, month, day) {
     doy += day;
     return doy;
 }
+
+/**
+ * Convert a day of year to Gregorian month and day.
+ */
+function monthDayFromDayOfYear(year, dayOfYear) {
+    const monthLengths = [31, isGregorianLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    let month = 1;
+    while (dayOfYear > monthLengths[month - 1]) {
+        dayOfYear -= monthLengths[month - 1];
+        month++;
+    }
+    return { month, day: dayOfYear };
+}
