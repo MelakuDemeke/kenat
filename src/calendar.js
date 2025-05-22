@@ -24,7 +24,7 @@
  * @param {number} ethDay - Ethiopian day (1-30 for months 1-12, 1-5/6 for month 13)
  * @returns {{year: number, month: number, day: number}} Gregorian date
  */
-function ethiopianToGregorian(ethYear, ethMonth, ethDay) {
+export function ethiopianToGregorian(ethYear, ethMonth, ethDay) {
     // Get Gregorian new year date for the Ethiopian year
     const newYear = getGregorianDateOfEthiopianNewYear(ethYear);
 
@@ -51,12 +51,6 @@ function ethiopianToGregorian(ethYear, ethMonth, ethDay) {
     const { month, day } = monthDayFromDayOfYear(gregorianYear, gregorianDayOfYear);
 
     return { year: gregorianYear, month, day };
-}
-
-
-export function ethiopianToGregorian(year, month, day) {
-    // TODO: Implement reverse conversion
-    return { year: null, month: null, day: null };
 }
 
 
