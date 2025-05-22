@@ -64,25 +64,27 @@ export function ethiopianToGregorian(ethYear, ethMonth, ethDay) {
 export function gregorianToEthiopian(gYear, gMonth, gDay) {
     const inputDayOfYear = dayOfYear(gYear, gMonth, gDay);
 
-    // Get Ethiopian New Year for this Gregorian year
-    const ethNewYearThis = getEthiopianNewYearForGregorian(gYear);
-    const newYearDayOfYear = dayOfYear(gYear, ethNewYearThis.month, ethNewYearThis.day);
+    // Get Ethiopian New Year in the Gregorian year
+    const ethNewYear = getEthiopianNewYearForGregorian(gYear);
+    const newYearDayOfYear = dayOfYear(ethNewYear.gregorianYear, ethNewYear.month, ethNewYear.day);
 
     let ethYear, daysSinceNewYear;
 
     if (inputDayOfYear >= newYearDayOfYear) {
-        ethYear = gYear - 8;
+        ethYear = gYear - 7; // Ethiopian year is Gregorian year - 7 when after Ethiopian new year
         daysSinceNewYear = inputDayOfYear - newYearDayOfYear;
     } else {
-        ethYear = gYear - 9;
+        ethYear = gYear - 8; // Ethiopian year is Gregorian year - 8 when before Ethiopian new year
+        // Get previous year's Ethiopian New Year Gregorian date
         const prevEthNewYear = getEthiopianNewYearForGregorian(gYear - 1);
-        const daysInPrevYear = isGregorianLeapYear(gYear - 1) ? 366 : 365;
-        daysSinceNewYear = daysInPrevYear - dayOfYear(gYear - 1, prevEthNewYear.month, prevEthNewYear.day) + inputDayOfYear;
+        const prevYearLength = isGregorianLeapYear(gYear - 1) ? 366 : 365;
+        const prevNewYearDayOfYear = dayOfYear(prevEthNewYear.gregorianYear, prevEthNewYear.month, prevEthNewYear.day);
+        daysSinceNewYear = prevYearLength - prevNewYearDayOfYear + inputDayOfYear;
     }
 
-    // Ethiopian months: 12 months * 30 days, last month has 5 or 6 days
-    let month = Math.floor(daysSinceNewYear / 30) + 1;
-    let day = (daysSinceNewYear % 30) + 1;
+    // Calculate Ethiopian month and day
+    const month = Math.floor(daysSinceNewYear / 30) + 1;
+    const day = (daysSinceNewYear % 30) + 1;
 
     return { year: ethYear, month, day };
 }
