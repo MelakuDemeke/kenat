@@ -16,11 +16,43 @@
 // - [ ] Add formatting helpers (e.g., formatEthiopianDate())
 // - [ ] Validate and sanitize input
 
-// Start with empty function for conversion
-export function gregorianToEthiopian(year, month, day) {
-    // TODO: Implement conversion logic
-    return { year: null, month: null, day: null };
+/**
+ * Convert Ethiopian date to Gregorian date.
+ *
+ * @param {number} ethYear - Ethiopian year
+ * @param {number} ethMonth - Ethiopian month (1-13)
+ * @param {number} ethDay - Ethiopian day (1-30 for months 1-12, 1-5/6 for month 13)
+ * @returns {{year: number, month: number, day: number}} Gregorian date
+ */
+function ethiopianToGregorian(ethYear, ethMonth, ethDay) {
+    // Get Gregorian new year date for the Ethiopian year
+    const newYear = getGregorianDateOfEthiopianNewYear(ethYear);
+
+    // Calculate the number of days since Ethiopian New Year for the input date
+    // Months 1-12 have 30 days, month 13 (Pagume) has 5 or 6 days
+    const daysSinceNewYear = (ethMonth - 1) * 30 + ethDay - 1;
+
+    // Calculate the day of the year in Gregorian calendar for Ethiopian New Year
+    const gregorianNewYearDayOfYear = dayOfYear(newYear.gregorianYear, newYear.month, newYear.day);
+
+    // Calculate total day of year in Gregorian calendar
+    let gregorianDayOfYear = gregorianNewYearDayOfYear + daysSinceNewYear;
+
+    // Handle leap year overflow (when day of year > 365/366)
+    const gregorianYearLength = isGregorianLeapYear(newYear.gregorianYear) ? 366 : 365;
+    let gregorianYear = newYear.gregorianYear;
+
+    if (gregorianDayOfYear > gregorianYearLength) {
+        gregorianDayOfYear -= gregorianYearLength;
+        gregorianYear += 1;
+    }
+
+    // Convert day of year back to Gregorian month and day
+    const { month, day } = monthDayFromDayOfYear(gregorianYear, gregorianDayOfYear);
+
+    return { year: gregorianYear, month, day };
 }
+
 
 export function ethiopianToGregorian(year, month, day) {
     // TODO: Implement reverse conversion
