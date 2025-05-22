@@ -1,0 +1,25 @@
+{
+  "name": "kenat",
+  "version": "0.1.0",
+  "description": "A JavaScript library for the Ethiopian calendar with date and time support.",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "ethiopian",
+    "calendar",
+    "ethiopian-calendar",
+    "date",
+    "time",
+    "kenat",
+    "habesha",
+    "zemen"
+  ],
+  "author": "Melaku Demeke",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
