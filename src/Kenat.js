@@ -1,4 +1,5 @@
 import { ethiopianToGregorian, gregorianToEthiopian } from './conversions.js';
+import { printMonthCalendarGrid } from './render/printMonthCalendarGrid.js';
 import { monthNames } from './monthNames.js';
 import { toGeez } from './geezConverter.js';
 /**
@@ -134,4 +135,15 @@ export class Kenat {
         return calendar;
     }
 
+    /**
+     * Prints the calendar grid for the current Ethiopian month.
+     *
+     * @param {boolean} [useGeez=false] - If true, displays the calendar using Geez numerals.
+     * @returns {void}
+     */
+    printThisMonth(useGeez = false) {
+        const { year, month } = this.getEthiopian();
+        const calendar = this.getMonthCalendar(year, month, useGeez);
+        printMonthCalendarGrid(year, month, calendar, useGeez);
+    }
 }
