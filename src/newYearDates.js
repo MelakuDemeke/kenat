@@ -1,7 +1,8 @@
+import { isGregorianLeapYear, isEthiopianLeapYear } from './utils.js';
 /**
  * Helper: Get Ethiopian New Year for a Gregorian year.
  */
-function getEthiopianNewYearForGregorian(gYear) {
+export function getEthiopianNewYearForGregorian(gYear) {
     const prevGYear = gYear - 1;
     const newYearDay = isGregorianLeapYear(prevGYear) ? 12 : 11;
     return {
@@ -20,7 +21,7 @@ function getEthiopianNewYearForGregorian(gYear) {
  * @param {number} ethiopianYear - Ethiopian calendar year
  * @returns {{gregorianYear: number, month: number, day: number}} - Gregorian year, month (1-12), and day of Ethiopian New Year
  */
-function getGregorianDateOfEthiopianNewYear(ethiopianYear) {
+export function getGregorianDateOfEthiopianNewYear(ethiopianYear) {
     const gregorianYear = ethiopianYear + 7;  // Ethiopian year roughly equals Gregorian year - 7 or -8
 
     // If the previous Gregorian year is a leap year, Ethiopian new year falls on Sept 12

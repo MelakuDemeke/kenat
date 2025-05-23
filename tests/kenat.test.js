@@ -1,4 +1,4 @@
-import { gregorianToEthiopian, ethiopianToGregorian } from '../src/calendar.js';
+import { gregorianToEthiopian, ethiopianToGregorian } from '../src/index.js';
 
 describe('Kenat Ethiopian Calendar conversions', () => {
   test('Gregorian to Ethiopian: May 22, 2025 -> 2017-9-14', () => {

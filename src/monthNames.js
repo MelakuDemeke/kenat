@@ -1,9 +1,9 @@
 export const monthNames = {
-  en: [
+  english: [
     "Meskerem", "Tikimt", "Hidar", "Tahsas", "Tir", "Yekatit",
     "Megabit", "Miazia", "Ginbot", "Sene", "Hamle", "Nehase", "Pagume"
   ],
-  am: [
+  amharic: [
     "መስከረም", "ጥቅምት", "ህዳር", "ታህሳስ", "ጥር", "የካቲት",
     "መጋቢት", "ሚያዝያ", "ግንቦት", "ሰኔ", "ሀምሌ", "ነሐሴ", "ጳጉሜ"
   ],
