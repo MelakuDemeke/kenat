@@ -148,7 +148,6 @@ export class Kenat {
         printMonthCalendarGrid(year, month, calendar, useGeez);
     }
 
-
     /**
      * Adds a specified number of days to the current Ethiopian date and returns a new Kenat instance.
      *
@@ -176,17 +175,33 @@ export class Kenat {
     }
 
     /**
-     * Add months to current Ethiopian date, return new Kenat instance.
-     * @param {number} months
-     * @returns {Kenat}
+     * Adds a specified number of months to the current Ethiopian date.
+     * Handles rollover across years and clamps days for Pagume.
+     *
+     * @param {number} months - Number of Ethiopian months to add (can be negative).
+     * @returns {Kenat} A new Kenat instance.
      */
     addMonths(months) {
-        const greg = this.getGregorian();
-        const date = new Date(greg.year, greg.month - 1, greg.day);
-        date.setMonth(date.getMonth() + months);
-        const eth = gregorianToEthiopian(date.getFullYear(), date.getMonth() + 1, date.getDate());
-        return new Kenat(`${eth.year}/${eth.month}/${eth.day}`);
+        let { year, month, day } = this.ethiopian;
+
+        let totalMonths = month + months;
+
+        if (totalMonths > 0) {
+            year += Math.floor((totalMonths - 1) / 13);
+            month = ((totalMonths - 1) % 13) + 1;
+        } else {
+            year += Math.floor((totalMonths - 1) / 13);
+            month = ((totalMonths - 1) % 13 + 13) % 13 + 1;
+        }
+
+        const daysInTargetMonth = getEthiopianDaysInMonth(year, month);
+        if (day > daysInTargetMonth) {
+            day = daysInTargetMonth;
+        }
+
+        return new Kenat(`${year}/${month}/${day}`);
     }
+
 
     /**
      * Add years to current Ethiopian date, return new Kenat instance.
