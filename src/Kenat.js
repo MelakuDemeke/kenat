@@ -160,4 +160,17 @@ export class Kenat {
         return new Kenat(`${eth.year}/${eth.month}/${eth.day}`);
     }
 
+    /**
+     * Add months to current Ethiopian date, return new Kenat instance.
+     * @param {number} months
+     * @returns {Kenat}
+     */
+    addMonths(months) {
+        const greg = this.getGregorian();
+        const date = new Date(greg.year, greg.month - 1, greg.day);
+        date.setMonth(date.getMonth() + months);
+        const eth = gregorianToEthiopian(date.getFullYear(), date.getMonth() + 1, date.getDate());
+        return new Kenat(`${eth.year}/${eth.month}/${eth.day}`);
+    }
+
 }
