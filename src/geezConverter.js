@@ -70,3 +70,51 @@ export function toGeez(input) {
 
     return result;
 }
+
+
+/**
+ * Converts a Ge'ez numeral string to its Arabic numeral equivalent.
+ *
+ * @param {string} geezStr - The Ge'ez numeral string to convert.
+ * @returns {number} The Arabic numeral representation of the input string.
+ * @throws {Error} If the input contains an unknown Ge'ez numeral character.
+ */
+export function toArabic(geezStr) {
+    const reverseMap = {};
+    if (typeof geezStr !== 'string' || geezStr.trim() === '') {
+        throw new Error('Geez input must be a non-empty string.');
+    }
+
+    // Build reverse map from existing symbols
+    symbols.ones.forEach((char, i) => {
+        if (char) reverseMap[char] = i;
+    });
+    symbols.tens.forEach((char, i) => {
+        if (char) reverseMap[char] = i * 10;
+    });
+    reverseMap[symbols.hundred] = 100;
+    reverseMap[symbols.tenThousand] = 10000;
+
+    let result = 0;
+    let temp = 0;
+
+    for (const char of geezStr) {
+        const value = reverseMap[char];
+
+        if (value === undefined) {
+            throw new Error(`Unknown Ge'ez numeral: ${char}`);
+        }
+
+        if (value === 100 || value === 10000) {
+            temp = (temp || 1) * value;
+            result += temp;
+            temp = 0;
+        } else {
+            temp += value;
+        }
+    }
+
+    result += temp;
+
+    return result;
+}
