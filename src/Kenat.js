@@ -75,7 +75,7 @@ export class Kenat {
     /**
      * Returns the Ethiopian date formatted with month name.
      * 
-     * @param {'english'|'amharic'} [lang='english'] - Language for month name.
+     * @param {'english'|'amharic'} [lang='amharic'] - Language for month name.
      * @returns {string} Formatted date, e.g., "Meskerem-15-2017" or "መስከረም-15-2017"
      */
     format(lang = 'amharic') {
