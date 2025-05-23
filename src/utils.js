@@ -50,3 +50,16 @@ export function isGregorianLeapYear(year) {
 export function isEthiopianLeapYear(year) {
     return year % 4 === 3;
 }
+
+/**
+ * Returns the number of days in the given Ethiopian month and year.
+ * @param {number} year - Ethiopian year
+ * @param {number} month - Ethiopian month (1-13)
+ * @returns {number} Number of days in the month
+ */
+export function getEthiopianDaysInMonth(year, month) {
+    if (month === 13) {
+        return isEthiopianLeapYear(year) ? 6 : 5;
+    }
+    return 30;
+}
