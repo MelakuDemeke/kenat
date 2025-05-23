@@ -1,4 +1,5 @@
 import { ethiopianToGregorian, gregorianToEthiopian } from './conversions.js';
+import { monthNames } from './monthNames.js';
 /**
  * Kenat - Ethiopian Calendar Date Wrapper
  * 
@@ -42,7 +43,7 @@ export class Kenat {
         return new Kenat();
     }
 
-    
+
     /**
      * Converts the current Ethiopian date stored in this.ethiopian to its Gregorian equivalent.
      *
@@ -69,5 +70,18 @@ export class Kenat {
      */
     toString() {
         return `Ethiopian: ${this.ethiopian.year}-${this.ethiopian.month}-${this.ethiopian.day}`;
+    }
+
+    /**
+     * Returns the Ethiopian date formatted with month name.
+     * 
+     * @param {'english'|'amharic'} [lang='english'] - Language for month name.
+     * @returns {string} Formatted date, e.g., "Meskerem-15-2017" or "መስከረም-15-2017"
+     */
+    format(lang = 'amharic') {
+        const { year, month, day } = this.ethiopian;
+        const names = monthNames[lang] || monthNames.amharic;
+        const monthName = names[month - 1] || `Month${month}`;
+        return `${monthName}-${day}-${year}`;
     }
 }
