@@ -212,4 +212,20 @@ export class Kenat {
         if (g1.day < g2.day) months -= 1;
         return months;
     }
+
+    /**
+     * Difference between this and another Kenat instance in years.
+     * @param {Kenat} other
+     * @returns {number} Positive if this > other, negative otherwise
+     */
+    diffInYears(other) {
+        const g1 = this.getGregorian();
+        const g2 = other.getGregorian();
+        let years = g1.year - g2.year;
+        if (
+            g1.month < g2.month ||
+            (g1.month === g2.month && g1.day < g2.day)
+        ) years -= 1;
+        return years;
+    }
 }
