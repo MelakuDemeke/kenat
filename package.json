@@ -19,6 +19,14 @@
   ],
   "author": "Melaku Demeke",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MelakuDemeke/kenat.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MelakuDemeke/kenat/issues"
+  },
+  "homepage": "https://github.com/MelakuDemeke/kenat#readme",
   "devDependencies": {
     "jest": "^29.7.0"
   }
