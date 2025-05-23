@@ -149,16 +149,13 @@ export class Kenat {
     }
 
 
-
     /**
-     * Adds a specified number of days to the current Ethiopian date.
+     * Adds a specified number of days to the current Ethiopian date and returns a new Kenat instance.
      *
-     * Handles incrementing or decrementing the day, month, and year fields
-     * as necessary, accounting for the unique structure of the Ethiopian calendar,
-     * including leap years and the 13th month.
+     * Handles month and year rollover according to the Ethiopian calendar.
      *
-     * @param {number} days - The number of days to add (can be negative to subtract days).
-     * @returns {Kenat} A new Kenat instance representing the resulting Ethiopian date.
+     * @param {number} days - The number of days to add.
+     * @returns {Kenat} A new Kenat instance representing the resulting date.
      */
     addDays(days) {
         let { year, month, day } = this.ethiopian;
@@ -177,10 +174,6 @@ export class Kenat {
 
         return new Kenat(`${year}/${month}/${day}`);
     }
-
-
-
-
 
     /**
      * Add months to current Ethiopian date, return new Kenat instance.
