@@ -5,10 +5,10 @@
  * Supports numbers from 1 up to 99999999.
  * 
  * Example:
- *   convertToEthiopianNumeral(1);     // '፩'
- *   convertToEthiopianNumeral(30);    // '፴'
- *   convertToEthiopianNumeral(123);   // '፻፳፫'
- *   convertToEthiopianNumeral(10000); // '፼'
+ *   toGeez(1);     // '፩'
+ *   toGeez(30);    // '፴'
+ *   toGeez(123);   // '፻፳፫'
+ *   toGeez(10000); // '፼'
  * 
  * @author
  * @license MIT
@@ -28,7 +28,7 @@ const symbols = {
  * @returns {string} Ethiopic numeral string.
  * @throws {Error} If input is not a valid positive integer.
  */
-export function convertToEthiopianNumeral(input) {
+export function toGeez(input) {
     if (!/^\d+$/.test(input.toString())) {
         throw new Error("Input must be a natural number.");
     }
