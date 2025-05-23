@@ -6,10 +6,14 @@ describe('Kenat class', () => {
     const kenat = new Kenat();
 
     const gregorian = kenat.getGregorian();
-    expect(gregorian).toBeInstanceOf(Date);
+    expect(gregorian).toHaveProperty('year');
+    expect(gregorian).toHaveProperty('month');
+    expect(gregorian).toHaveProperty('day');
 
-    // Allow some time drift (same date, not necessarily same millisecond)
-    expect(gregorian.toDateString()).toEqual(now.toDateString());
+    // Compare only the date portion
+    expect(`${gregorian.year}-${gregorian.month}-${gregorian.day}`).toBe(
+      `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
+    );
 
     const ethiopian = kenat.getEthiopian();
     expect(ethiopian).toHaveProperty('year');
@@ -17,18 +21,18 @@ describe('Kenat class', () => {
     expect(ethiopian).toHaveProperty('day');
   });
 
-  test('should convert a specific Gregorian date correctly', () => {
-    const kenat = new Kenat("2025-05-23T15:30:00");
+  test('should convert a specific Ethiopian date correctly', () => {
+    const kenat = new Kenat("2016/9/15");
     const gregorian = kenat.getGregorian();
-    expect(gregorian.toISOString()).toContain("2025-05-23");
+    expect(gregorian).toEqual({ year: 2024, month: 5, day: 23 });
 
     const ethiopian = kenat.getEthiopian();
-    expect(ethiopian).toEqual({ year: 2017, month: 9, day: 15 }); // Adjust if your conversion logic differs
+    expect(ethiopian).toEqual({ year: 2016, month: 9, day: 15 });
   });
 
   test('toString should return Ethiopian date string', () => {
-    const kenat = new Kenat("2025-05-23T15:30:00");
+    const kenat = new Kenat("2016/9/15");
     const str = kenat.toString();
-    expect(str).toBe("Ethiopian: 2017-9-15");
+    expect(str).toBe("Ethiopian: 2016-9-15");
   });
 });
