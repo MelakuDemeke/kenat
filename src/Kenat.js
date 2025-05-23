@@ -2,6 +2,7 @@ import { ethiopianToGregorian, gregorianToEthiopian } from './conversions.js';
 import { printMonthCalendarGrid } from './render/printMonthCalendarGrid.js';
 import { monthNames } from './monthNames.js';
 import { toGeez } from './geezConverter.js';
+import { getEthiopianDaysInMonth } from './utils.js';
 /**
  * Kenat - Ethiopian Calendar Date Wrapper
  * 
@@ -112,7 +113,7 @@ export class Kenat {
      *   Ethiopian and Gregorian date information and display strings.
      */
     getMonthCalendar(year = this.ethiopian.year, month = this.ethiopian.month, useGeez = false) {
-        const daysInMonth = month === 13 ? (year % 4 === 3 ? 6 : 5) : 30;
+        const daysInMonth = getEthiopianDaysInMonth(year, month);
         const calendar = [];
 
         for (let day = 1; day <= daysInMonth; day++) {
@@ -147,44 +148,48 @@ export class Kenat {
         printMonthCalendarGrid(year, month, calendar, useGeez);
     }
 
+
     
     /**
-     * Adds a specified number of days to the current Ethiopian date and returns a new Kenat instance.
+     * Adds a specified number of days to the current Ethiopian date.
      *
-     * Handles month and year transitions, including the special case for the 13th month (Pagume),
-     * which has 5 days in a common year and 6 days in a leap year.
+     * Handles incrementing or decrementing the day, month, and year fields
+     * as necessary, accounting for the unique structure of the Ethiopian calendar,
+     * including leap years and the 13th month.
      *
-     * @param {number} days - The number of days to add to the current date.
-     * @returns {Kenat} A new Kenat instance representing the resulting date.
+     * @param {number} days - The number of days to add (can be negative to subtract days).
+     * @returns {Kenat} A new Kenat instance representing the resulting Ethiopian date.
      */
     addDays(days) {
         let { year, month, day } = this.ethiopian;
-
         day += days;
 
-        // Calculate days in the current month
-        const daysInMonth = month === 13 ? (year % 4 === 3 ? 6 : 5) : 30;
+        // Loop to adjust day/month/year forward
+        while (true) {
+            const daysInMonth = getEthiopianDaysInMonth(year, month);
 
-        while (day > daysInMonth) {
-            day -= daysInMonth;
-            month += 1;
-
-            if (month > 13) {
-                month = 1;
-                year += 1;
-            }
-
-            // Update daysInMonth for the new month
-            if (month === 13) {
-                // Pagume month, 5 days normally, 6 in leap year
-                daysInMonth = (year % 4 === 3) ? 6 : 5;
+            if (day > daysInMonth) {
+                day -= daysInMonth;
+                month += 1;
+                if (month > 13) {
+                    month = 1;
+                    year += 1;
+                }
+            } else if (day <= 0) {
+                month -= 1;
+                if (month < 1) {
+                    month = 13;
+                    year -= 1;
+                }
+                day += getEthiopianDaysInMonth(year, month);
             } else {
-                daysInMonth = 30;
+                break;
             }
         }
 
         return new Kenat(`${year}/${month}/${day}`);
     }
+
 
 
     /**
