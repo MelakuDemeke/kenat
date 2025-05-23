@@ -199,4 +199,17 @@ export class Kenat {
         const diffMs = d1 - d2;
         return Math.floor(diffMs / (1000 * 60 * 60 * 24));
     }
+
+    /**
+     * Difference between this and another Kenat instance in months.
+     * @param {Kenat} other
+     * @returns {number} Positive if this > other, negative otherwise
+     */
+    diffInMonths(other) {
+        const g1 = this.getGregorian();
+        const g2 = other.getGregorian();
+        let months = (g1.year - g2.year) * 12 + (g1.month - g2.month);
+        if (g1.day < g2.day) months -= 1;
+        return months;
+    }
 }
