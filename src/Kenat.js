@@ -147,18 +147,45 @@ export class Kenat {
         printMonthCalendarGrid(year, month, calendar, useGeez);
     }
 
+    
     /**
-     * Add days to current Ethiopian date, return new Kenat instance.
-     * @param {number} days
-     * @returns {Kenat}
+     * Adds a specified number of days to the current Ethiopian date and returns a new Kenat instance.
+     *
+     * Handles month and year transitions, including the special case for the 13th month (Pagume),
+     * which has 5 days in a common year and 6 days in a leap year.
+     *
+     * @param {number} days - The number of days to add to the current date.
+     * @returns {Kenat} A new Kenat instance representing the resulting date.
      */
     addDays(days) {
-        const greg = this.getGregorian();
-        const date = new Date(greg.year, greg.month - 1, greg.day);
-        date.setDate(date.getDate() + days);
-        const eth = gregorianToEthiopian(date.getFullYear(), date.getMonth() + 1, date.getDate());
-        return new Kenat(`${eth.year}/${eth.month}/${eth.day}`);
+        let { year, month, day } = this.ethiopian;
+
+        day += days;
+
+        // Calculate days in the current month
+        const daysInMonth = month === 13 ? (year % 4 === 3 ? 6 : 5) : 30;
+
+        while (day > daysInMonth) {
+            day -= daysInMonth;
+            month += 1;
+
+            if (month > 13) {
+                month = 1;
+                year += 1;
+            }
+
+            // Update daysInMonth for the new month
+            if (month === 13) {
+                // Pagume month, 5 days normally, 6 in leap year
+                daysInMonth = (year % 4 === 3) ? 6 : 5;
+            } else {
+                daysInMonth = 30;
+            }
+        }
+
+        return new Kenat(`${year}/${month}/${day}`);
     }
+
 
     /**
      * Add months to current Ethiopian date, return new Kenat instance.
