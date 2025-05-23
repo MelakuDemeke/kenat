@@ -149,7 +149,7 @@ export class Kenat {
     }
 
 
-    
+
     /**
      * Adds a specified number of days to the current Ethiopian date.
      *
@@ -164,31 +164,21 @@ export class Kenat {
         let { year, month, day } = this.ethiopian;
         day += days;
 
-        // Loop to adjust day/month/year forward
-        while (true) {
+        while (day > getEthiopianDaysInMonth(year, month)) {
             const daysInMonth = getEthiopianDaysInMonth(year, month);
+            day -= daysInMonth;
+            month += 1;
 
-            if (day > daysInMonth) {
-                day -= daysInMonth;
-                month += 1;
-                if (month > 13) {
-                    month = 1;
-                    year += 1;
-                }
-            } else if (day <= 0) {
-                month -= 1;
-                if (month < 1) {
-                    month = 13;
-                    year -= 1;
-                }
-                day += getEthiopianDaysInMonth(year, month);
-            } else {
-                break;
+            if (month > 13) {
+                month = 1;
+                year += 1;
             }
         }
 
         return new Kenat(`${year}/${month}/${day}`);
     }
+
+
 
 
 
