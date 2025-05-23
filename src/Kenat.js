@@ -173,4 +173,30 @@ export class Kenat {
         return new Kenat(`${eth.year}/${eth.month}/${eth.day}`);
     }
 
+    /**
+     * Add years to current Ethiopian date, return new Kenat instance.
+     * @param {number} years
+     * @returns {Kenat}
+     */
+    addYears(years) {
+        const greg = this.getGregorian();
+        const date = new Date(greg.year, greg.month - 1, greg.day);
+        date.setFullYear(date.getFullYear() + years);
+        const eth = gregorianToEthiopian(date.getFullYear(), date.getMonth() + 1, date.getDate());
+        return new Kenat(`${eth.year}/${eth.month}/${eth.day}`);
+    }
+
+    /**
+     * Difference between this and another Kenat instance in days.
+     * @param {Kenat} other
+     * @returns {number} Positive if this > other, negative otherwise
+     */
+    diffInDays(other) {
+        const g1 = this.getGregorian();
+        const g2 = other.getGregorian();
+        const d1 = new Date(g1.year, g1.month - 1, g1.day);
+        const d2 = new Date(g2.year, g2.month - 1, g2.day);
+        const diffMs = d1 - d2;
+        return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    }
 }
