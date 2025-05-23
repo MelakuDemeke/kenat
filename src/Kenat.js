@@ -1,4 +1,4 @@
-import { gregorianToEthiopian } from './conversions.js';
+import { ethiopianToGregorian, gregorianToEthiopian } from './conversions.js';
 /**
  * Kenat - Ethiopian Calendar Date Wrapper
  * 
@@ -8,39 +8,49 @@ import { gregorianToEthiopian } from './conversions.js';
  */
 
 export class Kenat {
+
     /**
-     * Constructs a Kenat date wrapper.
-     * 
-     * @param {Date | string} [inputDate=new Date()] - A Date object or date string. Defaults to the current date/time.
+     * Constructs a Kenat instance from an Ethiopian date string in 'yyyy/mm/dd' format,
+     * or defaults to the current Gregorian date converted to Ethiopian date if no argument is provided.
+     *
+     * @param {string} [ethiopianDateStr] - The Ethiopian date string in 'yyyy/mm/dd' format.
+     * @throws {Error} If the provided date string does not match the 'yyyy/mm/dd' format.
      */
-    constructor(inputDate = new Date()) {
-        this.gregorian = new Date(inputDate); // Accepts Date object or ISO string
-        const { year, month, day } = this.gregorianToParts(this.gregorian);
-        this.ethiopian = gregorianToEthiopian(year, month, day);
+    constructor(ethiopianDateStr) {
+        if (!ethiopianDateStr) {
+            // default to current Gregorian date → Ethiopian
+            const today = new Date();
+            this.ethiopian = gregorianToEthiopian(
+                today.getFullYear(),
+                today.getMonth() + 1,
+                today.getDate()
+            );
+        } else if (/^\d{4}\/\d{1,2}\/\d{1,2}$/.test(ethiopianDateStr)) {
+            const [year, month, day] = ethiopianDateStr.split('/').map(Number);
+            this.ethiopian = { year, month, day };
+        } else {
+            throw new Error("Kenat only accepts Ethiopian date in 'yyyy/mm/dd' format.");
+        }
     }
 
     /**
-   * Converts a JS Date object into separate year, month, and day components.
-   * 
-   * @private
-   * @param {Date} date - The Date object to extract parts from.
-   * @returns {{ year: number, month: number, day: number }}
-   */
-    gregorianToParts(date) {
-        return {
-            year: date.getFullYear(),
-            month: date.getMonth() + 1,
-            day: date.getDate()
-        };
+     * Creates and returns a new instance of the Kenat class representing the current moment.
+     *
+     * @returns {Kenat} A new Kenat instance set to the current date and time.
+     */
+    static now() {
+        return new Kenat();
     }
 
+    
     /**
-     * Returns the original Gregorian JS `Date` object.
-     * 
-     * @returns {Date} The internal JavaScript `Date` instance.
+     * Converts the current Ethiopian date stored in this.ethiopian to its Gregorian equivalent.
+     *
+     * @returns {{ year: number, month: number, day: number }} The Gregorian date corresponding to the Ethiopian date.
      */
     getGregorian() {
-        return this.gregorian;
+        const { year, month, day } = this.ethiopian;
+        return ethiopianToGregorian(year, month, day);
     }
 
     /**
