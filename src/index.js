@@ -1,4 +1,10 @@
 import { Kenat } from './Kenat.js';
-export default Kenat;
+import { gregorianToEthiopian, ethiopianToGregorian } from './conversions.js';
 
-export { gregorianToEthiopian, ethiopianToGregorian } from './conversions.js';
+const KenatAPI = {
+  gregorianToEthiopian,
+  ethiopianToGregorian,
+  Kenat,
+};
+
+export default KenatAPI;
