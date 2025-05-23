@@ -45,4 +45,14 @@ describe('Kenat class', () => {
         const amharicFormat = kenat.format('amharic');
         expect(amharicFormat).toBe("መስከረም-15-2017");
     });
+
+    test('formatInGeezAmharic returns Ethiopian date string with Amharic month and Geez numerals', () => {
+        const kenat = new Kenat("2017/1/15"); // Meskerem 15, 2017
+
+        const formatted = kenat.formatInGeezAmharic();
+
+        // Expected: "መስከረም ፲፭ ፳፻፲፯"
+        expect(formatted).toBe("መስከረም ፲፭ ፳፻፲፯");
+    });
+
 });

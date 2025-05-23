@@ -1,5 +1,6 @@
 import { ethiopianToGregorian, gregorianToEthiopian } from './conversions.js';
 import { monthNames } from './monthNames.js';
+import { toGeez } from './geezConverter.js';
 /**
  * Kenat - Ethiopian Calendar Date Wrapper
  * 
@@ -83,5 +84,20 @@ export class Kenat {
         const names = monthNames[lang] || monthNames.amharic;
         const monthName = names[month - 1] || `Month${month}`;
         return `${monthName}-${day}-${year}`;
+    }
+
+    /**
+     * Formats the Ethiopian date in Geez numerals and Amharic month name.
+     *
+     * @returns {string} The formatted date string in the format: "{Amharic Month Name} {Geez Day} {Geez Year}".
+     *
+     * formatInGeezAmharic(); // "የካቲት ፲ ፳፻፲፭"
+     */
+    formatInGeezAmharic() {
+        const { year, month, day } = this.ethiopian;
+        const monthName = monthNames.amharic[month - 1] || `Month${month}`;
+        const geezDay = toGeez(day);
+        const geezYear = toGeez(year);
+        return `${monthName} ${geezDay} ${geezYear}`;
     }
 }
