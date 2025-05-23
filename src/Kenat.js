@@ -44,7 +44,6 @@ export class Kenat {
         return new Kenat();
     }
 
-
     /**
      * Converts the current Ethiopian date stored in this.ethiopian to its Gregorian equivalent.
      *
@@ -100,4 +99,39 @@ export class Kenat {
         const geezYear = toGeez(year);
         return `${monthName} ${geezDay} ${geezYear}`;
     }
+
+    /**
+     * Generates a calendar for a given Ethiopian month and year, mapping each Ethiopian date
+     * to its corresponding Gregorian date and providing formatted display strings.
+     *
+     * @param {number} [year=this.ethiopian.year] - The Ethiopian year for the calendar.
+     * @param {number} [month=this.ethiopian.month] - The Ethiopian month (1-13).
+     * @param {boolean} [useGeez=false] - Whether to display dates in Geez numerals.
+     * @returns {Array<Object>} An array of objects, each representing a day in the month with
+     *   Ethiopian and Gregorian date information and display strings.
+     */
+    getMonthCalendar(year = this.ethiopian.year, month = this.ethiopian.month, useGeez = false) {
+        const daysInMonth = month === 13 ? (year % 4 === 3 ? 6 : 5) : 30;
+        const calendar = [];
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const ethDate = { year, month, day };
+            const gregDate = ethiopianToGregorian(year, month, day);
+            calendar.push({
+                ethiopian: {
+                    ...ethDate,
+                    display: useGeez
+                        ? `${monthNames.amharic[month - 1]} ${toGeez(day)} ${toGeez(year)}`
+                        : `${monthNames.amharic[month - 1]} ${day} ${year}`
+                },
+                gregorian: {
+                    ...gregDate,
+                    display: `${gregDate.year}-${gregDate.month.toString().padStart(2, '0')}-${gregDate.day.toString().padStart(2, '0')}`
+                }
+            });
+        }
+
+        return calendar;
+    }
+
 }
