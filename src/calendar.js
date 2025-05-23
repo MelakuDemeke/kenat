@@ -128,9 +128,7 @@ function getGregorianDateOfEthiopianNewYear(ethiopianYear) {
     const gregorianYear = ethiopianYear + 7;  // Ethiopian year roughly equals Gregorian year - 7 or -8
 
     // If the previous Gregorian year is a leap year, Ethiopian new year falls on Sept 12
-    const previousGregorianYear = gregorianYear - 1;
-    const newYearDay = isGregorianLeapYear(previousGregorianYear) ? 12 : 11;
-
+    const newYearDay = isGregorianLeapYear(gregorianYear + 1) ? 12 : 11;
     return { gregorianYear, month: 9, day: newYearDay };
 }
 
