@@ -25,4 +25,10 @@ describe('Kenat Ethiopian Calendar conversions', () => {
     const result = ethiopianToGregorian(2011, 13, 6);
     expect(result).toEqual({ year: 2019, month: 9, day: 11 });
   });
+
+  // Test for Ethiopian to Gregorian conversion with Pagumē 6 in a leap year
+  test('Ethiopian to Gregorian Leap Year: Pagumē 6, 2019 (2019-13-6) -> September 11, 2027', () => {
+    const result = ethiopianToGregorian(2019, 13, 6);
+    expect(result).toEqual({ year: 2027, month: 9, day: 11 });
+  });
 });
