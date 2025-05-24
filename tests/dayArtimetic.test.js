@@ -41,7 +41,6 @@ describe('KenatAddDaysTests', () => {
 
 });
 
-
 describe('KenatAddMonthsTests', () => {
     test('Add months within same year', () => {
         const k = new Kenat('2016/03/10');
@@ -83,5 +82,37 @@ describe('KenatAddMonthsTests', () => {
         const k = new Kenat('2016/01/06'); // Meskerem 6
         const result = k.addMonths(-1);    // Should go to Pagume
         expect(result.getEthiopian()).toEqual({ year: 2015, month: 13, day: 6 }); // leap year
+    });
+});
+
+describe('KenatAddYearsTests', () => {
+    test('Add years within leap-safe month', () => {
+        const k = new Kenat('2010/05/15');
+        const result = k.addYears(3);
+        expect(result.getEthiopian()).toEqual({ year: 2013, month: 5, day: 15 });
+    });
+
+    test('Add years from leap Pagume 6 to non-leap year', () => {
+        const k = new Kenat('2011/13/6'); // 2011 is leap
+        const result = k.addYears(1);     // 2012 is not leap
+        expect(result.getEthiopian()).toEqual({ year: 2012, month: 13, day: 5 }); // day clamped
+    });
+
+    test('Add years to another leap year, keeping Pagume 6', () => {
+        const k = new Kenat('2011/13/6'); // 2011 is leap
+        const result = k.addYears(4);     // 2015 is also leap
+        expect(result.getEthiopian()).toEqual({ year: 2015, month: 13, day: 6 });
+    });
+
+    test('Add zero years returns same date', () => {
+        const k = new Kenat('2016/03/10');
+        const result = k.addYears(0);
+        expect(result.getEthiopian()).toEqual({ year: 2016, month: 3, day: 10 });
+    });
+
+    test('Subtract years across leap/non-leap transition', () => {
+        const k = new Kenat('2015/13/6'); // 2015 is leap
+        const result = k.addYears(-1);    // 2014 is not leap
+        expect(result.getEthiopian()).toEqual({ year: 2014, month: 13, day: 5 });
     });
 });

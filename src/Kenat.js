@@ -2,7 +2,7 @@ import { ethiopianToGregorian, gregorianToEthiopian } from './conversions.js';
 import { printMonthCalendarGrid } from './render/printMonthCalendarGrid.js';
 import { monthNames } from './monthNames.js';
 import { toGeez } from './geezConverter.js';
-import { getEthiopianDaysInMonth } from './utils.js';
+import { getEthiopianDaysInMonth, isEthiopianLeapYear } from './utils.js';
 /**
  * Kenat - Ethiopian Calendar Date Wrapper
  * 
@@ -204,17 +204,24 @@ export class Kenat {
 
 
     /**
-     * Add years to current Ethiopian date, return new Kenat instance.
-     * @param {number} years
+     * Add years to the current Ethiopian date and return a new Kenat instance.
+     * Handles leap years and Pagume overflow.
+     *
+     * @param {number} years - Number of years to add (can be negative).
      * @returns {Kenat}
      */
     addYears(years) {
-        const greg = this.getGregorian();
-        const date = new Date(greg.year, greg.month - 1, greg.day);
-        date.setFullYear(date.getFullYear() + years);
-        const eth = gregorianToEthiopian(date.getFullYear(), date.getMonth() + 1, date.getDate());
-        return new Kenat(`${eth.year}/${eth.month}/${eth.day}`);
+        let { year, month, day } = this.ethiopian;
+        year += years;
+
+        // Clamp Pagume 6 to Pagume 5 if the new year is not a leap year
+        if (month === 13 && day === 6 && !isEthiopianLeapYear(year)) {
+            day = 5;
+        }
+
+        return new Kenat(`${year}/${month}/${day}`);
     }
+
 
     /**
      * Difference between this and another Kenat instance in days.
