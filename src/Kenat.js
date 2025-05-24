@@ -2,6 +2,7 @@ import { ethiopianToGregorian, gregorianToEthiopian } from './conversions.js';
 import { printMonthCalendarGrid } from './render/printMonthCalendarGrid.js';
 import { monthNames } from './monthNames.js';
 import { toGeez } from './geezConverter.js';
+import { getEthiopianDaysInMonth, isEthiopianLeapYear } from './utils.js';
 /**
  * Kenat - Ethiopian Calendar Date Wrapper
  * 
@@ -112,7 +113,7 @@ export class Kenat {
      *   Ethiopian and Gregorian date information and display strings.
      */
     getMonthCalendar(year = this.ethiopian.year, month = this.ethiopian.month, useGeez = false) {
-        const daysInMonth = month === 13 ? (year % 4 === 3 ? 6 : 5) : 30;
+        const daysInMonth = getEthiopianDaysInMonth(year, month);
         const calendar = [];
 
         for (let day = 1; day <= daysInMonth; day++) {
@@ -148,84 +149,170 @@ export class Kenat {
     }
 
     /**
-     * Add days to current Ethiopian date, return new Kenat instance.
-     * @param {number} days
-     * @returns {Kenat}
+     * Adds a specified number of days to the current Ethiopian date and returns a new Kenat instance.
+     *
+     * Handles month and year rollover according to the Ethiopian calendar.
+     *
+     * @param {number} days - The number of days to add.
+     * @returns {Kenat} A new Kenat instance representing the resulting date.
      */
     addDays(days) {
-        const greg = this.getGregorian();
-        const date = new Date(greg.year, greg.month - 1, greg.day);
-        date.setDate(date.getDate() + days);
-        const eth = gregorianToEthiopian(date.getFullYear(), date.getMonth() + 1, date.getDate());
-        return new Kenat(`${eth.year}/${eth.month}/${eth.day}`);
+        let { year, month, day } = this.ethiopian;
+        day += days;
+
+        while (day > getEthiopianDaysInMonth(year, month)) {
+            const daysInMonth = getEthiopianDaysInMonth(year, month);
+            day -= daysInMonth;
+            month += 1;
+
+            if (month > 13) {
+                month = 1;
+                year += 1;
+            }
+        }
+
+        return new Kenat(`${year}/${month}/${day}`);
     }
 
     /**
-     * Add months to current Ethiopian date, return new Kenat instance.
-     * @param {number} months
-     * @returns {Kenat}
+     * Adds a specified number of months to the current Ethiopian date.
+     * Handles rollover across years and clamps days for Pagume.
+     *
+     * @param {number} months - Number of Ethiopian months to add (can be negative).
+     * @returns {Kenat} A new Kenat instance.
      */
     addMonths(months) {
-        const greg = this.getGregorian();
-        const date = new Date(greg.year, greg.month - 1, greg.day);
-        date.setMonth(date.getMonth() + months);
-        const eth = gregorianToEthiopian(date.getFullYear(), date.getMonth() + 1, date.getDate());
-        return new Kenat(`${eth.year}/${eth.month}/${eth.day}`);
+        let { year, month, day } = this.ethiopian;
+
+        let totalMonths = month + months;
+
+        if (totalMonths > 0) {
+            year += Math.floor((totalMonths - 1) / 13);
+            month = ((totalMonths - 1) % 13) + 1;
+        } else {
+            year += Math.floor((totalMonths - 1) / 13);
+            month = ((totalMonths - 1) % 13 + 13) % 13 + 1;
+        }
+
+        const daysInTargetMonth = getEthiopianDaysInMonth(year, month);
+        if (day > daysInTargetMonth) {
+            day = daysInTargetMonth;
+        }
+
+        return new Kenat(`${year}/${month}/${day}`);
     }
 
+
     /**
-     * Add years to current Ethiopian date, return new Kenat instance.
-     * @param {number} years
+     * Add years to the current Ethiopian date and return a new Kenat instance.
+     * Handles leap years and Pagume overflow.
+     *
+     * @param {number} years - Number of years to add (can be negative).
      * @returns {Kenat}
      */
     addYears(years) {
-        const greg = this.getGregorian();
-        const date = new Date(greg.year, greg.month - 1, greg.day);
-        date.setFullYear(date.getFullYear() + years);
-        const eth = gregorianToEthiopian(date.getFullYear(), date.getMonth() + 1, date.getDate());
-        return new Kenat(`${eth.year}/${eth.month}/${eth.day}`);
+        let { year, month, day } = this.ethiopian;
+        year += years;
+
+        // Clamp Pagume 6 to Pagume 5 if the new year is not a leap year
+        if (month === 13 && day === 6 && !isEthiopianLeapYear(year)) {
+            day = 5;
+        }
+
+        return new Kenat(`${year}/${month}/${day}`);
     }
 
     /**
-     * Difference between this and another Kenat instance in days.
+     * Difference between this and another Kenat instance in days (pure Ethiopian logic).
      * @param {Kenat} other
      * @returns {number} Positive if this > other, negative otherwise
      */
     diffInDays(other) {
-        const g1 = this.getGregorian();
-        const g2 = other.getGregorian();
-        const d1 = new Date(g1.year, g1.month - 1, g1.day);
-        const d2 = new Date(g2.year, g2.month - 1, g2.day);
-        const diffMs = d1 - d2;
-        return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        const eth1 = this.getEthiopian();
+        const eth2 = other.getEthiopian();
+
+        const totalDays = (eth) => {
+            let days = 0;
+
+            // Accumulate full years
+            for (let y = 1; y < eth.year; y++) {
+                days += 365;
+                if (isEthiopianLeapYear(y)) days += 1;
+            }
+
+            // Accumulate full months
+            for (let m = 1; m < eth.month; m++) {
+                days += getEthiopianDaysInMonth(eth.year, m);
+            }
+
+            // Add remaining days
+            days += eth.day;
+
+            return days;
+        };
+
+        return totalDays(eth1) - totalDays(eth2);
     }
 
     /**
-     * Difference between this and another Kenat instance in months.
+     * Difference between this and another Kenat instance in months (pure Ethiopian logic).
      * @param {Kenat} other
      * @returns {number} Positive if this > other, negative otherwise
      */
     diffInMonths(other) {
-        const g1 = this.getGregorian();
-        const g2 = other.getGregorian();
-        let months = (g1.year - g2.year) * 12 + (g1.month - g2.month);
-        if (g1.day < g2.day) months -= 1;
-        return months;
+        const a = this.getEthiopian();
+        const b = other.getEthiopian();
+
+        const totalMonthsA = a.year * 13 + (a.month - 1);
+        const totalMonthsB = b.year * 13 + (b.month - 1);
+
+        let diff = totalMonthsA - totalMonthsB;
+
+        if (a.day < b.day) {
+            diff -= 1;
+        }
+
+        return diff;
     }
 
+
+
     /**
-     * Difference between this and another Kenat instance in years.
-     * @param {Kenat} other
-     * @returns {number} Positive if this > other, negative otherwise
+     * Calculates the difference in full years between this date and another date.
+     * The result is positive if this date is after the other, negative if before.
+     * Partial years are not counted; the difference is rounded down to the nearest whole year.
+     *
+     * @param {Object} other - Another date object with a getEthiopian() method returning { year, month, day }.
+     * @returns {number} The signed number of full years between the two dates.
      */
     diffInYears(other) {
-        const g1 = this.getGregorian();
-        const g2 = other.getGregorian();
-        let years = g1.year - g2.year;
+        const a = this.getEthiopian();
+        const b = other.getEthiopian();
+
+        // Direction: a - b
+        const isAfter = (
+            a.year > b.year ||
+            (a.year === b.year && a.month > b.month) ||
+            (a.year === b.year && a.month === b.month && a.day > b.day)
+        );
+
+        const later = isAfter ? a : b;
+        const earlier = isAfter ? b : a;
+
+        let diff = later.year - earlier.year;
+
+        // Adjust only if year is more than 0 and the later date hasn't reached same month/day yet
         if (
-            g1.month < g2.month ||
-            (g1.month === g2.month && g1.day < g2.day)
-        ) years -= 1;
-        return years;
+            (later.month < earlier.month) ||
+            (later.month === earlier.month && later.day < earlier.day)
+        ) {
+            diff -= 1;
+        }
+
+        // Flip sign if a is before b
+        if (!isAfter) diff = -diff;
+
+        // Normalize zero
+        return diff === 0 ? 0 : diff;
     }
 }
