@@ -156,7 +156,8 @@ export class Kenat {
         printMonthCalendarGrid(year, month, calendar, useGeez);
     }
 
-    // arithmetic methods
+    // Arithmetic methods start here
+
     /**
      * Adds a specified number of days to the current Ethiopian date.
      *
@@ -219,4 +220,6 @@ export class Kenat {
     diffInYears(other) {
         return diffInYears(this.ethiopian, other.getEthiopian());
     }
+
+    // Arithmetic methods end here
 }
