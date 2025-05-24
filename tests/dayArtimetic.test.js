@@ -116,3 +116,35 @@ describe('KenatAddYearsTests', () => {
         expect(result.getEthiopian()).toEqual({ year: 2014, month: 13, day: 5 });
     });
 });
+
+describe('KenatDiffInDaysTests', () => {
+    test('Same date returns zero', () => {
+        const a = new Kenat('2016/05/15');
+        const b = new Kenat('2016/05/15');
+        expect(a.diffInDays(b)).toBe(0);
+    });
+
+    test('Later date minus earlier date returns positive', () => {
+        const a = new Kenat('2016/06/10');
+        const b = new Kenat('2016/06/05');
+        expect(a.diffInDays(b)).toBe(5);
+    });
+
+    test('Earlier date minus later date returns negative', () => {
+        const a = new Kenat('2016/06/01');
+        const b = new Kenat('2016/06/06');
+        expect(a.diffInDays(b)).toBe(-5);
+    });
+
+    test('Crossing year boundary', () => {
+        const a = new Kenat('2017/01/03');
+        const b = new Kenat('2016/13/04');
+        expect(a.diffInDays(b)).toBe(4); // Pagume 5 to Meskerem 3
+    });
+
+    test('Crossing multiple years', () => {
+        const a = new Kenat('2018/01/01');
+        const b = new Kenat('2016/01/01');
+        expect(a.diffInDays(b)).toBe(730); // 2 Ethiopian years = 365 * 2
+    });
+});

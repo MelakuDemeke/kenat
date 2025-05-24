@@ -224,18 +224,37 @@ export class Kenat {
 
 
     /**
-     * Difference between this and another Kenat instance in days.
+     * Difference between this and another Kenat instance in days (pure Ethiopian logic).
      * @param {Kenat} other
      * @returns {number} Positive if this > other, negative otherwise
-     */
+     */ 
     diffInDays(other) {
-        const g1 = this.getGregorian();
-        const g2 = other.getGregorian();
-        const d1 = new Date(g1.year, g1.month - 1, g1.day);
-        const d2 = new Date(g2.year, g2.month - 1, g2.day);
-        const diffMs = d1 - d2;
-        return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        const eth1 = this.getEthiopian();
+        const eth2 = other.getEthiopian();
+
+        const totalDays = (eth) => {
+            let days = 0;
+
+            // Accumulate full years
+            for (let y = 1; y < eth.year; y++) {
+                days += 365;
+                if (isEthiopianLeapYear(y)) days += 1;
+            }
+
+            // Accumulate full months
+            for (let m = 1; m < eth.month; m++) {
+                days += getEthiopianDaysInMonth(eth.year, m);
+            }
+
+            // Add remaining days
+            days += eth.day;
+
+            return days;
+        };
+
+        return totalDays(eth1) - totalDays(eth2);
     }
+
 
     /**
      * Difference between this and another Kenat instance in months.
