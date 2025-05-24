@@ -148,3 +148,44 @@ describe('KenatDiffInDaysTests', () => {
         expect(a.diffInDays(b)).toBe(730); // 2 Ethiopian years = 365 * 2
     });
 });
+
+describe('KenatDiffInMonthsTests', () => {
+  test('Same date returns zero', () => {
+    const a = new Kenat('2016/05/15');
+    const b = new Kenat('2016/05/15');
+    expect(a.diffInMonths(b)).toBe(0);
+  });
+
+  test('Later date minus earlier date within same year returns positive', () => {
+    const a = new Kenat('2016/06/10');
+    const b = new Kenat('2016/05/05');
+    expect(a.diffInMonths(b)).toBe(1);
+  });
+
+  test('Earlier date minus later date within same year returns negative', () => {
+    const a = new Kenat('2016/05/01');
+    const b = new Kenat('2016/06/06');
+    expect(a.diffInMonths(b)).toBe(-2); 
+    // Explanation: totalMonths difference is -1, but day 1 < 6 subtracts 1 more month = -2
+  });
+
+  test('Crossing year boundary', () => {
+    const a = new Kenat('2017/01/03');
+    const b = new Kenat('2016/13/04');
+    expect(a.diffInMonths(b)).toBe(0);
+  });
+
+  test('Crossing year boundary with day adjustment', () => {
+    const a = new Kenat('2017/01/05'); // day 5
+    const b = new Kenat('2016/13/04'); // day 4
+    expect(a.diffInMonths(b)).toBe(1); 
+    // Because 5 >= 4 no decrement
+  });
+
+  test('Crossing multiple years', () => {
+    const a = new Kenat('2018/01/01');
+    const b = new Kenat('2016/01/01');
+    expect(a.diffInMonths(b)).toBe(26); // 2 Ethiopian years * 13 months
+  });
+});
+
