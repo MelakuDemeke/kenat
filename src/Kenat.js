@@ -254,7 +254,6 @@ export class Kenat {
         return totalDays(eth1) - totalDays(eth2);
     }
 
-
     /**
      * Difference between this and another Kenat instance in months (pure Ethiopian logic).
      * @param {Kenat} other
@@ -277,19 +276,43 @@ export class Kenat {
     }
 
 
+
     /**
-     * Difference between this and another Kenat instance in years.
-     * @param {Kenat} other
-     * @returns {number} Positive if this > other, negative otherwise
+     * Calculates the difference in full years between this date and another date.
+     * The result is positive if this date is after the other, negative if before.
+     * Partial years are not counted; the difference is rounded down to the nearest whole year.
+     *
+     * @param {Object} other - Another date object with a getEthiopian() method returning { year, month, day }.
+     * @returns {number} The signed number of full years between the two dates.
      */
     diffInYears(other) {
-        const g1 = this.getGregorian();
-        const g2 = other.getGregorian();
-        let years = g1.year - g2.year;
+        const a = this.getEthiopian();
+        const b = other.getEthiopian();
+
+        // Direction: a - b
+        const isAfter = (
+            a.year > b.year ||
+            (a.year === b.year && a.month > b.month) ||
+            (a.year === b.year && a.month === b.month && a.day > b.day)
+        );
+
+        const later = isAfter ? a : b;
+        const earlier = isAfter ? b : a;
+
+        let diff = later.year - earlier.year;
+
+        // Adjust only if year is more than 0 and the later date hasn't reached same month/day yet
         if (
-            g1.month < g2.month ||
-            (g1.month === g2.month && g1.day < g2.day)
-        ) years -= 1;
-        return years;
+            (later.month < earlier.month) ||
+            (later.month === earlier.month && later.day < earlier.day)
+        ) {
+            diff -= 1;
+        }
+
+        // Flip sign if a is before b
+        if (!isAfter) diff = -diff;
+
+        // Normalize zero
+        return diff === 0 ? 0 : diff;
     }
 }

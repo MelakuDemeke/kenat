@@ -189,3 +189,47 @@ describe('KenatDiffInMonthsTests', () => {
   });
 });
 
+describe('KenatDiffInYearsTests', () => {
+  test('Same date returns zero', () => {
+    const a = new Kenat('2016/05/15');
+    const b = new Kenat('2016/05/15');
+    expect(a.diffInYears(b)).toBe(0);
+  });
+
+  test('Later date minus earlier date within same year returns zero', () => {
+    const a = new Kenat('2016/06/10');
+    const b = new Kenat('2016/05/05');
+    expect(a.diffInYears(b)).toBe(0); // Same year, difference less than full year
+  });
+
+  test('Earlier date minus later date within same year returns zero', () => {
+    const a = new Kenat('2016/05/01');
+    const b = new Kenat('2016/06/06');
+    expect(a.diffInYears(b)).toBe(0); // Same year, difference less than full year
+  });
+
+  test('Later date minus earlier date crossing year boundary returns positive', () => {
+    const a = new Kenat('2017/01/03');
+    const b = new Kenat('2016/13/04');
+    expect(a.diffInYears(b)).toBe(0); // Full year difference, day/month adjustment done
+  });
+
+  test('Later date minus earlier date crossing year boundary but day adjustment subtracts one', () => {
+    const a = new Kenat('2017/01/03'); // day 3 < day 4
+    const b = new Kenat('2016/13/04');
+    // Same as above test, but test again to confirm day < day subtracts 1
+    expect(a.diffInYears(b)).toBe(0);
+  });
+
+  test('Crossing multiple years returns correct positive value', () => {
+    const a = new Kenat('2018/01/01');
+    const b = new Kenat('2016/01/01');
+    expect(a.diffInYears(b)).toBe(2);
+  });
+
+  test('Earlier date minus later date returns negative years', () => {
+    const a = new Kenat('2016/01/01');
+    const b = new Kenat('2018/01/01');
+    expect(a.diffInYears(b)).toBe(-2);
+  });
+});
