@@ -224,6 +224,27 @@ export class Kenat {
     // Arithmetic methods end here
 
 
+    /**
+     * Generates a grid representation of an Ethiopian calendar month, including weekday headers and day objects.
+     *
+     * @param {Object|string} [input={}] - The input specifying the year, month, and options, or a date string in 'yyyy/mm/dd' format.
+     * @param {number} [input.year] - The Ethiopian year for the calendar grid.
+     * @param {number} [input.month] - The Ethiopian month for the calendar grid (1-13).
+     * @param {number} [input.weekStart=0] - The index of the first day of the week (0 for Sunday, 1 for Monday, etc.).
+     * @param {boolean} [input.useGeez=false] - Whether to use Geez numerals for the days.
+     * @param {string} [input.weekdayLang='amharic'] - The language for weekday labels ('amharic', etc.).
+     *
+     * @returns {Object} An object containing:
+     *   - {string[]} headers: The weekday headers in the specified language and order.
+     *   - {Array<Object|null>} days: The days of the month, padded with nulls at the start if needed. Each day object includes:
+     *       - {Object} ethiopian: The Ethiopian date (year, month, day).
+     *       - {number} weekday: The weekday index.
+     *       - {string} weekdayName: The name of the weekday.
+     *       - {boolean} isToday: Whether this day is today.
+     *       - ...other properties from the original day object.
+     *
+     * @throws {Error} If the input string is not in the 'yyyy/mm/dd' format.
+     */
     static getMonthGrid(input = {}) {
         let year, month, weekStart = 0, useGeez = false, weekdayLang = 'amharic';
 
