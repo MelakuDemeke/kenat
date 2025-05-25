@@ -2,11 +2,13 @@ import { Kenat } from '../../src/Kenat.js';
 
 /**
  * Renders the calendar to the #calendar div.
- * @param {Object} calendar - { headers: string[], days: Array }
+ * @param {Object} calendar - { headers: string[], days: Array, year, month, monthName }
  */
-function renderCalendar({ headers, days }) {
+function renderCalendar({ headers, days, year, month, monthName }) {
     console.log(days);
-    let html = '<table><thead><tr>';
+
+    // Show localized year and month as heading using returned monthName
+    let html = `<h2>📅 Ethiopian Calendar — ${monthName} ${year}</h2> <table><thead><tr>`;
     html += headers.map(day => `<th>${day}</th>`).join('');
     html += '</tr></thead><tbody><tr>';
 
@@ -18,9 +20,9 @@ function renderCalendar({ headers, days }) {
         } else {
             const todayClass = item.isToday ? 'today' : '';
             html += `<td class="${todayClass}">
-        <strong>${item.ethiopian.day}</strong><br/>
-        <small>${item.gregorian.month}/${item.gregorian.day}</small>
-      </td>`;
+                <strong>${item.ethiopian.day}</strong><br/>
+                <small>${item.gregorian.month}/${item.gregorian.day}</small>
+            </td>`;
         }
     });
 
@@ -30,9 +32,9 @@ function renderCalendar({ headers, days }) {
 
 // ✅ Get current month's calendar in Amharic with Geez numerals
 const calendar = Kenat.getMonthGrid({
-    useGeez: true,
+    useGeez: false,
     weekdayLang: 'amharic',
-    weekStart: 0
+    weekStart: 1
 });
 
 console.log(calendar);

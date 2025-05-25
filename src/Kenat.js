@@ -224,23 +224,23 @@ export class Kenat {
     // Arithmetic methods end here
 
 
-
     
     /**
      * Generates a grid representation of an Ethiopian month, including localized weekday and month names,
-     * and mapping to corresponding Gregorian dates.
+     * and information about each day's Gregorian equivalent and whether it is today.
      *
      * @param {Object} [options={}] - Options for generating the month grid.
      * @param {number} [options.year] - Ethiopian year. Defaults to current Ethiopian year if not provided.
      * @param {number} [options.month] - Ethiopian month (1-13). Defaults to current Ethiopian month if not provided.
      * @param {number} [options.weekStart=1] - Index of the first day of the week (0=Sunday, 1=Monday, etc.).
-     * @param {boolean} [options.useGeez=false] - Whether to use Geez numerals and labels for display.
+     * @param {boolean} [options.useGeez=false] - Whether to use Geez numerals and labels.
      * @param {string} [options.weekdayLang='english'] - Language for weekday and month labels ('english', 'amharic', etc.).
      * @returns {Object} An object containing:
-     *   - {string[]} headers: Localized weekday headers for the grid.
-     *   - {Array<Object|null>} days: Array of day objects (or null for padding), each with Ethiopian and Gregorian date info, weekday, and isToday flag.
-     *   - {number|string} year: Localized Ethiopian year (Geez or Arabic numerals).
-     *   - {number|string} month: Localized Ethiopian month (Geez or Arabic numerals or name).
+     *   @property {string[]} headers - Localized weekday headers for the grid.
+     *   @property {Array} days - Array of day objects (or null for padding), each with Ethiopian and Gregorian date info, weekday, and isToday flag.
+     *   @property {number|string} year - Ethiopian year (localized if useGeez is true).
+     *   @property {number} month - Ethiopian month number.
+     *   @property {string} monthName - Localized Ethiopian month name.
      */
     static getMonthGrid({
         year,
@@ -300,17 +300,14 @@ export class Kenat {
 
         // Localize the year and month for the return
         const localizedYear = useGeez ? toGeez(y) : y;
-        const localizedMonth = useGeez ? monthLabels[m - 1] : m;
+        const localizedMonthName = useGeez ? monthLabels[m - 1] : monthLabels[m - 1];
 
         return {
             headers,
             days: padded,
             year: localizedYear,
-            month: localizedMonth
+            month: m,               // numeric month
+            monthName: localizedMonthName  // localized month name
         };
     }
-
-
-
-
 }
