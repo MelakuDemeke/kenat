@@ -9,3 +9,14 @@ export const monthNames = {
   ],
 //   TODO: add oromifa, tigrigna, afar, somali, sidama, wolaytta, gambela languges
 };
+
+
+export const daysOfWeek = {
+  english: [
+    "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+  ],
+  amharic: [
+    "እሑድ", "ሰኞ", "ማክሰኞ", "ረቡዕ", "ሐሙስ", "ዓርብ", "ቅዳሜ"
+  ],
+//   TODO: add oromifa, tigrigna, afar, somali, sidama, wolaytta, gambela languges
+};
