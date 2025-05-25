@@ -224,24 +224,23 @@ export class Kenat {
     // Arithmetic methods end here
 
 
+
     
     /**
-     * Generates a grid representation of an Ethiopian month, including weekday headers and day objects.
+     * Generates a grid representation of an Ethiopian month, including localized weekday and month names,
+     * and mapping to corresponding Gregorian dates.
      *
      * @param {Object} [options={}] - Options for generating the month grid.
      * @param {number} [options.year] - Ethiopian year. Defaults to current Ethiopian year if not provided.
      * @param {number} [options.month] - Ethiopian month (1-13). Defaults to current Ethiopian month if not provided.
      * @param {number} [options.weekStart=1] - Index of the first day of the week (0=Sunday, 1=Monday, etc.).
-     * @param {boolean} [options.useGeez=false] - Whether to use Geez numerals and month names.
+     * @param {boolean} [options.useGeez=false] - Whether to use Geez numerals and labels for display.
      * @param {string} [options.weekdayLang='english'] - Language for weekday and month labels ('english', 'amharic', etc.).
      * @returns {Object} An object containing:
-     *   @property {string[]} headers - Array of weekday names in the specified language, ordered by weekStart.
-     *   @property {Array<Object|null>} days - Array of day objects (or null for padding), each containing:
-     *     @property {Object} ethiopian - Ethiopian date info (year, month, day), possibly in Geez.
-     *     @property {Object} gregorian - Gregorian date info (year, month, day).
-     *     @property {number} weekday - Index of the weekday (0=Sunday, 1=Monday, etc.).
-     *     @property {string} weekdayName - Name of the weekday in the specified language.
-     *     @property {boolean} isToday - True if the day is today in the Ethiopian calendar.
+     *   - {string[]} headers: Localized weekday headers for the grid.
+     *   - {Array<Object|null>} days: Array of day objects (or null for padding), each with Ethiopian and Gregorian date info, weekday, and isToday flag.
+     *   - {number|string} year: Localized Ethiopian year (Geez or Arabic numerals).
+     *   - {number|string} month: Localized Ethiopian month (Geez or Arabic numerals or name).
      */
     static getMonthGrid({
         year,
@@ -262,7 +261,7 @@ export class Kenat {
         const temp = new Kenat(`${y}/${m}/1`);
         const rawDays = temp.getMonthCalendar(y, m, useGeez);
 
-        // Use appropriate weekday labels
+        // Use appropriate weekday and month labels
         const labels = daysOfWeek[weekdayLang] || daysOfWeek.amharic;
         const monthLabels = monthNames[weekdayLang] || monthNames.amharic;
 
@@ -299,11 +298,18 @@ export class Kenat {
         const padded = Array(offset).fill(null).concat(daysWithWeekday);
         const headers = labels.slice(weekStart).concat(labels.slice(0, weekStart));
 
+        // Localize the year and month for the return
+        const localizedYear = useGeez ? toGeez(y) : y;
+        const localizedMonth = useGeez ? monthLabels[m - 1] : m;
+
         return {
             headers,
-            days: padded
+            days: padded,
+            year: localizedYear,
+            month: localizedMonth
         };
     }
+
 
 
 
