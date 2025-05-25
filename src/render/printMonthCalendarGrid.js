@@ -1,4 +1,4 @@
-import { monthNames } from '../monthNames.js';
+import { monthNames } from '../constants.js';
 import { toGeez } from '../geezConverter.js';
 
 export function printMonthCalendarGrid(ethiopianYear, ethiopianMonth, calendarData, useGeez = false) {

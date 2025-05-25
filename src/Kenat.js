@@ -1,6 +1,6 @@
 import { ethiopianToGregorian, gregorianToEthiopian } from './conversions.js';
 import { printMonthCalendarGrid } from './render/printMonthCalendarGrid.js';
-import { monthNames } from './monthNames.js';
+import { monthNames } from './constants.js';
 import { toGeez } from './geezConverter.js';
 import { getEthiopianDaysInMonth, isEthiopianLeapYear } from './utils.js';
 import {
