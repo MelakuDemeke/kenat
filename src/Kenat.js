@@ -224,40 +224,33 @@ export class Kenat {
     // Arithmetic methods end here
 
 
+    
     /**
-     * Generates a grid representation of an Ethiopian calendar month, including weekday headers and day objects.
+     * Generates a grid representation of an Ethiopian month, including weekday headers and day objects.
      *
-     * @param {Object|string} [input={}] - The input specifying the year, month, and options, or a date string in 'yyyy/mm/dd' format.
-     * @param {number} [input.year] - The Ethiopian year for the calendar grid.
-     * @param {number} [input.month] - The Ethiopian month for the calendar grid (1-13).
-     * @param {number} [input.weekStart=0] - The index of the first day of the week (0 for Sunday, 1 for Monday, etc.).
-     * @param {boolean} [input.useGeez=false] - Whether to use Geez numerals for the days.
-     * @param {string} [input.weekdayLang='amharic'] - The language for weekday labels ('amharic', etc.).
-     *
+     * @param {Object} [options={}] - Options for generating the month grid.
+     * @param {number} [options.year] - Ethiopian year. Defaults to current Ethiopian year if not provided.
+     * @param {number} [options.month] - Ethiopian month (1-13). Defaults to current Ethiopian month if not provided.
+     * @param {number} [options.weekStart=1] - Index of the first day of the week (0=Sunday, 1=Monday, etc.).
+     * @param {boolean} [options.useGeez=false] - Whether to use Geez numerals and month names.
+     * @param {string} [options.weekdayLang='english'] - Language for weekday and month labels ('english', 'amharic', etc.).
      * @returns {Object} An object containing:
-     *   - {string[]} headers: The weekday headers in the specified language and order.
-     *   - {Array<Object|null>} days: The days of the month, padded with nulls at the start if needed. Each day object includes:
-     *       - {Object} ethiopian: The Ethiopian date (year, month, day).
-     *       - {number} weekday: The weekday index.
-     *       - {string} weekdayName: The name of the weekday.
-     *       - {boolean} isToday: Whether this day is today.
-     *       - ...other properties from the original day object.
-     *
-     * @throws {Error} If the input string is not in the 'yyyy/mm/dd' format.
+     *   @property {string[]} headers - Array of weekday names in the specified language, ordered by weekStart.
+     *   @property {Array<Object|null>} days - Array of day objects (or null for padding), each containing:
+     *     @property {Object} ethiopian - Ethiopian date info (year, month, day), possibly in Geez.
+     *     @property {Object} gregorian - Gregorian date info (year, month, day).
+     *     @property {number} weekday - Index of the weekday (0=Sunday, 1=Monday, etc.).
+     *     @property {string} weekdayName - Name of the weekday in the specified language.
+     *     @property {boolean} isToday - True if the day is today in the Ethiopian calendar.
      */
-    static getMonthGrid(input = {}) {
-        let year, month, weekStart = 0, useGeez = false, weekdayLang = 'amharic';
-
-        if (typeof input === 'string') {
-            const match = input.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
-            if (!match) throw new Error("Invalid Ethiopian date format. Use 'yyyy/mm/dd'");
-            year = parseInt(match[1]);
-            month = parseInt(match[2]);
-        } else if (typeof input === 'object') {
-            ({ year, month, weekStart = 0, useGeez = false, weekdayLang = 'amharic' } = input);
-        }
-
-        // Default to current Ethiopian date if none provided
+    static getMonthGrid({
+        year,
+        month,
+        weekStart = 1,
+        useGeez = false,
+        weekdayLang = 'english'
+    } = {}) {
+        // Default to current Ethiopian date if year/month not provided
         const current = Kenat.now().getEthiopian();
         const y = year || current.year;
         const m = month || current.month;
@@ -267,11 +260,14 @@ export class Kenat {
 
         // Generate the month calendar
         const temp = new Kenat(`${y}/${m}/1`);
-        const days = temp.getMonthCalendar(y, m, useGeez);
+        const rawDays = temp.getMonthCalendar(y, m, useGeez);
 
+        // Use appropriate weekday labels
         const labels = daysOfWeek[weekdayLang] || daysOfWeek.amharic;
+        const monthLabels = monthNames[weekdayLang] || monthNames.amharic;
 
-        const daysWithWeekday = days.map(day => {
+        // Transform each day
+        const daysWithWeekday = rawDays.map(day => {
             const weekday = getWeekday(day.ethiopian);
             const isToday =
                 Number(day.ethiopian.year) === Number(todayEth.year) &&
@@ -279,14 +275,23 @@ export class Kenat {
                 Number(day.ethiopian.day) === Number(todayEth.day);
 
             return {
-                ...day,
+                ethiopian: {
+                    year: useGeez ? toGeez(day.ethiopian.year) : day.ethiopian.year,
+                    month: useGeez ? monthLabels[day.ethiopian.month - 1] : day.ethiopian.month,
+                    day: useGeez ? toGeez(day.ethiopian.day) : day.ethiopian.day
+                },
+                gregorian: {
+                    year: day.gregorian.year,
+                    month: day.gregorian.month,
+                    day: day.gregorian.day
+                },
                 weekday,
                 weekdayName: labels[weekday],
-                isToday,
+                isToday
             };
         });
 
-        // Pad start of grid
+        // Pad the start of the grid based on weekStart
         const firstWeekday = daysWithWeekday[0].weekday;
         let offset = firstWeekday - weekStart;
         if (offset < 0) offset += 7;
@@ -296,8 +301,10 @@ export class Kenat {
 
         return {
             headers,
-            days: padded,
+            days: padded
         };
     }
+
+
 
 }
