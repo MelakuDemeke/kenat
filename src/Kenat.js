@@ -236,35 +236,46 @@ export class Kenat {
             ({ year, month, weekStart = 0, useGeez = false, weekdayLang = 'amharic' } = input);
         }
 
+        // Default to current Ethiopian date if none provided
         const current = Kenat.now().getEthiopian();
         const y = year || current.year;
         const m = month || current.month;
 
+        // Get today for comparison
+        const todayEth = Kenat.now().getEthiopian();
+
+        // Generate the month calendar
         const temp = new Kenat(`${y}/${m}/1`);
         const days = temp.getMonthCalendar(y, m, useGeez);
+
         const labels = daysOfWeek[weekdayLang] || daysOfWeek.amharic;
 
         const daysWithWeekday = days.map(day => {
             const weekday = getWeekday(day.ethiopian);
+            const isToday =
+                Number(day.ethiopian.year) === Number(todayEth.year) &&
+                Number(day.ethiopian.month) === Number(todayEth.month) &&
+                Number(day.ethiopian.day) === Number(todayEth.day);
+
             return {
                 ...day,
                 weekday,
-                weekdayName: labels[weekday]
+                weekdayName: labels[weekday],
+                isToday,
             };
         });
 
+        // Pad start of grid
         const firstWeekday = daysWithWeekday[0].weekday;
         let offset = firstWeekday - weekStart;
         if (offset < 0) offset += 7;
 
         const padded = Array(offset).fill(null).concat(daysWithWeekday);
-
-        // 🔁 Rotate weekday labels based on weekStart
         const headers = labels.slice(weekStart).concat(labels.slice(0, weekStart));
 
         return {
             headers,
-            days: padded
+            days: padded,
         };
     }
 
