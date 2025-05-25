@@ -1,3 +1,5 @@
+import { ethiopianToGregorian } from './conversions.js';
+
 /**
  * Get the day of the year for given Gregorian date.
  * Jan 1 is 1.
@@ -62,4 +64,18 @@ export function getEthiopianDaysInMonth(year, month) {
         return isEthiopianLeapYear(year) ? 6 : 5;
     }
     return 30;
+}
+
+/**
+ * Returns the weekday (0-6) for a given Ethiopian date.
+ * 
+ * @param {Object} param0 - The Ethiopian date.
+ * @param {number} param0.year - The Ethiopian year.
+ * @param {number} param0.month - The Ethiopian month (1-13).
+ * @param {number} param0.day - The Ethiopian day (1-30).
+ * @returns {number} The day of the week (0 for Sunday, 6 for Saturday).
+ */
+export function getWeekday({ year, month, day }) {
+    const g = ethiopianToGregorian(year, month, day);
+    return new Date(g.year, g.month - 1, g.day).getDay();
 }

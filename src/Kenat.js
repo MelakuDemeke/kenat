@@ -1,8 +1,8 @@
 import { ethiopianToGregorian, gregorianToEthiopian } from './conversions.js';
 import { printMonthCalendarGrid } from './render/printMonthCalendarGrid.js';
-import { monthNames } from './constants.js';
+import { monthNames, daysOfWeek } from './constants.js';
 import { toGeez } from './geezConverter.js';
-import { getEthiopianDaysInMonth, isEthiopianLeapYear } from './utils.js';
+import { getEthiopianDaysInMonth, isEthiopianLeapYear, getWeekday } from './utils.js';
 import {
     addDays,
     addMonths,
@@ -222,4 +222,50 @@ export class Kenat {
     }
 
     // Arithmetic methods end here
+
+
+    static getMonthGrid(input = {}) {
+        let year, month, weekStart = 0, useGeez = false, weekdayLang = 'amharic';
+
+        if (typeof input === 'string') {
+            const match = input.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
+            if (!match) throw new Error("Invalid Ethiopian date format. Use 'yyyy/mm/dd'");
+            year = parseInt(match[1]);
+            month = parseInt(match[2]);
+        } else if (typeof input === 'object') {
+            ({ year, month, weekStart = 0, useGeez = false, weekdayLang = 'amharic' } = input);
+        }
+
+        const current = Kenat.now().getEthiopian();
+        const y = year || current.year;
+        const m = month || current.month;
+
+        const temp = new Kenat(`${y}/${m}/1`);
+        const days = temp.getMonthCalendar(y, m, useGeez);
+        const labels = daysOfWeek[weekdayLang] || daysOfWeek.amharic;
+
+        const daysWithWeekday = days.map(day => {
+            const weekday = getWeekday(day.ethiopian);
+            return {
+                ...day,
+                weekday,
+                weekdayName: labels[weekday]
+            };
+        });
+
+        const firstWeekday = daysWithWeekday[0].weekday;
+        let offset = firstWeekday - weekStart;
+        if (offset < 0) offset += 7;
+
+        const padded = Array(offset).fill(null).concat(daysWithWeekday);
+
+        // 🔁 Rotate weekday labels based on weekStart
+        const headers = labels.slice(weekStart).concat(labels.slice(0, weekStart));
+
+        return {
+            headers,
+            days: padded
+        };
+    }
+
 }
