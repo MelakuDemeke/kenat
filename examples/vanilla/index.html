@@ -14,7 +14,7 @@
       border-collapse: collapse;
       width: 100%;
       max-width: 600px;
-      margin-top: 1rem;
+      margin: 1rem auto;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
 
@@ -38,11 +38,20 @@
       border: 2px solid #ffc107;
       font-weight: bold;
     }
+
+    #calendar {
+      text-align: center;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <div id="calendar">Loading...</div>
-
   <script type="module" src="./calendar.js"></script>
 </body>
 </html>

@@ -1,14 +1,23 @@
 import { Kenat } from '../../src/Kenat.js';
 
+let currentYear, currentMonth;
+
 /**
  * Renders the calendar to the #calendar div.
- * @param {Object} calendar - { headers: string[], days: Array, year, month, monthName }
+ * @param {Object} calendar - { headers, days, year, month, monthName }
  */
 function renderCalendar({ headers, days, year, month, monthName }) {
-    console.log(days);
+    currentYear = typeof year === 'string' ? parseInt(Kenat.fromGeez(year)) : year;
+    currentMonth = month;
 
-    // Show localized year and month as heading using returned monthName
-    let html = `<h2>📅 Ethiopian Calendar — ${monthName} ${year}</h2> <table><thead><tr>`;
+    let html = `
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <button id="prevMonth">⬅️</button>
+        <h2>📅 Ethiopian Calendar — ${monthName} ${year}</h2>
+        <button id="nextMonth">➡️</button>
+      </div>
+      <table><thead><tr>`;
+    
     html += headers.map(day => `<th>${day}</th>`).join('');
     html += '</tr></thead><tbody><tr>';
 
@@ -28,14 +37,39 @@ function renderCalendar({ headers, days, year, month, monthName }) {
 
     html += '</tr></tbody></table>';
     document.getElementById('calendar').innerHTML = html;
+
+    // Attach event listeners to buttons
+    document.getElementById('prevMonth').onclick = () => navigateMonth(-1);
+    document.getElementById('nextMonth').onclick = () => navigateMonth(1);
 }
 
-// ✅ Get current month's calendar in Amharic with Geez numerals
+function navigateMonth(direction) {
+    let newMonth = currentMonth + direction;
+    let newYear = currentYear;
+
+    if (newMonth < 1) {
+        newMonth = 13;
+        newYear -= 1;
+    } else if (newMonth > 13) {
+        newMonth = 1;
+        newYear += 1;
+    }
+
+    const calendar = Kenat.getMonthGrid({
+        year: newYear,
+        month: newMonth,
+        useGeez: false,
+        weekdayLang: 'amharic',
+        weekStart: 1
+    });
+
+    renderCalendar(calendar);
+}
+
+// Initial render
 const calendar = Kenat.getMonthGrid({
     useGeez: false,
     weekdayLang: 'amharic',
     weekStart: 1
 });
-
-console.log(calendar);
 renderCalendar(calendar);
