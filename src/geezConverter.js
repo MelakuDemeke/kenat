@@ -10,7 +10,7 @@
  *   toGeez(123);   // '፻፳፫'
  *   toGeez(10000); // '፼'
  * 
- * @author
+ * @author Melaku Demeke
  * @license MIT
  */
 
