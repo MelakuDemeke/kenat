@@ -25,3 +25,5 @@ build/
 Features.md\
 
 demo.js
+all_js_code.txt
+bundle_js_to_txt.py
