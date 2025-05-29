@@ -6,7 +6,7 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/MelakuDemeke/kenat?logo=github&style=flat)
 ![GitHub forks](https://img.shields.io/github/forks/MelakuDemeke/kenat?logo=github&style=falt)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/MelakuDemeke/kenat?logo=github)
-
+[![npm downloads](https://img.shields.io/npm/dm/my-awesome-package.svg?style=flat-square)](https://www.npmjs.com/package/kenat)
 ---
 
 ## Overview
