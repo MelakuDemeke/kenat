@@ -1,8 +1,12 @@
-import { ethiopianToGregorian } from './conversions.js';
+import { ethiopianToGregorian, gregorianToEthiopian } from './conversions.js';
 
 /**
- * Get the day of the year for given Gregorian date.
- * Jan 1 is 1.
+ * Calculates the day of the year for a given date.
+ *
+ * @param {number} year - The full year (e.g., 2024).
+ * @param {number} month - The month (1-based, January is 1, December is 12).
+ * @param {number} day - The day of the month.
+ * @returns {number} The day of the year (1-based).
  */
 export function dayOfYear(year, month, day) {
     const monthLengths = [31, isGregorianLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -78,4 +82,42 @@ export function getEthiopianDaysInMonth(year, month) {
 export function getWeekday({ year, month, day }) {
     const g = ethiopianToGregorian(year, month, day);
     return new Date(g.year, g.month - 1, g.day).getDay();
+}
+
+
+/**
+ * Calculates the Ethiopian Orthodox Easter (Fasika) date for a given Ethiopian year.
+ *
+ * This function converts the Ethiopian year to the corresponding Gregorian year,
+ * computes the Julian Easter date using the Meeus algorithm, converts it to the
+ * Gregorian calendar, and then converts the result back to the Ethiopian calendar.
+ *
+ * @param {number} ethYear - The Ethiopian year for which to calculate Fasika.
+ * @returns {{ year: number, month: number, day: number }} An object containing the Ethiopian year, month, and day of Fasika.
+ */
+export function getFasikaDate(ethYear) {
+    const gYear = ethYear + 8; // Convert Ethiopian year to Gregorian year
+
+    // Julian Easter calculation (Meeus algorithm)
+    const a = gYear % 4;
+    const b = gYear % 7;
+    const c = gYear % 19;
+    const d = (19 * c + 15) % 30;
+    const e = (2 * a + 4 * b - d + 34) % 7;
+    const month = Math.floor((d + e + 114) / 31); // March or April
+    const day = ((d + e + 114) % 31) + 1;
+
+    // Convert Julian to Gregorian (add 13 days)
+    const easterGregorian = new Date(Date.UTC(gYear, month - 1, day + 13));
+    const gMonth = easterGregorian.getUTCMonth() + 1;
+    const gDay = easterGregorian.getUTCDate();
+
+    // Convert Gregorian to Ethiopian
+    const { year: eYear, month: eMonth, day: eDay } = gregorianToEthiopian(gYear, gMonth, gDay);
+
+    return {
+        year: eYear,
+        month: eMonth,
+        day: eDay
+    };
 }
