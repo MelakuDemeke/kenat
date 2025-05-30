@@ -1,6 +1,7 @@
 # Kenat/ ቀናት
 ![banner](assets/img/kenatBanner.png)
 
+![Build Status](https://github.com/MelakuDemeke/kenat/actions/workflows/test.yml/badge.svg?branch=main)
 ![GitHub repo size](https://img.shields.io/github/repo-size/MelakuDemeke/kenat)
 ![GitHub issues](https://img.shields.io/github/issues/MelakuDemeke/kenat)
 ![GitHub Repo stars](https://img.shields.io/github/stars/MelakuDemeke/kenat?logo=github&style=flat)
