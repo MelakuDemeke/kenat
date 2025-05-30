@@ -29,7 +29,7 @@ export class Kenat {
      * @param {string} [ethiopianDateStr] - The Ethiopian date string in 'yyyy/mm/dd' format.
      * @throws {Error} If the provided date string does not match the 'yyyy/mm/dd' format.
      */
-    constructor(ethiopianDateStr) {
+    constructor(ethiopianDateStr, timeObj = null) {
         if (!ethiopianDateStr) {
             // default to current Gregorian date → Ethiopian
             const today = new Date();
@@ -38,9 +38,12 @@ export class Kenat {
                 today.getMonth() + 1,
                 today.getDate()
             );
+            this.time = toEthiopianTime(today.getHours(), today.getMinutes());
+
         } else if (/^\d{4}\/\d{1,2}\/\d{1,2}$/.test(ethiopianDateStr)) {
             const [year, month, day] = ethiopianDateStr.split('/').map(Number);
             this.ethiopian = { year, month, day };
+            this.time = timeObj || { hour: 12, minute: 0, period: 'day' };
         } else {
             throw new Error("Kenat only accepts Ethiopian date in 'yyyy/mm/dd' format.");
         }
@@ -74,13 +77,31 @@ export class Kenat {
         return this.ethiopian;
     }
 
+
     /**
-     * Custom string representation of the Ethiopian date.
-     * 
-     * @returns {string} A string like "Ethiopian: 2017-9-15"
+     * Returns a string representation of the Ethiopian date and time.
+     *
+     * The format is: "Ethiopian: {year}-{month}-{day} {hh:mm period}".
+     * If the time is not available, hour and minute are replaced with '??'.
+     *
+     * @returns {string} The formatted Ethiopian date and time string.
      */
     toString() {
-        return `Ethiopian: ${this.ethiopian.year}-${this.ethiopian.month}-${this.ethiopian.day}`;
+        const { year, month, day } = this.ethiopian;
+        const { hour, minute, period } = this.time || { hour: '??', minute: '??', period: '' };
+        const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} ${period}`;
+        return `Ethiopian: ${year}-${month}-${day} ${timeStr}`;
+    }
+
+    /**
+     * Sets the current time.
+     *
+     * @param {number} hour - The hour value to set.
+     * @param {number} minute - The minute value to set.
+     * @param {string} period - The period of the day (e.g., 'AM' or 'PM').
+     */
+    setTime(hour, minute, period) {
+        this.time = { hour, minute, period };
     }
 
     /**

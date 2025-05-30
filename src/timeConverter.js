@@ -26,3 +26,6 @@ export function toGregorianTime(ethHour, minute = 0, period = 'day') {
     if (hour >= 24) hour -= 24;
     return { hour, minute };
 }
+
+
+// TODO: Implement time arthmetic functions

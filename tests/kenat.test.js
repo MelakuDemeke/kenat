@@ -35,7 +35,7 @@ describe('Kenat Ethiopian Calendar conversions', () => {
   test('Kenat instance toString and getGregorian', () => {
     const ethDateStr = '2017/09/14';
     const kenatInstance = new Kenat(ethDateStr);
-    expect(kenatInstance.toString()).toBe('Ethiopian: 2017-9-14');
+    expect(kenatInstance.toString()).toBe('Ethiopian: 2017-9-14 12:00 day');
     expect(kenatInstance.getGregorian()).toEqual({ year: 2025, month: 5, day: 22 });
   });
 });

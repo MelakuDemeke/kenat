@@ -33,7 +33,7 @@ describe('Kenat class', () => {
     test('toString should return Ethiopian date string', () => {
         const kenat = new Kenat("2016/9/15");
         const str = kenat.toString();
-        expect(str).toBe("Ethiopian: 2016-9-15");
+        expect(str).toBe("Ethiopian: 2016-9-15 12:00 day");
     });
 
     test('format returns Ethiopian date string with month name in English and Amharic', () => {
