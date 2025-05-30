@@ -1,6 +1,7 @@
 import { ethiopianToGregorian, gregorianToEthiopian } from './conversions.js';
 import { printMonthCalendarGrid } from './render/printMonthCalendarGrid.js';
 import { monthNames, daysOfWeek } from './constants.js';
+import { toEthiopianTime, toGregorianTime } from './timeConverter.js';
 import { toGeez } from './geezConverter.js';
 import { getEthiopianDaysInMonth, isEthiopianLeapYear, getWeekday } from './utils.js';
 import {
@@ -224,7 +225,7 @@ export class Kenat {
     // Arithmetic methods end here
 
 
-    
+
     /**
      * Generates a grid representation of an Ethiopian month, including localized weekday and month names,
      * and information about each day's Gregorian equivalent and whether it is today.
@@ -309,5 +310,28 @@ export class Kenat {
             month: m,               // numeric month
             monthName: localizedMonthName  // localized month name
         };
+    }
+
+    // Time Methods
+    getCurrentTime() {
+        const now = new Date();
+        const hour = now.getHours();
+        const minute = now.getMinutes();
+        return toEthiopianTime(hour, minute);
+    }
+
+    /**
+     * Formats an Ethiopian time object.
+     *
+     * @param {{ hour: number, minute: number, period: 'day' | 'night' }} timeObj - Ethiopian time.
+     * @param {'amharic' | 'english'} [lang='amharic'] - Output language.
+     * @returns {string} Formatted Ethiopian time.
+     */
+    static formatEthiopianTime(timeObj, lang = 'amharic') {
+        const { hour, minute, period } = timeObj;
+        const suffix = lang === 'amharic'
+            ? (period === 'day' ? 'ጠዋት' : 'ማታ')
+            : (period === 'day' ? 'day' : 'night');
+        return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} ${suffix}`;
     }
 }
