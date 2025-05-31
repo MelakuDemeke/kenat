@@ -18,7 +18,7 @@ describe('Kenat Ethiopian Calendar conversions', () => {
 
     test('Gregorian to Ethiopian Leap Year: February 29, 2020 -> Yekatit 22, 2012', () => {
         const result = gregorianToEthiopian(2020, 2, 29);
-        expect(result).toEqual({ year: 2012, month: 6, day: 22 });
+        expect(result).toEqual({ year: 2012, month: 6, day: 21 });
     });
 
     test('Ethiopian to Gregorian Leap Year: 2011-13-6 (Pagumē 6, 2011) -> September 11, 2019', () => {

@@ -47,29 +47,45 @@ export function ethiopianToGregorian(ethYear, ethMonth, ethDay) {
  * @returns {{year: number, month: number, day: number}} Ethiopian date
  */
 export function gregorianToEthiopian(gYear, gMonth, gDay) {
-    const inputDayOfYear = dayOfYear(gYear, gMonth, gDay);
+    const oneDay = 1000 * 60 * 60 * 24;
+    const oneYear = 365 * oneDay;
+    const fourYears = 1461 * oneDay; // 365*4 + 1 leap day
 
-    // Get Ethiopian New Year in the Gregorian year
-    const ethNewYear = getEthiopianNewYearForGregorian(gYear);
-    const newYearDayOfYear = dayOfYear(ethNewYear.gregorianYear, ethNewYear.month, ethNewYear.day);
+    // Reference: Meskerem 1, 1964 = September 12, 1971 (Gregorian)
+    const baseDate = new Date(Date.UTC(1971, 8, 12)); // Sep 12, 1971
+    const inputDate = new Date(Date.UTC(gYear, gMonth - 1, gDay));
 
-    let ethYear, daysSinceNewYear;
-
-    if (inputDayOfYear >= newYearDayOfYear) {
-        ethYear = gYear - 7; // Ethiopian year is Gregorian year - 7 when after Ethiopian new year
-        daysSinceNewYear = inputDayOfYear - newYearDayOfYear;
-    } else {
-        ethYear = gYear - 8; // Ethiopian year is Gregorian year - 8 when before Ethiopian new year
-        // Get previous year's Ethiopian New Year Gregorian date
-        const prevEthNewYear = getEthiopianNewYearForGregorian(gYear - 1);
-        const prevYearLength = isGregorianLeapYear(gYear - 1) ? 366 : 365;
-        const prevNewYearDayOfYear = dayOfYear(prevEthNewYear.gregorianYear, prevEthNewYear.month, prevEthNewYear.day);
-        daysSinceNewYear = prevYearLength - prevNewYearDayOfYear + inputDayOfYear;
+    // Optional range check function
+    if (inputDate < new Date(Date.UTC(1900, 0, 1)) || inputDate > new Date(Date.UTC(2100, 11, 31))) {
+        throw `Out of range input year: ${gYear}`;
     }
 
-    // Calculate Ethiopian month and day
-    const month = Math.floor(daysSinceNewYear / 30) + 1;
-    const day = (daysSinceNewYear % 30) + 1;
+    const difference = inputDate.getTime() - baseDate.getTime();
+    const fourYearsPassed = Math.floor(difference / fourYears);
+
+    let remainingYears = Math.floor(
+        (difference - fourYearsPassed * fourYears) / oneYear
+    );
+
+    if (remainingYears === 4) {
+        remainingYears = 3;
+    }
+
+    const remainingMonths = Math.floor(
+        (difference - fourYearsPassed * fourYears - remainingYears * oneYear) /
+        (30 * oneDay)
+    );
+
+    const remainingDays = Math.floor(
+        (difference -
+            fourYearsPassed * fourYears -
+            remainingYears * oneYear -
+            remainingMonths * 30 * oneDay) / oneDay
+    );
+
+    const ethYear = 1964 + 4 * fourYearsPassed + remainingYears;
+    const month = remainingMonths + 1;
+    const day = remainingDays + 1;
 
     return { year: ethYear, month, day };
 }
