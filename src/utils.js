@@ -105,15 +105,8 @@ export function getFasikaDate(gregorianYear) {
     const eth = gregorianToEthiopian(gYear, gMonthNum + 1, gDay);
 
     return {
-        gregorian: {
-            day: gDay,
-            month: monthNames.gregorian[gMonthNum],
-            year: gYear
-        },
-        ethiopian: {
-            day: eth.day,
-            month: monthNames.amharic[eth.month - 1],
-            year: eth.year
-        }
-    };
+        day: eth.day,
+        month: eth.month,
+        year: eth.year
+    }
 }
