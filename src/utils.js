@@ -1,4 +1,5 @@
 import { ethiopianToGregorian, gregorianToEthiopian } from './conversions.js';
+import { monthNames } from './constants.js';
 
 /**
  * Calculates the day of the year for a given date.
@@ -84,13 +85,6 @@ export function getWeekday({ year, month, day }) {
     return new Date(g.year, g.month - 1, g.day).getDay();
 }
 
-/**
- * Returns the Ethiopian date of Fasika (Orthodox Easter) for a given Ethiopian year.
- * Based on Julian calendar used by Ethiopian Orthodox Church.
- *
- * @param {number} ethYear - Ethiopian year
- * @returns {{ year: number, month: number, day: number }} Ethiopian date of Fasika
- */
 export function getFasikaDate(gregorianYear) {
     const a = gregorianYear % 4;
     const b = gregorianYear % 7;
@@ -100,13 +94,26 @@ export function getFasikaDate(gregorianYear) {
     const month = Math.floor((d + e + 114) / 31);
     const day = ((d + e + 114) % 31) + 1;
 
-    // This is Julian Easter
+    // Julian → Gregorian
     const julianDate = new Date(Date.UTC(gregorianYear, month - 1, day));
-    julianDate.setUTCDate(julianDate.getUTCDate() + 13); // Julian to Gregorian
+    julianDate.setUTCDate(julianDate.getUTCDate() + 13);
+
+    const gYear = julianDate.getUTCFullYear();
+    const gMonthNum = julianDate.getUTCMonth(); // 0-based
+    const gDay = julianDate.getUTCDate();
+
+    const eth = gregorianToEthiopian(gYear, gMonthNum + 1, gDay);
 
     return {
-        year: julianDate.getUTCFullYear(),
-        month: julianDate.getUTCMonth() + 1,
-        day: julianDate.getUTCDate()
+        gregorian: {
+            day: gDay,
+            month: monthNames.gregorian[gMonthNum],
+            year: gYear
+        },
+        ethiopian: {
+            day: eth.day,
+            month: monthNames.amharic[eth.month - 1],
+            year: eth.year
+        }
     };
 }
