@@ -2,7 +2,8 @@ import { dayOfYear } from "../src/utils";
 import {
     monthDayFromDayOfYear,
     isEthiopianLeapYear,
-    isGregorianLeapYear
+    isGregorianLeapYear,
+    getEthiopianDaysInMonth
 } from "../src/utils";
 
 
@@ -121,4 +122,33 @@ describe('isEthiopianLeapYear', () => {
         expect(isEthiopianLeapYear(2020)).toBe(false);
     });
 });
+
+describe('getEthiopianDaysInMonth', () => {
+    it('returns 30 for any month from 1 to 12', () => {
+        for (let month = 1; month <= 12; month++) {
+            expect(getEthiopianDaysInMonth(2010, month)).toBe(30);
+            expect(getEthiopianDaysInMonth(2011, month)).toBe(30);
+            expect(getEthiopianDaysInMonth(2012, month)).toBe(30);
+            expect(getEthiopianDaysInMonth(2013, month)).toBe(30);
+        }
+    });
+
+    it('returns 6 for month 13 in a leap year', () => {
+        // 2011, 2015, 2019 are leap years (year % 4 === 3)
+        expect(getEthiopianDaysInMonth(2011, 13)).toBe(6);
+        expect(getEthiopianDaysInMonth(2015, 13)).toBe(6);
+        expect(getEthiopianDaysInMonth(2019, 13)).toBe(6);
+    });
+
+    it('returns 5 for month 13 in a non-leap year', () => {
+        // 2010, 2012, 2013, 2014, 2020 are not leap years
+        expect(getEthiopianDaysInMonth(2010, 13)).toBe(5);
+        expect(getEthiopianDaysInMonth(2012, 13)).toBe(5);
+        expect(getEthiopianDaysInMonth(2013, 13)).toBe(5);
+        expect(getEthiopianDaysInMonth(2014, 13)).toBe(5);
+        expect(getEthiopianDaysInMonth(2020, 13)).toBe(5);
+    });
+});
+
+
 
