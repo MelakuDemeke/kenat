@@ -36,7 +36,7 @@ describe('Kenat Ethiopian Calendar conversions', () => {
         expect(result).toEqual({ year: 2016, month: 8, day: 27 });
     });
 
-    test('Gregorian to Ethiopian Leap Year: May 5, 2024 -> Miazia 27, 2016', () => {
+    test('Ethiopian to Gregorian Leap Year: May 5, 2024 -> Miazia 27, 2016', () => {
         const result = ethiopianToGregorian(2016, 8, 27);
         expect(result).toEqual({ year: 2024, month: 5, day: 5 });
     });
