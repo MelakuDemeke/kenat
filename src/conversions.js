@@ -1,4 +1,4 @@
-import { getGregorianDateOfEthiopianNewYear, getEthiopianNewYearForGregorian } from './newYearDates.js';
+import { getGregorianDateOfEthiopianNewYear } from './newYearDates.js';
 import { dayOfYear, monthDayFromDayOfYear, isGregorianLeapYear } from './utils.js';
 
 /**
