@@ -1,5 +1,6 @@
 import { dayOfYear } from "../src/utils";
 import { monthDayFromDayOfYear } from "../src/utils";
+import { isGregorianLeapYear } from "../src/utils";
 
 describe('dayOfYear', () => {
     it('returns 1 for January 1st of a non-leap year', () => {
@@ -70,5 +71,32 @@ describe('monthDayFromDayOfYear', () => {
 
     it('returns December 31 for day 366 of a leap year', () => {
         expect(monthDayFromDayOfYear(2024, 366)).toEqual({ month: 12, day: 31 });
+    });
+});
+
+describe('isGregorianLeapYear', () => {
+
+    it('returns true for years divisible by 4 but not by 100', () => {
+        expect(isGregorianLeapYear(2024)).toBe(true);
+        expect(isGregorianLeapYear(1996)).toBe(true);
+        expect(isGregorianLeapYear(2008)).toBe(true);
+    });
+
+    it('returns false for years not divisible by 4', () => {
+        expect(isGregorianLeapYear(2023)).toBe(false);
+        expect(isGregorianLeapYear(2019)).toBe(false);
+        expect(isGregorianLeapYear(2101)).toBe(false);
+    });
+
+    it('returns false for years divisible by 100 but not by 400', () => {
+        expect(isGregorianLeapYear(1900)).toBe(false);
+        expect(isGregorianLeapYear(2100)).toBe(false);
+        expect(isGregorianLeapYear(1800)).toBe(false);
+    });
+
+    it('returns true for years divisible by 400', () => {
+        expect(isGregorianLeapYear(2000)).toBe(true);
+        expect(isGregorianLeapYear(1600)).toBe(true);
+        expect(isGregorianLeapYear(2400)).toBe(true);
     });
 });
