@@ -7,6 +7,10 @@ export const monthNames = {
     "መስከረም", "ጥቅምት", "ህዳር", "ታህሳስ", "ጥር", "የካቲት",
     "መጋቢት", "ሚያዝያ", "ግንቦት", "ሰኔ", "ሀምሌ", "ነሐሴ", "ጳጉሜ"
   ],
+  gregorian: [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ],
 //   TODO: add oromifa, tigrigna, afar, somali, sidama, wolaytta, gambela languges
 };
 
