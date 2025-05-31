@@ -1,6 +1,10 @@
 import { dayOfYear } from "../src/utils";
-import { monthDayFromDayOfYear } from "../src/utils";
-import { isGregorianLeapYear } from "../src/utils";
+import {
+    monthDayFromDayOfYear,
+    isEthiopianLeapYear,
+    isGregorianLeapYear
+} from "../src/utils";
+
 
 describe('dayOfYear', () => {
     it('returns 1 for January 1st of a non-leap year', () => {
@@ -100,3 +104,21 @@ describe('isGregorianLeapYear', () => {
         expect(isGregorianLeapYear(2400)).toBe(true);
     });
 });
+
+describe('isEthiopianLeapYear', () => {
+    it('returns true for Ethiopian years where year % 4 === 3', () => {
+        expect(isEthiopianLeapYear(2011)).toBe(true);
+        expect(isEthiopianLeapYear(2015)).toBe(true);
+        expect(isEthiopianLeapYear(2019)).toBe(true);
+        expect(isEthiopianLeapYear(2003)).toBe(true);
+    });
+
+    it('returns false for Ethiopian years where year % 4 !== 3', () => {
+        expect(isEthiopianLeapYear(2010)).toBe(false);
+        expect(isEthiopianLeapYear(2012)).toBe(false);
+        expect(isEthiopianLeapYear(2013)).toBe(false);
+        expect(isEthiopianLeapYear(2014)).toBe(false);
+        expect(isEthiopianLeapYear(2020)).toBe(false);
+    });
+});
+
