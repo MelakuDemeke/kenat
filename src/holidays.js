@@ -195,3 +195,41 @@ export const movableHolidays = {
         description: 'Celebrates the birthday of the Prophet Mohammed.'
     },
 }
+
+/**
+ * Calculates the Ethiopian Orthodox Easter (Fasika) date for a given Ethiopian year.
+ *
+ * This function converts the Ethiopian year to the corresponding Gregorian year,
+ * computes the Julian Easter date using the Meeus algorithm, adjusts for the Gregorian
+ * calendar, and then converts the result back to the Ethiopian calendar.
+ *
+ * @param {number} ethYear - The Ethiopian year for which to calculate Fasika.
+ * @returns {{ year: number, month: number, day: number }} The Ethiopian date of Fasika,
+ *          with properties: year (Ethiopian year), month (Ethiopian month), and day (Ethiopian day).
+ */
+export function getFasikaDate(ethYear) {
+    const gYear = ethYear + 8; // Convert Ethiopian year to Gregorian year
+
+    // Julian Easter calculation (Meeus algorithm)
+    const a = gYear % 4;
+    const b = gYear % 7;
+    const c = gYear % 19;
+    const d = (19 * c + 15) % 30;
+    const e = (2 * a + 4 * b - d + 34) % 7;
+    const month = Math.floor((d + e + 114) / 31); // March or April
+    const day = ((d + e + 114) % 31) + 1;
+
+    // Convert Julian to Gregorian (add 13 days)
+    const easterGregorian = new Date(Date.UTC(gYear, month - 1, day + 13));
+    const gMonth = easterGregorian.getUTCMonth() + 1;
+    const gDay = easterGregorian.getUTCDate();
+
+    // Convert Gregorian to Ethiopian
+    const { year: eYear, month: eMonth, day: eDay } = gregorianToEthiopian(gYear, gMonth, gDay);
+
+    return {
+        year: eYear,
+        month: eMonth,
+        day: eDay
+    };
+}

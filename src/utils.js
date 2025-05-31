@@ -84,30 +84,3 @@ export function getWeekday({ year, month, day }) {
     const g = ethiopianToGregorian(year, month, day);
     return new Date(g.year, g.month - 1, g.day).getDay();
 }
-
-export function getFasikaDate(ethYear) {
-    const gYear = ethYear + 8; // Convert Ethiopian year to Gregorian year
-
-    // Julian Easter calculation (Meeus algorithm)
-    const a = gYear % 4;
-    const b = gYear % 7;
-    const c = gYear % 19;
-    const d = (19 * c + 15) % 30;
-    const e = (2 * a + 4 * b - d + 34) % 7;
-    const month = Math.floor((d + e + 114) / 31); // March or April
-    const day = ((d + e + 114) % 31) + 1;
-
-    // Convert Julian to Gregorian (add 13 days)
-    const easterGregorian = new Date(Date.UTC(gYear, month - 1, day + 13));
-    const gMonth = easterGregorian.getUTCMonth() + 1;
-    const gDay = easterGregorian.getUTCDate();
-
-    // Convert Gregorian to Ethiopian
-    const { year: eYear, month: eMonth, day: eDay } = gregorianToEthiopian(gYear, gMonth, gDay);
-
-    return {
-        year: eYear,
-        month: eMonth,
-        day: eDay
-    };
-}
