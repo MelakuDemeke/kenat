@@ -1,3 +1,5 @@
+import { gregorianToEthiopian } from './conversions.js';
+
 export const HolidayTags = {
     PUBLIC: 'public',
     RELIGIOUS: 'religious',
@@ -200,14 +202,20 @@ export const movableHolidays = {
 /**
  * Calculates the date of Fasika (Ethiopian Easter) for a given Ethiopian year.
  *
- * This function converts the Ethiopian year to the corresponding Gregorian year,
- * computes the Julian Easter date using the Meeus algorithm, adjusts it to the
- * Gregorian calendar, and then converts the result back to the Ethiopian calendar.
+ * This function uses the Meeus algorithm to compute the Julian Easter date,
+ * converts it to the Gregorian calendar, and then converts the Gregorian date
+ * back to the Ethiopian calendar.
  *
  * @param {number} ethYear - The Ethiopian year for which to calculate Fasika.
  * @returns {Object} An object containing:
- *   - {Object} gregorian: The Gregorian date of Fasika with properties { year, month, day }.
- *   - {Object} ethiopian: The Ethiopian date of Fasika with properties { year, month, day }.
+ *   - {Object} gregorian: The Gregorian date of Fasika.
+ *     - {number} year - Gregorian year.
+ *     - {number} month - Gregorian month (1-based).
+ *     - {number} day - Gregorian day.
+ *   - {Object} ethiopian: The Ethiopian date of Fasika.
+ *     - {number} year - Ethiopian year.
+ *     - {number} month - Ethiopian month (1-based).
+ *     - {number} day - Ethiopian day.
  */
 export function getFasikaDate(ethYear) {
     const gYear = ethYear + 8; // Convert Ethiopian year to Gregorian year
@@ -223,6 +231,7 @@ export function getFasikaDate(ethYear) {
 
     // Convert Julian to Gregorian (add 13 days)
     const easterGregorian = new Date(Date.UTC(gYear, month - 1, day + 13));
+    const gYearFinal = easterGregorian.getUTCFullYear();
     const gMonth = easterGregorian.getUTCMonth() + 1;
     const gDay = easterGregorian.getUTCDate();
 
@@ -232,6 +241,45 @@ export function getFasikaDate(ethYear) {
     return {
         gregorian: {
             year: gYearFinal,
+            month: gMonth,
+            day: gDay
+        },
+        ethiopian: {
+            year: eYear,
+            month: eMonth,
+            day: eDay
+        }
+    };
+}
+
+/**
+ * Calculates the date of Siklet (Good Friday) for a given Ethiopian year.
+ *
+ * Siklet is observed two days before Fasika (Ethiopian Easter).
+ * This function determines the Gregorian and Ethiopian dates for Siklet.
+ *
+ * @param {number} ethYear - The Ethiopian year for which to calculate Siklet.
+ * @returns {{ 
+ *   gregorian: { year: number, month: number, day: number }, 
+ *   ethiopian: { year: number, month: number, day: number } 
+ * }} An object containing the Siklet date in both Gregorian and Ethiopian calendars.
+ */
+export function getSikletDate(ethYear) {
+    const fasika = getFasikaDate(ethYear);
+    const { year, month, day } = fasika.gregorian;
+
+    const fasikaDate = new Date(Date.UTC(year, month - 1, day));
+    fasikaDate.setUTCDate(fasikaDate.getUTCDate() - 2);
+
+    const gYear = fasikaDate.getUTCFullYear();
+    const gMonth = fasikaDate.getUTCMonth() + 1;
+    const gDay = fasikaDate.getUTCDate();
+
+    const eth = gregorianToEthiopian(gYear, gMonth, gDay);
+
+    return {
+        gregorian: {
+            year: gYear,
             month: gMonth,
             day: gDay
         },
