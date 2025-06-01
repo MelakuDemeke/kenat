@@ -329,3 +329,44 @@ export function getEidFitrDate(ethiopianYear) {
 
     return result;
 }
+
+/**
+ * Estimates the date of Eid al-Adha for a given Ethiopian year.
+ *
+ * Uses a base Gregorian date and shifts approx. 10.875 days per Ethiopian year.
+ * Result is an estimate and may be off by ±1 day.
+ *
+ * @param {number} ethiopianYear - Ethiopian year.
+ * @returns {Object} Estimated date in Gregorian and Ethiopian calendars with note.
+ */
+export function getEidAdhaDate(ethiopianYear) {
+    const baseEthiopianYear = 2014;
+    const baseEidAdhaDate = { year: 2022, month: 7, day: 9 }; // Eid al-Adha in 2014 E.C.
+    const daysPerYearShift = 10.875;
+
+    const gregorianBaseYear = ethiopianYear + 8;
+    const yearDiff = ethiopianYear - baseEthiopianYear;
+
+    const baseDate = new Date(gregorianBaseYear, baseEidAdhaDate.month - 1, baseEidAdhaDate.day);
+    const daysToShift = Math.round(yearDiff * daysPerYearShift);
+
+    baseDate.setDate(baseDate.getDate() - daysToShift);
+
+    const gregorianDate = {
+        year: baseDate.getFullYear(),
+        month: baseDate.getMonth() + 1,
+        day: baseDate.getDate(),
+    };
+
+    const ethiopianDate = gregorianToEthiopian(
+        gregorianDate.year,
+        gregorianDate.month,
+        gregorianDate.day
+    );
+
+    return {
+        gregorian: gregorianDate,
+        ethiopian: ethiopianDate,
+        note: 'Estimated ±1 day',
+    };
+}
