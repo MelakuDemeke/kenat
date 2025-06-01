@@ -3,7 +3,7 @@ import { toArabic } from '../../src/geezConverter.js';
 
 let currentYear, currentMonth;
 
-// Settings with defaults
+// Settings
 let useGeez = true;
 let weekdayLang = 'amharic';
 let weekStart = 1;
@@ -44,9 +44,13 @@ function renderCalendar({ headers, days, year, month, monthName }) {
                 html += '<td></td>';
             } else {
                 const todayClass = item.isToday ? 'today' : '';
-                html += `<td class="${todayClass}">
+                const isHoliday = item.holidays && item.holidays.length > 0;
+                const holidays = item.holidays.map(h => h.name.amharic).join(', ');
+
+                html += `<td class="${todayClass} ${isHoliday ? 'holiday' : ''}">
                     <strong>${item.ethiopian.day}</strong><br/>
                     <small>${item.gregorian.month}/${item.gregorian.day}</small>
+                    ${holidays ? `<div class="holiday-labels">${holidays}</div>` : ''}
                 </td>`;
             }
         }
@@ -56,10 +60,10 @@ function renderCalendar({ headers, days, year, month, monthName }) {
     html += '</tbody></table>';
     document.getElementById('calendar').innerHTML = html;
 
+    // Event listeners
     document.getElementById('prevMonth').onclick = () => navigateMonth(-1);
     document.getElementById('nextMonth').onclick = () => navigateMonth(1);
 
-    // Attach toggle event listeners
     document.getElementById('toggleGeez').onclick = () => {
         useGeez = !useGeez;
         rerender();
