@@ -6,14 +6,15 @@ These are essential for most calendar applications.
 
 1. **Conversion Enhancements**
 
-   * [ ] Support conversion both ways: `gregorianToEthiopian()` and `ethiopianToGregorian()` already exist—expose them more clearly in the API.
-   * [ ] Accept JavaScript `Date` object directly (and return one too).
+   * [ ] Support conversion both ways: `gregorianToEthiopian()` and `ethiopianToGregorian()` renate this to better dev friendly names like toGregorian() and toEthiopian(). TODO: rename these methods.
+
+   * [ ] Accept JavaScript `Date` object directly (and return one too). 
    * [ ] Add parsing and formatting helpers for ISO-8601 (`YYYY-MM-DD`).
 
 2. **Date Arithmetic**
 
-   * [ ] Add/subtract days, months, years on Ethiopian dates.
-   * [ ] Get difference between two Ethiopian dates in days/months/years.
+   * [ ] Add/subtract days, months, years on Ethiopian dates. Add already added, work on subtracting.
+   * [x] Get difference between two Ethiopian dates in days/months/years.
 
 3. **Validation**
 
@@ -22,7 +23,7 @@ These are essential for most calendar applications.
 
 4. **Leap Year Helpers**
 
-   * [ ] `.isLeapYear()` method for both Ethiopian and Gregorian dates.
+   * [x] `.isLeapYear()` method for both Ethiopian and Gregorian dates.
    * [ ] `.daysInMonth()` method for any month/year combo.
 
 ---
@@ -36,11 +37,11 @@ These are essential for most calendar applications.
 
 6. **Geez Numerals Everywhere**
 
-   * [ ] Add option to display full date in Geez: "መስከረም ፲፭ ፳፻፲፯" and also time in Geez (if relevant).
+   * [x] Add option to display full date in Geez: "መስከረም ፲፭ ፳፻፲፯" and also time in Geez (if relevant).
 
 7. **Pretty Today**
 
-   * [ ] `Kenat.today()` returns a `Kenat` for current date.
+   * [x] `Kenat.today()` returns a `Kenat` for current date.
    * [ ] `.isToday()` to check if the stored Ethiopian date is today.
 
 ---
@@ -54,8 +55,8 @@ These are essential for most calendar applications.
 
 9. **Holiday Support**
 
-   * [ ] Built-in support for major Ethiopian holidays (Fasika, Meskel, Timket, Enkutatash, etc.).
-   * [ ] Ability to list holidays in a given Ethiopian year.
+   * [x] Built-in support for major Ethiopian holidays (Fasika, Meskel, Timket, Enkutatash, etc.).
+   * [ ] Ability to list holidays in a given Ethiopian year. / added a method to list in month will list the year too.
 
 10. **Week Numbers**
 
@@ -76,8 +77,8 @@ These are essential for most calendar applications.
 
 13. **Calendar View Generator**
 
-* [ ] Function to return an array of days for a given month (e.g., for building UIs).
-* [ ] Optional metadata (weekday, holiday, isToday, etc.).
+* [x] Function to return an array of days for a given month (e.g., for building UIs).
+* [x] Optional metadata (weekday, holiday, isToday, etc.).
 
 ---
 
@@ -93,4 +94,4 @@ These are essential for most calendar applications.
 
 16. **Ethiopian Time Support**
 
-* [ ] Format times in Ethiopian 12-hour system (e.g., “3:00 in the morning” = 9:00 AM Gregorian)
+* [x] Format times in Ethiopian 12-hour system (e.g., “3:00 in the morning” = 9:00 AM Gregorian)
