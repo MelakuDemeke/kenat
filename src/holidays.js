@@ -97,7 +97,7 @@ export const fixedHolidayName = {
         movable: false,
         tags: [HolidayTags.PUBLIC, HolidayTags.STATE],
         name: {
-            amharic: 'ድል አድዋ',
+            amharic: 'የአድዋ ድል በዓል',
             english: 'Victory of Adwa'
         },
         description: 'Celebrates Ethiopia’s victory over Italian colonizers in 1896.'
@@ -410,4 +410,54 @@ export function getMoulidDate(ethiopianYear) {
         ethiopian: ethiopianDate,
         note: 'Estimated ±1 day',
     };
+}
+
+export function getHolidaysInMonth(ethYear, ethMonth) {
+    const holidays = [];
+
+    // Helper to add a fixed holiday if it matches the month
+    function tryAddFixedHoliday(holiday) {
+        if (holiday.month === ethMonth) {
+            holidays.push({
+                ...holiday,
+                ethiopian: { year: ethYear, month: holiday.month, day: holiday.day }
+            });
+        }
+    }
+
+    // Add fixed holidays for the month
+    Object.values(fixedHolidayName).forEach(tryAddFixedHoliday);
+
+    // Calculate movable holidays for the year
+    const fasika = getFasikaDate(ethYear);
+    const siklet = getSikletDate(ethYear);
+    const eidFitr = getEidFitrDate(ethYear);
+    const eidAdha = getEidAdhaDate(ethYear);
+    const moulid = getMoulidDate(ethYear);
+
+    // Add movable holidays if they fall in the month
+    [fasika, siklet, eidFitr, eidAdha, moulid].forEach(movable => {
+        if (movable.ethiopian.month === ethMonth) {
+            // Find corresponding holiday key for description, etc.
+            // For simplicity, match by key in movableHolidays
+            let holidayKey = null;
+
+            if (movable === fasika) holidayKey = 'fasika';
+            else if (movable === siklet) holidayKey = 'siklet';
+            else if (movable === eidFitr) holidayKey = 'eidFitr';
+            else if (movable === eidAdha) holidayKey = 'eidAdha';
+            else if (movable === moulid) holidayKey = 'moulid';
+
+            if (holidayKey && movableHolidays[holidayKey]) {
+                holidays.push({
+                    ...movableHolidays[holidayKey],
+                    ethiopian: movable.ethiopian,
+                    gregorian: movable.gregorian,
+                    note: movable.note || null,
+                });
+            }
+        }
+    });
+
+    return holidays;
 }
