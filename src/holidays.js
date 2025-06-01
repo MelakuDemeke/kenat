@@ -370,3 +370,44 @@ export function getEidAdhaDate(ethiopianYear) {
         note: 'Estimated ±1 day',
     };
 }
+
+/**
+ * Estimates the date of Moulid (Birth of Prophet Mohammed) for a given Ethiopian year.
+ *
+ * Uses a base Gregorian date and shifts approx. 10.875 days per Ethiopian year.
+ * Result is an estimate and may be off by ±1 day.
+ *
+ * @param {number} ethiopianYear - Ethiopian year.
+ * @returns {Object} Estimated date in Gregorian and Ethiopian calendars with note.
+ */
+export function getMoulidDate(ethiopianYear) {
+    const baseEthiopianYear = 2014;
+    const baseMoulidDate = { year: 2022, month: 10, day: 8 }; // Moulid in 2014 E.C.
+    const daysPerYearShift = 10.875;
+
+    const gregorianBaseYear = ethiopianYear + 8;
+    const yearDiff = ethiopianYear - baseEthiopianYear;
+
+    const baseDate = new Date(gregorianBaseYear, baseMoulidDate.month - 1, baseMoulidDate.day);
+    const daysToShift = Math.round(yearDiff * daysPerYearShift);
+
+    baseDate.setDate(baseDate.getDate() - daysToShift);
+
+    const gregorianDate = {
+        year: baseDate.getFullYear(),
+        month: baseDate.getMonth() + 1,
+        day: baseDate.getDate(),
+    };
+
+    const ethiopianDate = gregorianToEthiopian(
+        gregorianDate.year,
+        gregorianDate.month,
+        gregorianDate.day
+    );
+
+    return {
+        gregorian: gregorianDate,
+        ethiopian: ethiopianDate,
+        note: 'Estimated ±1 day',
+    };
+}
