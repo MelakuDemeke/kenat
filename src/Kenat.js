@@ -3,6 +3,7 @@ import { printMonthCalendarGrid } from './render/printMonthCalendarGrid.js';
 import { monthNames, daysOfWeek } from './constants.js';
 import { toEthiopianTime, toGregorianTime } from './timeConverter.js';
 import { toGeez } from './geezConverter.js';
+import { getHolidaysInMonth } from './holidays.js';
 import { getEthiopianDaysInMonth, isEthiopianLeapYear, getWeekday } from './utils.js';
 import {
     addDays,
@@ -283,32 +284,50 @@ export class Kenat {
         const temp = new Kenat(`${y}/${m}/1`);
         const rawDays = temp.getMonthCalendar(y, m, useGeez);
 
-        // Use appropriate weekday and month labels
+        // Get weekday and month labels
         const labels = daysOfWeek[weekdayLang] || daysOfWeek.amharic;
         const monthLabels = monthNames[weekdayLang] || monthNames.amharic;
 
+        // 🎯 Get holidays for this month and prepare lookup
+        const monthHolidays = getHolidaysInMonth(y, m);
+        const holidayMap = {};
+        monthHolidays.forEach(h => {
+            const key = `${h.ethiopian.year}-${h.ethiopian.month}-${h.ethiopian.day}`;
+            if (!holidayMap[key]) holidayMap[key] = [];
+            holidayMap[key].push(h);
+        });
+
         // Transform each day
         const daysWithWeekday = rawDays.map(day => {
-            const weekday = getWeekday(day.ethiopian);
+            const eth = day.ethiopian;
+            const greg = day.gregorian;
+
             const isToday =
-                Number(day.ethiopian.year) === Number(todayEth.year) &&
-                Number(day.ethiopian.month) === Number(todayEth.month) &&
-                Number(day.ethiopian.day) === Number(todayEth.day);
+                Number(eth.year) === Number(todayEth.year) &&
+                Number(eth.month) === Number(todayEth.month) &&
+                Number(eth.day) === Number(todayEth.day);
+
+            const weekday = getWeekday(eth);
+
+            // 🔗 Holiday lookup key
+            const key = `${eth.year}-${eth.month}-${eth.day}`;
+            const holidays = holidayMap[key] || [];
 
             return {
                 ethiopian: {
-                    year: useGeez ? toGeez(day.ethiopian.year) : day.ethiopian.year,
-                    month: useGeez ? monthLabels[day.ethiopian.month - 1] : day.ethiopian.month,
-                    day: useGeez ? toGeez(day.ethiopian.day) : day.ethiopian.day
+                    year: useGeez ? toGeez(eth.year) : eth.year,
+                    month: useGeez ? monthLabels[eth.month - 1] : eth.month,
+                    day: useGeez ? toGeez(eth.day) : eth.day
                 },
                 gregorian: {
-                    year: day.gregorian.year,
-                    month: day.gregorian.month,
-                    day: day.gregorian.day
+                    year: greg.year,
+                    month: greg.month,
+                    day: greg.day
                 },
                 weekday,
                 weekdayName: labels[weekday],
-                isToday
+                isToday,
+                holidays // 🔗 Add holidays here
             };
         });
 
@@ -320,7 +339,7 @@ export class Kenat {
         const padded = Array(offset).fill(null).concat(daysWithWeekday);
         const headers = labels.slice(weekStart).concat(labels.slice(0, weekStart));
 
-        // Localize the year and month for the return
+        // Localized year and month name
         const localizedYear = useGeez ? toGeez(y) : y;
         const localizedMonthName = useGeez ? monthLabels[m - 1] : monthLabels[m - 1];
 
@@ -328,10 +347,11 @@ export class Kenat {
             headers,
             days: padded,
             year: localizedYear,
-            month: m,               // numeric month
-            monthName: localizedMonthName  // localized month name
+            month: m,
+            monthName: localizedMonthName
         };
     }
+
 
     // Time Methods
     getCurrentTime() {

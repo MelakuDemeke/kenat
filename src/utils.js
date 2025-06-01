@@ -1,8 +1,13 @@
-import { ethiopianToGregorian } from './conversions.js';
+import { ethiopianToGregorian, gregorianToEthiopian } from './conversions.js';
+import { monthNames } from './constants.js';
 
 /**
- * Get the day of the year for given Gregorian date.
- * Jan 1 is 1.
+ * Calculates the day of the year for a given date.
+ *
+ * @param {number} year - The full year (e.g., 2024).
+ * @param {number} month - The month (1-based, January is 1, December is 12).
+ * @param {number} day - The day of the month.
+ * @returns {number} The day of the year (1-based).
  */
 export function dayOfYear(year, month, day) {
     const monthLengths = [31, isGregorianLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
