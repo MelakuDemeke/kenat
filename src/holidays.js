@@ -134,8 +134,6 @@ export const movableHolidays = {
 
     eidFitr: {
         key: 'eidFitr',
-        month: 7,
-        day: 11,
         movable: true,
         tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.MUSLIM],
         name: {
@@ -147,8 +145,6 @@ export const movableHolidays = {
 
     siklet: {
         key: 'siklet',
-        month: 8,
-        day: 2,
         movable: true,
         tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
         name: {
@@ -160,8 +156,6 @@ export const movableHolidays = {
 
     fasika: {
         key: 'fasika',
-        month: 8,
-        day: 4,
         movable: true,
         tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
         name: {
@@ -173,8 +167,6 @@ export const movableHolidays = {
 
     eidAdha: {
         key: 'eidAdha',
-        month: 9,
-        day: 18,
         movable: true,
         tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.MUSLIM],
         name: {
@@ -186,8 +178,6 @@ export const movableHolidays = {
 
     moulid: {
         key: 'moulid',
-        month: 11,
-        day: 20,
         movable: true,
         tags: [HolidayTags.RELIGIOUS, HolidayTags.MUSLIM],
         name: {
