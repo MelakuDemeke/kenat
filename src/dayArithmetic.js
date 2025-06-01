@@ -1,5 +1,15 @@
 import { getEthiopianDaysInMonth, isEthiopianLeapYear } from './utils.js';
 
+/**
+ * Adds a specified number of days to an Ethiopian date.
+ *
+ * @param {Object} ethiopian - The Ethiopian date object.
+ * @param {number} ethiopian.year - The year in the Ethiopian calendar.
+ * @param {number} ethiopian.month - The month in the Ethiopian calendar (1-13).
+ * @param {number} ethiopian.day - The day in the Ethiopian calendar.
+ * @param {number} days - The number of days to add.
+ * @returns {Object} The resulting Ethiopian date after adding the specified days.
+ */
 export function addDays(ethiopian, days) {
     let { year, month, day } = ethiopian;
     day += days;

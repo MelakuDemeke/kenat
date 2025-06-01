@@ -1,9 +1,11 @@
-# Kenat / ቀናት
+# Kenat / ቀናት ![NPM Version](https://img.shields.io/npm/v/kenat)
+
 
 ![banner](assets/img/kenatBanner.png)
 
+
 ![Build Status](https://github.com/MelakuDemeke/kenat/actions/workflows/test.yml/badge.svg?branch=main)
-![GitHub repo size](https://img.shields.io/github/repo-size/MelakuDemeke/kenat)
+![npm bundle size](https://img.shields.io/bundlephobia/min/kenat)
 ![GitHub issues](https://img.shields.io/github/issues/MelakuDemeke/kenat)
 ![GitHub Repo stars](https://img.shields.io/github/stars/MelakuDemeke/kenat?logo=github&style=flat)
 ![GitHub forks](https://img.shields.io/github/forks/MelakuDemeke/kenat?logo=github&style=falt)

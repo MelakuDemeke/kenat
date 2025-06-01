@@ -1,3 +1,5 @@
+## add nextMonth, previousMonth, nextYear, previousYear methods for calendar navigation
+
 ## 🔹 Core Features to Add
 
 These are essential for most calendar applications.
