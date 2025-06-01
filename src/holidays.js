@@ -187,7 +187,7 @@ export const movableHolidays = {
         description: 'Celebrates the birthday of the Prophet Mohammed.'
     },
 }
-
+// TODO: Impove the acuracy of the Eid dates by using astronomical calculations or lunar observations.
 
 /**
  * Calculates the date of Fasika (Ethiopian Easter) for a given Ethiopian year.
