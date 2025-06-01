@@ -1,4 +1,4 @@
-import { gregorianToEthiopian } from './conversions.js';
+import { gregorianToEthiopian, ethiopianToGregorian } from './conversions.js';
 
 export const HolidayTags = {
     PUBLIC: 'public',
@@ -279,4 +279,53 @@ export function getSikletDate(ethYear) {
             day: eth.day
         }
     };
+}
+
+/**
+ * Estimates the date of Eid al-Fitr for a given Ethiopian year.
+ *
+ * The calculation is based on a reference Eid date in the Ethiopian year 2014 (Gregorian 2022-05-02),
+ * and shifts the date by approximately 10.875 days per Ethiopian year difference.
+ * The result is an estimate and may be off by ±1 day.
+ *
+ * @param {number} ethiopianYear - The Ethiopian year for which to estimate Eid al-Fitr.
+ * @returns {Object} An object containing:
+ *   - {Object} gregorian: The estimated Gregorian date ({ year, month, day }).
+ *   - {Object} ethiopian: The corresponding Ethiopian date ({ year, month, day }).
+ *   - {string} note: A note indicating the estimate's accuracy.
+ */
+export function getEidFitrDate(ethiopianYear) {
+    const baseEthiopianYear = 2014;
+    const baseEidDate = { year: 2022, month: 5, day: 2 }; // Eid in 2014 E.C.
+    const daysPerYearShift = 10.875;
+
+    let gregorianDate;
+
+    const gregorianBaseYear = ethiopianYear + 8;
+    const yearDiff = ethiopianYear - baseEthiopianYear;
+    const baseDate = new Date(gregorianBaseYear, 4, 2);
+
+    const daysToShift = Math.round(yearDiff * daysPerYearShift);
+
+    baseDate.setDate(baseDate.getDate() - daysToShift);
+
+    gregorianDate = {
+        year: baseDate.getFullYear(),
+        month: baseDate.getMonth() + 1,
+        day: baseDate.getDate(),
+    };
+
+    const ethiopianDate = gregorianToEthiopian(
+        gregorianDate.year,
+        gregorianDate.month,
+        gregorianDate.day
+    );
+
+    const result = {
+        gregorian: gregorianDate,
+        ethiopian: ethiopianDate,
+        note: 'Estimated ±1 day',
+    };
+
+    return result;
 }
