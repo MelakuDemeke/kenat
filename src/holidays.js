@@ -1,4 +1,4 @@
-import { gregorianToEthiopian, ethiopianToGregorian } from './conversions.js';
+import { toEC, toGC } from './conversions.js';
 
 export const HolidayTags = {
     PUBLIC: 'public',
@@ -226,7 +226,7 @@ export function getFasikaDate(ethYear) {
     const gDay = easterGregorian.getUTCDate();
 
     // Convert Gregorian to Ethiopian
-    const { year: eYear, month: eMonth, day: eDay } = gregorianToEthiopian(gYear, gMonth, gDay);
+    const { year: eYear, month: eMonth, day: eDay } = toEC(gYear, gMonth, gDay);
 
     return {
         gregorian: {
@@ -265,7 +265,7 @@ export function getSikletDate(ethYear) {
     const gMonth = fasikaDate.getUTCMonth() + 1;
     const gDay = fasikaDate.getUTCDate();
 
-    const eth = gregorianToEthiopian(gYear, gMonth, gDay);
+    const eth = toEC(gYear, gMonth, gDay);
 
     return {
         gregorian: {
@@ -315,7 +315,7 @@ export function getEidFitrDate(ethiopianYear) {
         day: baseDate.getDate(),
     };
 
-    const ethiopianDate = gregorianToEthiopian(
+    const ethiopianDate = toEC(
         gregorianDate.year,
         gregorianDate.month,
         gregorianDate.day
@@ -358,7 +358,7 @@ export function getEidAdhaDate(ethiopianYear) {
         day: baseDate.getDate(),
     };
 
-    const ethiopianDate = gregorianToEthiopian(
+    const ethiopianDate = toEC(
         gregorianDate.year,
         gregorianDate.month,
         gregorianDate.day
@@ -399,7 +399,7 @@ export function getMoulidDate(ethiopianYear) {
         day: baseDate.getDate(),
     };
 
-    const ethiopianDate = gregorianToEthiopian(
+    const ethiopianDate = toEC(
         gregorianDate.year,
         gregorianDate.month,
         gregorianDate.day

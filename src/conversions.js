@@ -9,7 +9,7 @@ import { dayOfYear, monthDayFromDayOfYear, isGregorianLeapYear } from './utils.j
  * @param {number} ethDay - Ethiopian day (1-30 for months 1-12, 1-5/6 for month 13)
  * @returns {{year: number, month: number, day: number}} Gregorian date
  */
-export function ethiopianToGregorian(ethYear, ethMonth, ethDay) {
+export function toGC(ethYear, ethMonth, ethDay) {
     // Get Gregorian new year date for the Ethiopian year
     const newYear = getGregorianDateOfEthiopianNewYear(ethYear);
 
@@ -46,7 +46,7 @@ export function ethiopianToGregorian(ethYear, ethMonth, ethDay) {
  * @param {number} gDay - Gregorian day
  * @returns {{year: number, month: number, day: number}} Ethiopian date
  */
-export function gregorianToEthiopian(gYear, gMonth, gDay) {
+export function toEC(gYear, gMonth, gDay) {
     const oneDay = 1000 * 60 * 60 * 24;
     const oneYear = 365 * oneDay;
     const fourYears = 1461 * oneDay; // 365*4 + 1 leap day
