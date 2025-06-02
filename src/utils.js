@@ -1,4 +1,4 @@
-import { toGC, gregorianToEthiopian } from './conversions.js';
+import { toGC, toEC } from './conversions.js';
 import { monthNames } from './constants.js';
 
 /**

@@ -46,7 +46,7 @@ export function toGC(ethYear, ethMonth, ethDay) {
  * @param {number} gDay - Gregorian day
  * @returns {{year: number, month: number, day: number}} Ethiopian date
  */
-export function gregorianToEthiopian(gYear, gMonth, gDay) {
+export function toEC(gYear, gMonth, gDay) {
     const oneDay = 1000 * 60 * 60 * 24;
     const oneYear = 365 * oneDay;
     const fourYears = 1461 * oneDay; // 365*4 + 1 leap day

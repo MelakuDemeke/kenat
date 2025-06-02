@@ -42,7 +42,7 @@ npm install kenat
 ## Quick Usage
 
 ```js
-import Kenat, { gregorianToEthiopian, toGC } from 'kenat';
+import Kenat, { toEC, toGC } from 'kenat';
 
 const k = new Kenat();
 console.log(k.getEthiopian()); // { year: 2017, month: 9, day: 23 }
@@ -53,7 +53,7 @@ console.log(k.getEthiopian()); // { year: 2017, month: 9, day: 23 }
 ### 🔄 Date Conversion
 
 ```js
-const eth = gregorianToEthiopian(2025, 5, 30);
+const eth = toEC(2025, 5, 30);
 console.log(eth); // { year: 2017, month: 9, day: 22 }
 
 const greg = toGC(2017, 9, 22);
@@ -164,7 +164,7 @@ console.log(grid.days);    // Array of day objects
 
 | Function                              | Description                |
 | ------------------------------------- | -------------------------- |
-| `gregorianToEthiopian(y, m, d)`       | → Ethiopian date           |
+| `toEC(y, m, d)`       | → Ethiopian date           |
 | `toGC(y, m, d)`       | → Gregorian date           |
 | `toGeez(num)`                         | → Ge'ez numeral            |
 | `toArabic(geezStr)`                   | → Arabic number from Ge'ez |

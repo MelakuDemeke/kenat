@@ -1,4 +1,4 @@
-import { toGC, gregorianToEthiopian } from './conversions.js';
+import { toGC, toEC } from './conversions.js';
 import { printMonthCalendarGrid } from './render/printMonthCalendarGrid.js';
 import { monthNames, daysOfWeek } from './constants.js';
 import { toEthiopianTime, toGregorianTime } from './timeConverter.js';
@@ -34,7 +34,7 @@ export class Kenat {
         if (!ethiopianDateStr) {
             // default to current Gregorian date → Ethiopian
             const today = new Date();
-            this.ethiopian = gregorianToEthiopian(
+            this.ethiopian = toEC(
                 today.getFullYear(),
                 today.getMonth() + 1,
                 today.getDate()
