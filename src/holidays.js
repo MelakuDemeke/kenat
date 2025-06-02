@@ -438,8 +438,6 @@ export function getHolidaysInMonth(ethYear, ethMonth) {
     // Add movable holidays if they fall in the month
     [fasika, siklet, eidFitr, eidAdha, moulid].forEach(movable => {
         if (movable.ethiopian.month === ethMonth) {
-            // Find corresponding holiday key for description, etc.
-            // For simplicity, match by key in movableHolidays
             let holidayKey = null;
 
             if (movable === fasika) holidayKey = 'fasika';
@@ -458,6 +456,9 @@ export function getHolidaysInMonth(ethYear, ethMonth) {
             }
         }
     });
+
+    // Sort holidays by day of the Ethiopian month
+    holidays.sort((a, b) => a.ethiopian.day - b.ethiopian.day);
 
     return holidays;
 }
