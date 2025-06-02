@@ -1,4 +1,5 @@
 import { Kenat } from './Kenat.js';
+import { MonthGrid } from './MonthGrid.js';
 import { gregorianToEthiopian, ethiopianToGregorian } from './conversions.js';
 import { toArabic, toGeez } from './geezConverter.js';  
 
@@ -11,5 +12,6 @@ export {
   gregorianToEthiopian,
   ethiopianToGregorian,
   toArabic,
-  toGeez
+  toGeez,
+  MonthGrid
 };
