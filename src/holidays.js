@@ -412,6 +412,24 @@ export function getMoulidDate(ethiopianYear) {
     };
 }
 
+/**
+ * Returns a list of holidays occurring in a given Ethiopian month and year.
+ *
+ * The function collects both fixed-date and movable holidays, returning them as
+ * objects containing holiday metadata and their Ethiopian date. Movable holidays
+ * are calculated for the given year and included if they fall within the specified month.
+ *
+ * @param {number} ethYear - The Ethiopian year for which to retrieve holidays.
+ * @param {number} ethMonth - The Ethiopian month (1-13) for which to retrieve holidays.
+ * @returns {Array<Object>} An array of holiday objects for the specified month, sorted by day.
+ *
+ * Each holiday object contains:
+ *   - {string} name: The name of the holiday.
+ *   - {string} [description]: Optional description of the holiday.
+ *   - {Object} ethiopian: The Ethiopian date of the holiday ({ year, month, day }).
+ *   - {Object} [gregorian]: The Gregorian date of the holiday ({ year, month, day }), for movable holidays.
+ *   - {string|null} [note]: Optional note for movable holidays.
+ */
 export function getHolidaysInMonth(ethYear, ethMonth) {
     const holidays = [];
 
