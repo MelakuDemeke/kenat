@@ -6,7 +6,7 @@ These are essential for most calendar applications.
 
 1. **Conversion Enhancements**
 
-   * [ ] Support conversion both ways: `gregorianToEthiopian()` and `ethiopianToGregorian()` renate this to better dev friendly names like toGregorian() and toEthiopian(). TODO: rename these methods.
+   * [ ] Support conversion both ways: `gregorianToEthiopian()` and `toGC()` renate this to better dev friendly names like toGregorian() and toEthiopian(). TODO: rename these methods.
 
    * [ ] Accept JavaScript `Date` object directly (and return one too). 
    * [ ] Add parsing and formatting helpers for ISO-8601 (`YYYY-MM-DD`).

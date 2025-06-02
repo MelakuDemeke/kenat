@@ -1,4 +1,4 @@
-import { ethiopianToGregorian, gregorianToEthiopian } from './conversions.js';
+import { toGC, gregorianToEthiopian } from './conversions.js';
 import { monthNames } from './constants.js';
 
 /**
@@ -81,6 +81,6 @@ export function getEthiopianDaysInMonth(year, month) {
  * @returns {number} The day of the week (0 for Sunday, 6 for Saturday).
  */
 export function getWeekday({ year, month, day }) {
-    const g = ethiopianToGregorian(year, month, day);
+    const g = toGC(year, month, day);
     return new Date(g.year, g.month - 1, g.day).getDay();
 }

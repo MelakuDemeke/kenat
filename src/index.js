@@ -1,6 +1,6 @@
 import { Kenat } from './Kenat.js';
 import { MonthGrid } from './MonthGrid.js';
-import { gregorianToEthiopian, ethiopianToGregorian } from './conversions.js';
+import { gregorianToEthiopian, toGC } from './conversions.js';
 import { toArabic, toGeez } from './geezConverter.js';  
 import { getHolidaysInMonth } from './holidays.js';
 
@@ -10,7 +10,7 @@ export default Kenat;
 // Named exports for the conversion functions
 export {
   gregorianToEthiopian,
-  ethiopianToGregorian,
+  toGC,
   toArabic,
   toGeez,
   getHolidaysInMonth,

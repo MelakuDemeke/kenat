@@ -1,69 +1,69 @@
-import { gregorianToEthiopian, ethiopianToGregorian } from "../src/conversions";
+import { gregorianToEthiopian, toGC } from "../src/conversions";
 
 describe('Ethiopian to Gregorian conversion', () => {
 
     test('Ethiopian to Gregorian: 2017-9-14 -> May 22, 2025', () => {
-        const result = ethiopianToGregorian(2017, 9, 14);
+        const result = toGC(2017, 9, 14);
         expect(result).toEqual({ year: 2025, month: 5, day: 22 });
     });
 
     test('Ethiopian to Gregorian: Pagumē 5, 2016 (2016-13-5) -> September 10, 2024', () => {
-        const result = ethiopianToGregorian(2016, 13, 5);
+        const result = toGC(2016, 13, 5);
         expect(result).toEqual({ year: 2024, month: 9, day: 10 });
     });
 
     test('Ethiopian to Gregorian Leap Year: 2011-13-6 (Pagumē 6, 2011) -> September 11, 2019', () => {
-        const result = ethiopianToGregorian(2011, 13, 6);
+        const result = toGC(2011, 13, 6);
         expect(result).toEqual({ year: 2019, month: 9, day: 11 });
     });
 
     test('Ethiopian to Gregorian Leap Year: Pagumē 6, 2019 (2019-13-6) -> September 11, 2027', () => {
-        const result = ethiopianToGregorian(2019, 13, 6);
+        const result = toGC(2019, 13, 6);
         expect(result).toEqual({ year: 2027, month: 9, day: 11 });
     });
 
     test('Ethiopian to Gregorian Leap Year: May 5, 2024 -> Miazia 27, 2016', () => {
-        const result = ethiopianToGregorian(2016, 8, 27);
+        const result = toGC(2016, 8, 27);
         expect(result).toEqual({ year: 2024, month: 5, day: 5 });
     });
 
         test('Ethiopian to Gregorian: Meskerem 1, 2016 (2016-1-1) -> September 11, 2023', () => {
-        const result = ethiopianToGregorian(2016, 1, 1);
+        const result = toGC(2016, 1, 1);
         expect(result).toEqual({ year: 2023, month: 9, day: 12 });
     });
 
     test('Ethiopian to Gregorian: Tahsas 30, 2015 (2015-4-30) -> January 8, 2023', () => {
-        const result = ethiopianToGregorian(2015, 4, 30);
+        const result = toGC(2015, 4, 30);
         expect(result).toEqual({ year: 2023, month: 1, day: 8 });
     });
 
     test('Ethiopian to Gregorian: Pagume 1, 2011 (2011-13-1) -> September 6, 2019', () => {
-        const result = ethiopianToGregorian(2011, 13, 1);
+        const result = toGC(2011, 13, 1);
         expect(result).toEqual({ year: 2019, month: 9, day: 6 });
     });
 
     test('Ethiopian to Gregorian: Meskerem 1, 1964 (1964-1-1) -> September 12, 1971', () => {
-        const result = ethiopianToGregorian(1964, 1, 1);
+        const result = toGC(1964, 1, 1);
         expect(result).toEqual({ year: 1971, month: 9, day: 12 });
     });
 
     test('Ethiopian to Gregorian: Pagume 6, 2007 (leap Pagume) -> September 11, 2015', () => {
-        const result = ethiopianToGregorian(2007, 13, 6);
+        const result = toGC(2007, 13, 6);
         expect(result).toEqual({ year: 2015, month: 9, day: 11 });
     });
 
     test('Ethiopian to Gregorian: Pagume 5, 2006 (non-leap Pagume) -> September 10, 2014', () => {
-        const result = ethiopianToGregorian(2006, 13, 5);
+        const result = toGC(2006, 13, 5);
         expect(result).toEqual({ year: 2014, month: 9, day: 10 });
     });
 
     test('Ethiopian to Gregorian: End of Ethiopian year (Pagume 5, 2015) -> September 10, 2023', () => {
-        const result = ethiopianToGregorian(2015, 13, 5);
+        const result = toGC(2015, 13, 5);
         expect(result).toEqual({ year: 2023, month: 9, day: 10 });
     });
 
     test('Ethiopian to Gregorian: Start of Ethiopian year (Meskerem 1, 2015) -> September 11, 2022', () => {
-        const result = ethiopianToGregorian(2015, 1, 1);
+        const result = toGC(2015, 1, 1);
         expect(result).toEqual({ year: 2022, month: 9, day: 11 });
     });
 });

@@ -1,4 +1,4 @@
-import { gregorianToEthiopian, ethiopianToGregorian } from './conversions.js';
+import { gregorianToEthiopian, toGC } from './conversions.js';
 
 export const HolidayTags = {
     PUBLIC: 'public',

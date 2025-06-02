@@ -1,4 +1,4 @@
-import { ethiopianToGregorian, gregorianToEthiopian } from './conversions.js';
+import { toGC, gregorianToEthiopian } from './conversions.js';
 import { printMonthCalendarGrid } from './render/printMonthCalendarGrid.js';
 import { monthNames, daysOfWeek } from './constants.js';
 import { toEthiopianTime, toGregorianTime } from './timeConverter.js';
@@ -66,7 +66,7 @@ export class Kenat {
      */
     getGregorian() {
         const { year, month, day } = this.ethiopian;
-        return ethiopianToGregorian(year, month, day);
+        return toGC(year, month, day);
     }
 
     /**
@@ -149,7 +149,7 @@ export class Kenat {
 
         for (let day = 1; day <= daysInMonth; day++) {
             const ethDate = { year, month, day };
-            const gregDate = ethiopianToGregorian(year, month, day);
+            const gregDate = toGC(year, month, day);
             calendar.push({
                 ethiopian: {
                     ...ethDate,
