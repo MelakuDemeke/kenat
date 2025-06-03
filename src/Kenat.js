@@ -5,6 +5,7 @@ import { toEthiopianTime, toGregorianTime } from './timeConverter.js';
 import { toGeez } from './geezConverter.js';
 import { getHolidaysInMonth } from './holidays.js';
 import { getEthiopianDaysInMonth, isEthiopianLeapYear, getWeekday } from './utils.js';
+import { formatStandard, formatInGeezAmharic, formatWithTime } from './formatting.js';
 import {
     addDays,
     addMonths,
@@ -78,22 +79,6 @@ export class Kenat {
         return this.ethiopian;
     }
 
-
-    /**
-     * Returns a string representation of the Ethiopian date and time.
-     *
-     * The format is: "Ethiopian: {year}-{month}-{day} {hh:mm period}".
-     * If the time is not available, hour and minute are replaced with '??'.
-     *
-     * @returns {string} The formatted Ethiopian date and time string.
-     */
-    toString() {
-        const { year, month, day } = this.ethiopian;
-        const { hour, minute, period } = this.time || { hour: '??', minute: '??', period: '' };
-        const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} ${period}`;
-        return `Ethiopian: ${year}-${month}-${day} ${timeStr}`;
-    }
-
     /**
      * Sets the current time.
      *
@@ -105,6 +90,19 @@ export class Kenat {
         this.time = { hour, minute, period };
     }
 
+
+    /**
+     * Returns a string representation of the Ethiopian date and time.
+     *
+     * The format is: "Ethiopian: {year}-{month}-{day} {hh:mm period}".
+     * If the time is not available, hour and minute are replaced with '??'.
+     *
+     * @returns {string} The formatted Ethiopian date and time string.
+     */
+    toString() {
+        return formatWithTime(this.ethiopian, this.time);
+    }
+
     /**
      * Returns the Ethiopian date formatted with month name.
      * 
@@ -112,10 +110,7 @@ export class Kenat {
      * @returns {string} Formatted date, e.g., "Meskerem-15-2017" or "መስከረም-15-2017"
      */
     format(lang = 'amharic') {
-        const { year, month, day } = this.ethiopian;
-        const names = monthNames[lang] || monthNames.amharic;
-        const monthName = names[month - 1] || `Month${month}`;
-        return `${monthName}-${day}-${year}`;
+        return formatStandard(this.ethiopian, lang);
     }
 
     /**
@@ -126,11 +121,7 @@ export class Kenat {
      * formatInGeezAmharic(); // "የካቲት ፲ ፳፻፲፭"
      */
     formatInGeezAmharic() {
-        const { year, month, day } = this.ethiopian;
-        const monthName = monthNames.amharic[month - 1] || `Month${month}`;
-        const geezDay = toGeez(day);
-        const geezYear = toGeez(year);
-        return `${monthName} ${geezDay} ${geezYear}`;
+        return formatInGeezAmharic(this.ethiopian);
     }
 
     /**
