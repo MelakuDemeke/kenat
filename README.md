@@ -1,8 +1,7 @@
+
 # Kenat / ቀናት ![NPM Version](https://img.shields.io/npm/v/kenat)
 
-
 ![banner](assets/img/kenatBanner.png)
-
 
 ![Build Status](https://github.com/MelakuDemeke/kenat/actions/workflows/test.yml/badge.svg?branch=main)
 ![npm bundle size](https://img.shields.io/bundlephobia/min/kenat)
@@ -10,66 +9,71 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/MelakuDemeke/kenat?logo=github&style=flat)
 ![GitHub forks](https://img.shields.io/github/forks/MelakuDemeke/kenat?logo=github&style=falt)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/MelakuDemeke/kenat?logo=github)
-[![npm downloads](https://img.shields.io/npm/dm/my-awesome-package.svg?style=flat-square)](https://www.npmjs.com/package/kenat)
----
-
-## Overview
-
-Kenat (ቀናት) is a JavaScript library for working with the Ethiopian calendar. It provides conversion between Ethiopian and Gregorian dates, date formatting (including Geez numerals), and calendar utilities. Ideal for Ethiopian apps, websites, and tools.
-
-## Features
-
-- 🔄 Convert between **Ethiopian ↔ Gregorian** dates
-- 📆 Full **Ethiopian calendar support** with leap years
-- 🧮 Date arithmetic: **add/subtract days, months, years**
-- 🌐 Localized formatting (Amharic, English)
-- 🕒 **Time conversion** between Ethiopian and Gregorian clocks
-- 🔢 Format numbers and dates in **Geez numerals**
-- 🗓 Generate/print **calendar grids** in Ethiopian format
-- ✅ Validate Ethiopian dates and handle **Pagume**
-- 📦 Lightweight and framework-agnostic
+[![npm downloads](https://img.shields.io/npm/dm/kenat.svg?style=flat-square)](https://www.npmjs.com/package/kenat)
 
 ---
 
-## Installation
+## 📌 Overview
+
+**Kenat** (Amharic: ቀናት) is an all-in-one Ethiopian calendar library for JavaScript. It handles date conversion, formatting (including Geez numerals), time conversion, holidays, and calendar grids — everything you need to build Ethiopian calendar-powered apps.
+
+---
+
+## ✨ Features
+
+- 🔄 **Bidirectional conversion**: Ethiopian ↔ Gregorian
+- 📅 Supports all **13 Ethiopian months**, including **Pagume**
+- 📐 Full **date arithmetic**: Add/subtract days, months, years
+- 🌍 Localized formatting in **Amharic** and **English**
+- 🔢 Convert numbers to **Geez numerals**
+- 🕒 **Ethiopian ↔ Gregorian time** conversion
+- 📆 Calendar grid generation and printing
+- 🕌 Built-in **Ethiopian holiday detection**
+- 🔍 **Date diff**: years, months, days
+- 🧪 Unit-tested, modular, and extendable
+
+---
+
+## 🚀 Installation
 
 ```bash
 npm install kenat
-````
+```
 
 ---
 
-## Quick Usage
+## 🔰 Quick Start
 
 ```js
 import Kenat, { toEC, toGC } from 'kenat';
 
-const k = new Kenat();
-console.log(k.getEthiopian()); // { year: 2017, month: 9, day: 23 }
+const today = new Kenat();
+console.log(today.getEthiopian()); 
+// → { year: 2017, month: 9, day: 25 } (based on your system date)
 ```
 
 ---
 
-### 🔄 Date Conversion
+## 🔄 Date Conversion
 
 ```js
 const eth = toEC(2025, 5, 30);
-console.log(eth); // { year: 2017, month: 9, day: 22 }
+console.log(eth);
+// → { year: 2017, month: 9, day: 22 }
 
 const greg = toGC(2017, 9, 22);
-console.log(greg); // { year: 2025, month: 5, day: 30 }
+console.log(greg);
+// → { year: 2025, month: 5, day: 30 }
 ```
 
 ---
 
-### 📅 Month Calendar
+## 📅 Month Calendar Generation
 
 ```js
-const calendar = k.getMonthCalendar();
+const calendar = today.getMonthCalendar();
 console.log(calendar.slice(0, 2));
 ```
-
-Output:
 
 ```js
 [
@@ -83,109 +87,284 @@ Output:
 
 ---
 
-### 🕒 Time Support
+## 🕒 Time Support
 
 ```js
-console.log(Kenat.formatEthiopianTime(k.getCurrentTime(), 'amharic')); // ፩፩:00 ጠዋት
+console.log(Kenat.formatEthiopianTime(today.getCurrentTime(), 'amharic'));
+// → "፩፪:00 ጠዋት" (or equivalent current time)
+
+today.setTime(3, 30, 'night');
 ```
 
 ---
 
-### 📆 Print Month (ASCII Grid)
+## 🖨️ Print Calendar Grid (Console)
 
 ```js
-k.printThisMonth(false); // without Geez numerals
-k.printThisMonth(true);  // with Geez numerals
+today.printThisMonth(false); // ← Plain numbers
+today.printThisMonth(true);  // ← Geez numerals
+```
+
+```txt
+   ግንቦት ፳፻፲፯
+Mo  Tu  We  Th  Fr  Sa  Su
+        1/09 2/10 3/11 4/12 5/13
+6/14 7/15 8/16 ...
 ```
 
 ---
 
-### ➕ Date Arithmetic
+## ➕ Date Arithmetic
 
 ```js
-k.addDays(10);     // 10 days forward
-k.addMonths(-1);   // 1 month back
-k.addYears(2);     // 2 years forward
+const newDate = today.addDays(10);
+console.log(newDate.toString());
+
+const backOneMonth = today.addMonths(-1);
+console.log(backOneMonth.getEthiopian());
 ```
 
 ---
 
-### 📏 Difference Between Dates
+## 📏 Difference Between Dates
 
 ```js
 const a = new Kenat('2015/5/15');
 const b = new Kenat('2012/5/15');
 
-a.diffInDays(b);    // → 1095
-a.diffInMonths(b);  // → 39
-a.diffInYears(b);   // → 3
+console.log(a.diffInDays(b));    // → 1095
+console.log(a.diffInMonths(b));  // → 39
+console.log(a.diffInYears(b));   // → 3
 ```
 
 ---
+# 📖 Formatting Ethiopian Dates
 
-### 🧠 Format In Geez
+All formatting functions are **instance methods** of the `Kenat` class and can only be called on an instantiated Ethiopian date object.
+
+---
+
+## Common Usage Pattern
 
 ```js
-k.formatInGeezAmharic(); // ግንቦት ፳፫ ፳፻፲፯
+import Kenat from 'kenat';
+
+const today = new Kenat(2016, 1, 10, 8, 30, 'day'); // year, month, day, hour, minute, period
 ```
 
 ---
 
-### 🗓 Calendar Grid Generator
+## Instance Formatting Methods
+
+### 1. `format(lang = 'amharic')`
+
+Formats the date with the month name in the specified language (`'amharic'` or `'english'`), using Arabic numerals.
+
+```js
+today.format(); // "መስከረም 10 2016"
+today.format('english'); // "Meskerem 10 2016"
+```
+
+---
+
+### 2. `formatInGeezAmharic()`
+
+Formats the date with Amharic month names and Geez numerals for day and year.
+
+```js
+today.formatInGeezAmharic(); // "መስከረም ፲ ፳፻፲፮"
+```
+
+---
+
+### 3. `formatWithTime(lang = 'amharic')`
+
+Formats the date and time with localized time period suffix.
+
+```js
+today.formatWithTime(); // "መስከረም 10 2016 08:30 ጠዋት"
+today.formatWithTime('english'); // "Meskerem 10 2016 08:30 day"
+```
+
+---
+
+### 4. `formatWithWeekday(lang = 'amharic', useGeez = false)`
+
+Includes the weekday name. Optionally use Geez numerals if `useGeez` is `true`.
+
+```js
+today.formatWithWeekday(); // "ማክሰኞ, መስከረም 10 2016"
+today.formatWithWeekday('english'); // "Tuesday, Meskerem 10 2016"
+today.formatWithWeekday('amharic', true); // "ማክሰኞ, መስከረም ፲ ፳፻፲፮"
+```
+
+---
+
+### 5. `formatShort()`
+
+Returns the date in `"yyyy/mm/dd"` zero-padded format.
+
+```js
+today.formatShort(); // "2016/01/10"
+```
+
+---
+
+### 6. `toISOString()`
+
+Returns an ISO-like string `"YYYY-MM-DD"` or `"YYYY-MM-DDTHH:mm"` (with optional time).
+
+```js
+today.toISOString(); // "2016-01-10"
+```
+
+If time is set, it includes time:
+
+```js
+const dt = new Kenat(2016, 1, 10, 8, 30, 'day');
+dt.toISOString(); // "2016-01-10T08:30"
+```
+
+---
+
+### 7. `toString()`
+
+Returns the full date and time string in default Amharic format.
+
+```js
+today.toString(); // "መስከረም 10 2016 08:30 ጠዋት"
+```
+
+
+## `format(options)`
+
+Flexible formatting with multiple options:
+
+### Parameters
+
+* `options.lang` (string) — Language for month and weekday names.
+  Allowed values: `'amharic'` (default), `'english'`, etc.
+
+* `options.showWeekday` (boolean) — Whether to include the weekday name. Default: `false`.
+
+* `options.useGeez` (boolean) — Whether to use Geez numerals for day and year. Default: `false`.
+
+* `options.includeTime` (boolean) — Whether to include the time in the output. Default: `false`.
+
+---
+
+### Usage Examples
+
+```js
+import Kenat from 'kenat';
+
+const today = new Kenat(2016, 1, 10, 8, 30, 'day');
+
+// Default: Amharic, no weekday, Arabic numerals, no time
+console.log(today.format());
+// Output: "መስከረም 10 2016"
+
+// English month name
+console.log(today.format({ lang: 'english' }));
+// Output: "Meskerem 10 2016"
+
+// Include weekday name in Amharic
+console.log(today.format({ showWeekday: true }));
+// Output: "ማክሰኞ, መስከረም 10 2016"
+
+// Include weekday + Geez numerals in Amharic
+console.log(today.format({ showWeekday: true, useGeez: true }));
+// Output: "ማክሰኞ, መስከረም ፲ ፳፻፲፮"
+
+// Include time, Amharic
+console.log(today.format({ includeTime: true }));
+// Output: "መስከረም 10 2016 08:30 ጠዋት"
+
+// Include weekday and time, English
+console.log(today.format({ showWeekday: true, includeTime: true, lang: 'english' }));
+// Output: "Tuesday, Meskerem 10 2016 08:30 day"
+
+// Using Geez numerals but English month/weekday names
+console.log(today.format({ useGeez: true, lang: 'english' }));
+// Output: "Meskerem ፲ ፳፻፲፮"
+```
+
+## Summary
+
+* You **must create an instance** of `Kenat` first (e.g., `const today = new Kenat(...)`).
+* Then call any formatting method on that instance, like `today.format()` or `today.formatWithWeekday()`.
+
+
+---
+
+## 🗓 Generate Full Calendar Grid
 
 ```js
 const grid = Kenat.getMonthGrid({ year: 2017, month: 9, useGeez: true });
-console.log(grid.headers); // Weekday headers
-console.log(grid.days);    // Array of day objects
+console.log(grid.headers); // ["እሑድ", "ሰኞ", "ማክሰኞ", ...]
+console.log(grid.days[0]); // First day object with holiday info
 ```
 
 ---
 
-## API Reference
+## 📚 API Reference
 
-### Kenat Class
+### 🔹 Kenat Class
 
 | Method                                                             | Description                                  |
 | ------------------------------------------------------------------ | -------------------------------------------- |
 | `new Kenat(dateStr?)`                                              | Create instance from `yyyy/mm/dd` or now     |
-| `getEthiopian()`                                                   | Returns current Ethiopian date               |
-| `getGregorian()`                                                   | Converts to Gregorian date                   |
+| `getEthiopian()`                                                   | Returns Ethiopian date `{ year, month, day }`|
+| `getGregorian()`                                                   | Converts to Gregorian `{ year, month, day }` |
 | `format(lang?)`                                                    | Formatted Ethiopian date                     |
 | `formatInGeezAmharic()`                                            | Formatted with Geez numerals                 |
-| `printThisMonth(useGeez?)`                                         | Prints calendar grid to console              |
-| `getMonthCalendar()`                                               | Returns detailed calendar array              |
-| `addDays(n)` / `addMonths(n)` / `addYears(n)`                      | Add to current date                          |
-| `diffInDays(other)` / `diffInMonths(other)` / `diffInYears(other)` | Compare dates                                |
-| `setTime(hour, min, period)`                                       | Set Ethiopian time (1–12, minute, day/night) |
-| `getCurrentTime()`                                                 | Get current time in Ethiopian format         |
-| `toString()`                                                       | Returns string like `Ethiopian: yyyy-mm-dd`  |
+| `printThisMonth(useGeez?)`                                         | Print ASCII calendar to console              |
+| `getMonthCalendar()`                                               | Returns full month calendar array            |
+| `addDays(n)` / `addMonths(n)` / `addYears(n)`                      | Adjust date                                  |
+| `diffInDays(other)` / `diffInMonths(other)` / `diffInYears(other)` | Calculate difference                         |
+| `setTime(hour, min, period)`                                       | Set Ethiopian time                           |
+| `getCurrentTime()`                                                 | Get current EC time                          |
+| `toString()`                                                       | String like `Ethiopian: yyyy-mm-dd hh:mm`    |
 
-### Utility Functions
+### 🔹 Utility Functions
 
-| Function                              | Description                |
-| ------------------------------------- | -------------------------- |
-| `toEC(y, m, d)`       | → Ethiopian date           |
-| `toGC(y, m, d)`       | → Gregorian date           |
-| `toGeez(num)`                         | → Ge'ez numeral            |
-| `toArabic(geezStr)`                   | → Arabic number from Ge'ez |
-| `Kenat.getMonthGrid({ year, month })` | → Calendar grid            |
+| Function                                | Description                                |
+|-----------------------------------------|--------------------------------------------|
+| `toEC(year, month, day)`                | → Convert Gregorian → Ethiopian            |
+| `toGC(year, month, day)`                | → Convert Ethiopian → Gregorian            |
+| `toGeez(number)`                        | → Convert number to Geez numerals          |
+| `toArabic(geezStr)`                     | → Convert Ge'ez numerals to Arabic         |
+| `Kenat.getMonthGrid({ year, month })`   | → Calendar grid with weekday labels        |
 
 ---
 
-## Contribution Guide
+## 🎉 Coming Soon
+
+- ✅ TS/JS Doc website (built with Nextra)
+- 🔄 Full Ethiopian-Gregorian time conversion
+- 📱 React/Flutter UI calendar components
+- 📦 iCalendar (.ics) export
+- 🔭 Astronomical accuracy for Islamic holidays
+
+---
+
+## 🤝 Contribution Guide
 
 1. Fork the repo & clone it
-2. Create a new branch (`feature/xyz`)
-3. Write code + add tests under `/tests`
-4. Run `npm run test` and submit a PR
-5. For major changes, file an issue first to discuss ideas
+2. Create a new branch: `git checkout -b feature/your-feature`
+3. Write your changes + tests in `/tests`
+4. Run `npm test` before committing
+5. Open a PR with your improvements or bugfix
 
 ---
 
-## Author
+## 👨‍💻 Author
 
-* Melaku Demeke ([GitHub](https://github.com/MelakuDemeke))
+**Melaku Demeke**  
+[GitHub](https://github.com/MelakuDemeke) ・ [LinkedIn](https://www.linkedin.com/in/melakudemeke/)
 
-## License
+---
 
-MIT – see [LICENSE](LICENSE) for details.
+## 📄 License
+
+MIT — see [LICENSE](LICENSE) for details.

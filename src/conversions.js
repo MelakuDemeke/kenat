@@ -89,3 +89,30 @@ export function toEC(gYear, gMonth, gDay) {
 
     return { year: ethYear, month, day };
 }
+
+/**
+ * Converts an Ethiopian date to a Gregorian Calendar JavaScript Date object (UTC).
+ *
+ * @param {number} ethYear - The Ethiopian year.
+ * @param {number} ethMonth - The Ethiopian month (1-based).
+ * @param {number} ethDay - The Ethiopian day.
+ * @returns {Date} A JavaScript Date object representing the equivalent Gregorian date in UTC.
+ */
+export function toGCDate(ethYear, ethMonth, ethDay) {
+    const { year, month, day } = toGC(ethYear, ethMonth, ethDay);
+    return new Date(Date.UTC(year, month - 1, day));
+}
+
+/**
+ * Converts a JavaScript Date object to the Ethiopian Calendar (EC) date representation.
+ *
+ * @param {Date} dateObj - The JavaScript Date object to convert.
+ * @returns {*} The Ethiopian Calendar date, as returned by the `toEC` function.
+ */
+export function fromDateToEC(dateObj) {
+    return toEC(
+        dateObj.getFullYear(),
+        dateObj.getMonth() + 1,
+        dateObj.getDate()
+    );
+}
