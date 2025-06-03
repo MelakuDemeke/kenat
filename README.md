@@ -139,12 +139,163 @@ console.log(a.diffInYears(b));   // → 3
 
 ---
 
-## 🧠 Format with Geez Numerals
+Sure! Here's a clear, concise, and user-friendly **Formatting** section README for your Ethiopian calendar library based on the features and test examples you shared:
+
+---
+
+# Formatting Ethiopian Dates with Kenat
+
+Kenat provides flexible and localized formatting methods to display Ethiopian dates and times in multiple styles, languages, and numeral systems.
+
+## Available Format Methods
+
+### 1. `formatStandard(etDate, lang = 'amharic')`
+
+Formats a plain Ethiopian date with the month name in the specified language (`'amharic'` or `'english'`), using Arabic numerals.
+
+**Example:**
 
 ```js
-console.log(today.formatInGeezAmharic());
-// → ግንቦት ፳፭ ፳፻፲፯
+formatStandard({ year: 2016, month: 1, day: 10 }, 'amharic'); // "መስከረም 10 2016"
+formatStandard({ year: 2016, month: 1, day: 10 }, 'english'); // "Meskerem 10 2016"
 ```
+
+---
+
+### 2. `formatInGeezAmharic(etDate)`
+
+Formats the Ethiopian date with Amharic month names and Geez numerals for day and year.
+
+**Example:**
+
+```js
+formatInGeezAmharic({ year: 2016, month: 5, day: 11 }); // "ሚያዝያ ፲፩ ፳፻፲፮"
+```
+
+---
+
+### 3. `formatWithTime(etDate, time, lang = 'amharic')`
+
+Formats an Ethiopian date and time, including hour, minute, and period suffix (day or night) in the specified language.
+
+**Example:**
+
+```js
+formatWithTime(
+  { year: 2016, month: 1, day: 10 },
+  { hour: 8, minute: 30, period: 'day' },
+  'amharic'
+); // "መስከረም 10 2016 08:30 ጠዋት"
+```
+
+---
+
+### 4. `formatWithWeekday(etDate, lang = 'amharic', useGeez = false)`
+
+Includes the weekday name, month name, day, and year. Can optionally use Geez numerals (only applies for Amharic).
+
+**Example:**
+
+```js
+formatWithWeekday({ year: 2016, month: 1, day: 1 }, 'amharic', true);
+// "ማክሰኞ, መስከረም ፩ ፳፻፲፮"
+
+formatWithWeekday({ year: 2016, month: 1, day: 1 }, 'english');
+// "Tuesday, Meskerem 1 2016"
+```
+
+---
+
+### 5. `formatShort(etDate)`
+
+Returns a short numeric string of the date in `"yyyy/mm/dd"` format with zero-padded month and day.
+
+**Example:**
+
+```js
+formatShort({ year: 2017, month: 10, day: 25 }); // "2017/10/25"
+```
+
+---
+
+### 6. `toISODateString(etDate, time = null)`
+
+Returns an ISO-like string `"YYYY-MM-DD"` or `"YYYY-MM-DDTHH:mm"` optionally with a suffix indicating day or night period.
+
+**Example:**
+
+```js
+toISODateString({ year: 2017, month: 10, day: 25 });
+// "2017-10-25"
+
+toISODateString(
+  { year: 2017, month: 10, day: 25 },
+  { hour: 8, minute: 30, period: 'day' }
+);
+// "2017-10-25T08:30"
+
+toISODateString(
+  { year: 2017, month: 10, day: 25 },
+  { hour: 8, minute: 30, period: 'night' }
+);
+// "2017-10-25T08:30+12h"
+```
+
+---
+
+## Instance Methods on `Kenat` Objects
+
+Kenat instances also provide convenient instance methods for formatting:
+
+* `toString()`
+  Returns a full date & time string in default Amharic with time.
+  Example: `"መስከረም 10 2016 08:30 ጠዋት"`
+
+* `format(options)`
+  Flexible formatting with options:
+
+  ```ts
+  interface FormatOptions {
+    lang?: 'amharic' | 'english';    // Default: 'amharic'
+    showWeekday?: boolean;           // Include weekday name, default false
+    useGeez?: boolean;               // Use Geez numerals (only in Amharic), default false
+    includeTime?: boolean;           // Include time string, default false
+  }
+  ```
+
+  Examples:
+
+  ```js
+  today.format(); // Default Amharic without weekday or time
+  today.format({ lang: 'english' }); // English month names
+  today.format({ useGeez: true }); // Geez numerals + Amharic month
+  today.format({ showWeekday: true }); // Include weekday
+  today.format({ showWeekday: true, useGeez: true }); // Weekday + Geez numerals
+  today.format({ includeTime: true }); // Include time suffix
+  today.format({ showWeekday: true, includeTime: true, useGeez: true, lang: 'amharic' }); // Full detailed format
+  ```
+
+* `formatInGeezAmharic()`
+  Shorthand for formatting date with Amharic month and Geez numerals.
+
+* `formatWithWeekday(lang, useGeez)`
+  Formats with weekday, language, and Geez numeral option.
+
+* `formatShort()`
+  Returns `"yyyy/mm/dd"` string.
+
+* `toISOString()`
+  Returns ISO-style `"YYYY-MM-DD"` or `"YYYY-MM-DDTHH:mm"` string.
+
+
+## Notes
+
+* Geez numerals only apply meaningfully for Amharic language outputs.
+* Weekday and month names support at least `'amharic'` and `'english'`.
+* Time periods are localized as `'ጠዋት'` (day) and `'ማታ'` (night) in Amharic.
+* Time formatting assumes Ethiopian 12-hour clock with day/night periods.
+* The `format()` method on the instance provides a powerful unified interface for various formatting needs.
+
 
 ---
 
