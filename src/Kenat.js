@@ -6,6 +6,15 @@ import { toGeez } from './geezConverter.js';
 import { getHolidaysInMonth } from './holidays.js';
 import { getEthiopianDaysInMonth, isEthiopianLeapYear, getWeekday } from './utils.js';
 import {
+    formatStandard,
+    formatInGeezAmharic,
+    formatWithTime,
+    formatWithWeekday,
+    formatShort,
+    toISODateString
+} from './formatting.js';
+
+import {
     addDays,
     addMonths,
     addYears,
@@ -78,22 +87,6 @@ export class Kenat {
         return this.ethiopian;
     }
 
-
-    /**
-     * Returns a string representation of the Ethiopian date and time.
-     *
-     * The format is: "Ethiopian: {year}-{month}-{day} {hh:mm period}".
-     * If the time is not available, hour and minute are replaced with '??'.
-     *
-     * @returns {string} The formatted Ethiopian date and time string.
-     */
-    toString() {
-        const { year, month, day } = this.ethiopian;
-        const { hour, minute, period } = this.time || { hour: '??', minute: '??', period: '' };
-        const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} ${period}`;
-        return `Ethiopian: ${year}-${month}-${day} ${timeStr}`;
-    }
-
     /**
      * Sets the current time.
      *
@@ -105,17 +98,54 @@ export class Kenat {
         this.time = { hour, minute, period };
     }
 
+    // Format Methods
+
     /**
-     * Returns the Ethiopian date formatted with month name.
-     * 
-     * @param {'english'|'amharic'} [lang='amharic'] - Language for month name.
-     * @returns {string} Formatted date, e.g., "Meskerem-15-2017" or "መስከረም-15-2017"
+     * Returns a string representation of the Ethiopian date and time.
+     *
+     * The format is: "Ethiopian: {year}-{month}-{day} {hh:mm period}".
+     * If the time is not available, hour and minute are replaced with '??'.
+     *
+     * @returns {string} The formatted Ethiopian date and time string.
      */
-    format(lang = 'amharic') {
-        const { year, month, day } = this.ethiopian;
-        const names = monthNames[lang] || monthNames.amharic;
-        const monthName = names[month - 1] || `Month${month}`;
-        return `${monthName}-${day}-${year}`;
+    toString() {
+        return formatWithTime(this.ethiopian, this.time);
+    }
+
+
+    /**
+     * Formats the Ethiopian date according to the specified options.
+     *
+     * @param {Object} [options={}] - Formatting options.
+     * @param {string} [options.lang='amharic'] - Language to use for formatting ('amharic', 'english', etc.).
+     * @param {boolean} [options.showWeekday=false] - Whether to include the weekday in the formatted string.
+     * @param {boolean} [options.useGeez=false] - Whether to use Geez numerals (only applies if lang is 'amharic').
+     * @param {boolean} [options.includeTime=false] - Whether to include the time in the formatted string.
+     * @returns {string} The formatted Ethiopian date string.
+     */
+    format(options = {}) {
+        const {
+            lang = 'amharic',
+            showWeekday = false,
+            useGeez = false,
+            includeTime = false
+        } = options;
+
+        if (showWeekday && includeTime) {
+            return `${formatWithWeekday(this.ethiopian, lang, useGeez)} ${Kenat.formatEthiopianTime(this.time, lang)}`;
+        }
+
+        if (showWeekday) {
+            return formatWithWeekday(this.ethiopian, lang, useGeez);
+        }
+
+        if (includeTime) {
+            return formatWithTime(this.ethiopian, this.time, lang);
+        }
+
+        return useGeez && lang === 'amharic'
+            ? formatInGeezAmharic(this.ethiopian)
+            : formatStandard(this.ethiopian, lang);
     }
 
     /**
@@ -126,12 +156,38 @@ export class Kenat {
      * formatInGeezAmharic(); // "የካቲት ፲ ፳፻፲፭"
      */
     formatInGeezAmharic() {
-        const { year, month, day } = this.ethiopian;
-        const monthName = monthNames.amharic[month - 1] || `Month${month}`;
-        const geezDay = toGeez(day);
-        const geezYear = toGeez(year);
-        return `${monthName} ${geezDay} ${geezYear}`;
+        return formatInGeezAmharic(this.ethiopian);
     }
+
+    /**
+     * Formats the Ethiopian date with weekday name.
+     *
+     * @param {'amharic'|'english'} [lang='amharic'] - Language for month and weekday names.
+     * @param {boolean} [useGeez=false] - Whether to show numerals in Geez.
+     * @returns {string} Formatted string with weekday, e.g. "ማክሰኞ, መስከረም ፳፩ ፳፻፲፯"
+     */
+    formatWithWeekday(lang = 'amharic', useGeez = false) {
+        return formatWithWeekday(this.ethiopian, lang, useGeez);
+    }
+
+    /**
+     * Returns the Ethiopian date in "yyyy/mm/dd" short format.
+     * @returns {string}
+     */
+    formatShort() {
+        return formatShort(this.ethiopian);
+    }
+
+    /**
+     * Returns an ISO-style date string: "YYYY-MM-DD" or "YYYY-MM-DDTHH:mm".
+     * @returns {string}
+     */
+    toISOString() {
+        return toISODateString(this.ethiopian, this.time);
+    }
+
+
+    // format ends
 
     /**
      * Generates a calendar for a given Ethiopian month and year, mapping each Ethiopian date
