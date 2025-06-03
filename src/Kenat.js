@@ -5,7 +5,15 @@ import { toEthiopianTime, toGregorianTime } from './timeConverter.js';
 import { toGeez } from './geezConverter.js';
 import { getHolidaysInMonth } from './holidays.js';
 import { getEthiopianDaysInMonth, isEthiopianLeapYear, getWeekday } from './utils.js';
-import { formatStandard, formatInGeezAmharic, formatWithTime, formatWithWeekday } from './formatting.js';
+import {
+    formatStandard,
+    formatInGeezAmharic,
+    formatWithTime,
+    formatWithWeekday,
+    formatShort,
+    toISODateString
+} from './formatting.js';
+
 import {
     addDays,
     addMonths,
@@ -104,7 +112,7 @@ export class Kenat {
         return formatWithTime(this.ethiopian, this.time);
     }
 
-   
+
     /**
      * Formats the Ethiopian date according to the specified options.
      *
@@ -161,6 +169,23 @@ export class Kenat {
     formatWithWeekday(lang = 'amharic', useGeez = false) {
         return formatWithWeekday(this.ethiopian, lang, useGeez);
     }
+
+    /**
+     * Returns the Ethiopian date in "yyyy/mm/dd" short format.
+     * @returns {string}
+     */
+    formatShort() {
+        return formatShort(this.ethiopian);
+    }
+
+    /**
+     * Returns an ISO-style date string: "YYYY-MM-DD" or "YYYY-MM-DDTHH:mm".
+     * @returns {string}
+     */
+    toISOString() {
+        return toISODateString(this.ethiopian, this.time);
+    }
+
 
     // format ends
 
