@@ -289,8 +289,6 @@ console.log(today.format({ useGeez: true, lang: 'english' }));
 // Output: "Meskerem ፲ ፳፻፲፮"
 ```
 
----
-
 ## Summary
 
 * You **must create an instance** of `Kenat` first (e.g., `const today = new Kenat(...)`).
