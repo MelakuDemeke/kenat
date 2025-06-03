@@ -104,14 +104,40 @@ export class Kenat {
         return formatWithTime(this.ethiopian, this.time);
     }
 
+   
     /**
-     * Returns the Ethiopian date formatted with month name.
-     * 
-     * @param {'english'|'amharic'} [lang='amharic'] - Language for month name.
-     * @returns {string} Formatted date, e.g., "Meskerem-15-2017" or "መስከረም-15-2017"
+     * Formats the Ethiopian date according to the specified options.
+     *
+     * @param {Object} [options={}] - Formatting options.
+     * @param {string} [options.lang='amharic'] - Language to use for formatting ('amharic', 'english', etc.).
+     * @param {boolean} [options.showWeekday=false] - Whether to include the weekday in the formatted string.
+     * @param {boolean} [options.useGeez=false] - Whether to use Geez numerals (only applies if lang is 'amharic').
+     * @param {boolean} [options.includeTime=false] - Whether to include the time in the formatted string.
+     * @returns {string} The formatted Ethiopian date string.
      */
-    format(lang = 'amharic') {
-        return formatStandard(this.ethiopian, lang);
+    format(options = {}) {
+        const {
+            lang = 'amharic',
+            showWeekday = false,
+            useGeez = false,
+            includeTime = false
+        } = options;
+
+        if (showWeekday && includeTime) {
+            return `${formatWithWeekday(this.ethiopian, lang, useGeez)} ${Kenat.formatEthiopianTime(this.time, lang)}`;
+        }
+
+        if (showWeekday) {
+            return formatWithWeekday(this.ethiopian, lang, useGeez);
+        }
+
+        if (includeTime) {
+            return formatWithTime(this.ethiopian, this.time, lang);
+        }
+
+        return useGeez && lang === 'amharic'
+            ? formatInGeezAmharic(this.ethiopian)
+            : formatStandard(this.ethiopian, lang);
     }
 
     /**
