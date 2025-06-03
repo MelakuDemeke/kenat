@@ -1,5 +1,7 @@
 import { toGeez } from './geezConverter.js';
 import { monthNames } from './constants.js';
+import { getWeekday } from './utils.js';
+import { daysOfWeek } from './constants.js';
 
 /**
  * Formats an Ethiopian date using language-specific month name and Arabic numerals.
@@ -41,4 +43,14 @@ export function formatWithTime(etDate, time, lang = 'amharic') {
     ? (time?.period === 'day' ? 'ጠዋት' : 'ማታ')
     : (time?.period === 'day' ? 'day' : 'night');
   return `${base} ${hour}:${minute} ${suffix}`;
+}
+
+export function formatWithWeekday(etDate, lang = 'amharic', useGeez = false) {
+  const weekdayIndex = getWeekday(etDate);
+  const weekdayName = daysOfWeek[lang]?.[weekdayIndex] || daysOfWeek.amharic[weekdayIndex];
+  const monthName = monthNames[lang]?.[etDate.month - 1] || `Month${etDate.month}`;
+  const day = useGeez ? toGeez(etDate.day) : etDate.day;
+  const year = useGeez ? toGeez(etDate.year) : etDate.year;
+
+  return `${weekdayName}, ${monthName} ${day} ${year}`;
 }

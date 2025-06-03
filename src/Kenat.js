@@ -5,7 +5,7 @@ import { toEthiopianTime, toGregorianTime } from './timeConverter.js';
 import { toGeez } from './geezConverter.js';
 import { getHolidaysInMonth } from './holidays.js';
 import { getEthiopianDaysInMonth, isEthiopianLeapYear, getWeekday } from './utils.js';
-import { formatStandard, formatInGeezAmharic, formatWithTime } from './formatting.js';
+import { formatStandard, formatInGeezAmharic, formatWithTime, formatWithWeekday } from './formatting.js';
 import {
     addDays,
     addMonths,
@@ -90,6 +90,7 @@ export class Kenat {
         this.time = { hour, minute, period };
     }
 
+    // Format Methods
 
     /**
      * Returns a string representation of the Ethiopian date and time.
@@ -123,6 +124,19 @@ export class Kenat {
     formatInGeezAmharic() {
         return formatInGeezAmharic(this.ethiopian);
     }
+
+    /**
+     * Formats the Ethiopian date with weekday name.
+     *
+     * @param {'amharic'|'english'} [lang='amharic'] - Language for month and weekday names.
+     * @param {boolean} [useGeez=false] - Whether to show numerals in Geez.
+     * @returns {string} Formatted string with weekday, e.g. "ማክሰኞ, መስከረም ፳፩ ፳፻፲፯"
+     */
+    formatWithWeekday(lang = 'amharic', useGeez = false) {
+        return formatWithWeekday(this.ethiopian, lang, useGeez);
+    }
+
+    // format ends
 
     /**
      * Generates a calendar for a given Ethiopian month and year, mapping each Ethiopian date
