@@ -33,17 +33,17 @@ describe('Kenat class', () => {
     test('toString should return Ethiopian date string', () => {
         const kenat = new Kenat("2016/9/15");
         const str = kenat.toString();
-        expect(str).toBe("Ethiopian: 2016-9-15 12:00 day");
+        expect(str).toBe("ግንቦት 15 2016 12:00 ጠዋት");
     });
 
     test('format returns Ethiopian date string with month name in English and Amharic', () => {
         const kenat = new Kenat("2017/1/15"); // Meskerem 15, 2017
 
-        const englishFormat = kenat.format('english');
-        expect(englishFormat).toBe("Meskerem-15-2017");
+        const englishFormat = kenat.format({ lang: 'english' });
+        expect(englishFormat).toBe("Meskerem 15 2017");
 
-        const amharicFormat = kenat.format('amharic');
-        expect(amharicFormat).toBe("መስከረም-15-2017");
+        const amharicFormat = kenat.format({ lang: 'amharic' });
+        expect(amharicFormat).toBe("መስከረም 15 2017");
     });
 
     test('formatInGeezAmharic returns Ethiopian date string with Amharic month and Geez numerals', () => {
