@@ -253,14 +253,14 @@ export function getSikletDate(ethYear) {
  *   - {Object} ethiopian: The corresponding Ethiopian date ({ year, month, day }).
  *   - {string} note: A note indicating the estimate's accuracy.
  */
-export function getEidFitrDate(ethiopianYear) {
+export function getEidFitrDate(ethiopianYear, ethiopianMonth = 9) {
     const baseEthiopianYear = 2014;
     const baseEidDate = { year: 2022, month: 5, day: 2 }; // Eid in 2014 E.C.
     const daysPerYearShift = 10.875;
 
     let gregorianDate;
 
-    const gregorianBaseYear = ethiopianYear + 8;
+    const gregorianBaseYear = toGC(ethiopianYear, ethiopianMonth, 1).year;
     const yearDiff = ethiopianYear - baseEthiopianYear;
     const baseDate = new Date(gregorianBaseYear, 4, 2);
 
@@ -408,7 +408,7 @@ export function getHolidaysInMonth(ethYear, ethMonth) {
     // Calculate movable holidays for the year
     const fasika = getFasikaDate(ethYear);
     const siklet = getSikletDate(ethYear);
-    const eidFitr = getEidFitrDate(ethYear);
+    const eidFitr = getEidFitrDate(ethYear,ethMonth);
     const eidAdha = getEidAdhaDate(ethYear);
     const moulid = getMoulidDate(ethYear);
 
