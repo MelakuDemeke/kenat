@@ -293,20 +293,21 @@ export function getEidFitrDate(ethiopianYear, ethiopianMonth = 9) {
 }
 
 /**
- * Estimates the date of Eid al-Adha for a given Ethiopian year.
+ * Returns the Gregorian and Ethiopian date for Eid al-Adha in a given Ethiopian year.
+ * 
+ * Eid al-Adha falls on the 10th day of the 12th Hijri month (Dhu al-Hijjah).
+ * This function estimates the corresponding Gregorian date and converts it
+ * to the Ethiopian calendar as well.
  *
- * @param {number} ethiopianYear - The Ethiopian year for which to estimate Eid al-Adha.
- * @param {number} [ethiopianMonth=12] - The Ethiopian month (defaults to 12 if not provided).
+ * @param {number} ethiopianYear - The Ethiopian year to search within.
+ * @param {number} [ethiopianMonth=12] - Optional Ethiopian month to approximate the Gregorian year (defaults to 12).
  * @returns {{
  *   gregorian: { year: number, month: number, day: number },
- *   ethiopian: { year: number, month: number, day: number },
- *   note: string
- * }} An object containing the estimated Gregorian and Ethiopian dates for Eid al-Adha, and a note about the estimation accuracy.
- *
- * @remarks
- * This function uses a base date and an average yearly shift to estimate the date of Eid al-Adha.
- * The result is approximate and may be off by ±1 day.
- * Requires `toGC` (Ethiopian to Gregorian) and `toEC` (Gregorian to Ethiopian) conversion functions.
+ *   ethiopian: { year: number, month: number, day: number }
+ * } | null} - An object containing both Gregorian and Ethiopian dates of Eid al-Adha,
+ *            or `null` if the date couldn't be determined.
+ * 
+ * @throws {Error} If the input year is not a valid number.
  */
 export function getEidAdhaDate(ethiopianYear, ethiopianMonth = 12) {
     const gregorianYear = toGC(ethiopianYear, ethiopianMonth, 1).year;
