@@ -1,4 +1,5 @@
 import { toEC, toGC } from './conversions.js';
+import { holidayNames } from './constants.js';
 
 export const HolidayTags = {
     PUBLIC: 'public',
@@ -18,10 +19,7 @@ export const fixedHolidayName = {
         day: 1,
         movable: false,
         tags: [HolidayTags.PUBLIC, HolidayTags.CULTURAL],
-        name: {
-            amharic: 'እንቁጣጣሽ',
-            english: 'Ethiopian New Year (Enkutatash)'
-        },
+        name: holidayNames.enkutatash,
         description: 'Marks the start of the Ethiopian year; symbolizes renewal and the end of the rainy season.'
     },
 
@@ -31,10 +29,7 @@ export const fixedHolidayName = {
         day: 17,
         movable: false,
         tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
-        name: {
-            amharic: 'መስቀል',
-            english: 'Finding of the True Cross (Meskel)'
-        },
+        name: holidayNames.meskel,
         description: 'Commemorates the discovery of the True Cross by Empress Helena in the 4th century.'
     },
 
@@ -44,10 +39,7 @@ export const fixedHolidayName = {
         day: 20,
         movable: false,
         tags: [HolidayTags.PUBLIC, HolidayTags.STATE],
-        name: {
-            amharic: 'የብሔር ብሔረሰቦች ቀን',
-            english: 'Ethiopian National Unity Day'
-        },
+        name: holidayNames.beherbehereseb,
         description: 'This holiday acknowledges and celebrates the diversity of Ethiopias ethnic groups, affirming their equal rights and fostering unity through culture and language '
     },
 
@@ -57,10 +49,7 @@ export const fixedHolidayName = {
         day: 29,
         movable: false,
         tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
-        name: {
-            amharic: 'ገና',
-            english: 'Ethiopian Christmas (Genna)'
-        },
+        name: holidayNames.gena,
         description: 'Ethiopian Orthodox Christmas celebrating the birth of Jesus Christ.'
     },
 
@@ -70,10 +59,7 @@ export const fixedHolidayName = {
         day: 11,
         movable: false,
         tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
-        name: {
-            amharic: 'ጥምቀት',
-            english: 'Ethiopian Epiphany (Timket)'
-        },
+        name: holidayNames.timket,
         description: 'Commemorates the baptism of Jesus in the Jordan River.'
     },
 
@@ -83,10 +69,7 @@ export const fixedHolidayName = {
         day: 12,
         movable: false,
         tags: [HolidayTags.PUBLIC, HolidayTags.STATE],
-        name: {
-            amharic: 'የሰማዕታት ቀን',
-            english: 'Ethiopian Martyrs’ Day'
-        },
+        name: holidayNames.martyrsDay,
         description: 'Honors those who sacrificed their lives for Ethiopia’s freedom and independence.'
     },
 
@@ -96,10 +79,7 @@ export const fixedHolidayName = {
         day: 23,
         movable: false,
         tags: [HolidayTags.PUBLIC, HolidayTags.STATE],
-        name: {
-            amharic: 'የአድዋ ድል በዓል',
-            english: 'Victory of Adwa'
-        },
+        name: holidayNames.adwa,
         description: 'Celebrates Ethiopia’s victory over Italian colonizers in 1896.'
     },
 
@@ -109,10 +89,7 @@ export const fixedHolidayName = {
         day: 23,
         movable: false,
         tags: [HolidayTags.PUBLIC, HolidayTags.STATE],
-        name: {
-            amharic: 'የሰራተኞች ቀን',
-            english: 'International Labour Day'
-        },
+        name: holidayNames.labour,
         description: 'A global celebration of workers and labor rights.'
     },
 
@@ -122,10 +99,7 @@ export const fixedHolidayName = {
         day: 27,
         movable: false,
         tags: [HolidayTags.PUBLIC, HolidayTags.STATE],
-        name: {
-            amharic: 'የአርበኞች (የድል) ቀን',
-            english: 'Ethiopian Patriots’ Victory Day'
-        },
+        name: holidayNames.patriots,
         description: 'Honors Ethiopian resistance fighters who defeated Italian occupation.'
     },
 };
@@ -136,10 +110,7 @@ export const movableHolidays = {
         key: 'eidFitr',
         movable: true,
         tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.MUSLIM],
-        name: {
-            amharic: 'ዒድ አል ፈጥር',
-            english: 'Eid al-Fitr (Arafa)'
-        },
+        name: holidayNames.eidFitr,
         description: 'Marks the end of Ramadan, the month of fasting for Muslims.'
     },
 
@@ -147,10 +118,7 @@ export const movableHolidays = {
         key: 'siklet',
         movable: true,
         tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
-        name: {
-            amharic: 'ስቅለት',
-            english: 'Good Friday (Siklet)'
-        },
+        name: holidayNames.siklet,
         description: 'Marks the crucifixion of Jesus Christ.'
     },
 
@@ -158,10 +126,7 @@ export const movableHolidays = {
         key: 'fasika',
         movable: true,
         tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
-        name: {
-            amharic: 'ፋሲካ',
-            english: 'Ethiopian Easter (Fasika)'
-        },
+        name: holidayNames.fasika,
         description: 'Celebrates the resurrection of Jesus Christ. One of the most important Christian holidays in Ethiopia.'
     },
 
@@ -169,10 +134,7 @@ export const movableHolidays = {
         key: 'eidAdha',
         movable: true,
         tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.MUSLIM],
-        name: {
-            amharic: 'ዒድ አል አድሐ ',
-            english: 'Eid al-Adha'
-        },
+        name: holidayNames.eidAdha,
         description: 'Commemorates Abraham’s willingness to sacrifice his son as an act of obedience to God.'
     },
 
@@ -180,10 +142,7 @@ export const movableHolidays = {
         key: 'moulid',
         movable: true,
         tags: [HolidayTags.RELIGIOUS, HolidayTags.MUSLIM],
-        name: {
-            amharic: 'መውሊድ',
-            english: 'Birth of Prophet Mohammed (Moulid)'
-        },
+        name: holidayNames.moulid,
         description: 'Celebrates the birthday of the Prophet Mohammed.'
     },
 }
@@ -480,3 +439,4 @@ export function getHolidaysInMonth(ethYear, ethMonth) {
 
     return holidays;
 }
+
