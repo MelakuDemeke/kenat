@@ -1,4 +1,5 @@
-import { toEC, toGC } from './conversions.js';
+import { toEC, toGC, hijriToGregorian, getHijriYear } from './conversions.js';
+import { holidayNames } from './constants.js';
 
 export const HolidayTags = {
     PUBLIC: 'public',
@@ -18,10 +19,7 @@ export const fixedHolidayName = {
         day: 1,
         movable: false,
         tags: [HolidayTags.PUBLIC, HolidayTags.CULTURAL],
-        name: {
-            amharic: 'እንቁጣጣሽ',
-            english: 'Ethiopian New Year (Enkutatash)'
-        },
+        name: holidayNames.enkutatash,
         description: 'Marks the start of the Ethiopian year; symbolizes renewal and the end of the rainy season.'
     },
 
@@ -31,10 +29,7 @@ export const fixedHolidayName = {
         day: 17,
         movable: false,
         tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
-        name: {
-            amharic: 'መስቀል',
-            english: 'Finding of the True Cross (Meskel)'
-        },
+        name: holidayNames.meskel,
         description: 'Commemorates the discovery of the True Cross by Empress Helena in the 4th century.'
     },
 
@@ -44,10 +39,7 @@ export const fixedHolidayName = {
         day: 20,
         movable: false,
         tags: [HolidayTags.PUBLIC, HolidayTags.STATE],
-        name: {
-            amharic: 'የብሔር ብሔረሰቦች ቀን',
-            english: 'Ethiopian National Unity Day'
-        },
+        name: holidayNames.beherbehereseb,
         description: 'This holiday acknowledges and celebrates the diversity of Ethiopias ethnic groups, affirming their equal rights and fostering unity through culture and language '
     },
 
@@ -57,10 +49,7 @@ export const fixedHolidayName = {
         day: 29,
         movable: false,
         tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
-        name: {
-            amharic: 'ገና',
-            english: 'Ethiopian Christmas (Genna)'
-        },
+        name: holidayNames.gena,
         description: 'Ethiopian Orthodox Christmas celebrating the birth of Jesus Christ.'
     },
 
@@ -70,10 +59,7 @@ export const fixedHolidayName = {
         day: 11,
         movable: false,
         tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
-        name: {
-            amharic: 'ጥምቀት',
-            english: 'Ethiopian Epiphany (Timket)'
-        },
+        name: holidayNames.timket,
         description: 'Commemorates the baptism of Jesus in the Jordan River.'
     },
 
@@ -83,10 +69,7 @@ export const fixedHolidayName = {
         day: 12,
         movable: false,
         tags: [HolidayTags.PUBLIC, HolidayTags.STATE],
-        name: {
-            amharic: 'የሰማዕታት ቀን',
-            english: 'Ethiopian Martyrs’ Day'
-        },
+        name: holidayNames.martyrsDay,
         description: 'Honors those who sacrificed their lives for Ethiopia’s freedom and independence.'
     },
 
@@ -96,10 +79,7 @@ export const fixedHolidayName = {
         day: 23,
         movable: false,
         tags: [HolidayTags.PUBLIC, HolidayTags.STATE],
-        name: {
-            amharic: 'የአድዋ ድል በዓል',
-            english: 'Victory of Adwa'
-        },
+        name: holidayNames.adwa,
         description: 'Celebrates Ethiopia’s victory over Italian colonizers in 1896.'
     },
 
@@ -109,10 +89,7 @@ export const fixedHolidayName = {
         day: 23,
         movable: false,
         tags: [HolidayTags.PUBLIC, HolidayTags.STATE],
-        name: {
-            amharic: 'የሰራተኞች ቀን',
-            english: 'International Labour Day'
-        },
+        name: holidayNames.labour,
         description: 'A global celebration of workers and labor rights.'
     },
 
@@ -122,10 +99,7 @@ export const fixedHolidayName = {
         day: 27,
         movable: false,
         tags: [HolidayTags.PUBLIC, HolidayTags.STATE],
-        name: {
-            amharic: 'የአርበኞች (የድል) ቀን',
-            english: 'Ethiopian Patriots’ Victory Day'
-        },
+        name: holidayNames.patriots,
         description: 'Honors Ethiopian resistance fighters who defeated Italian occupation.'
     },
 };
@@ -136,10 +110,7 @@ export const movableHolidays = {
         key: 'eidFitr',
         movable: true,
         tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.MUSLIM],
-        name: {
-            amharic: 'ዒድ አል ፈጥር',
-            english: 'Eid al-Fitr (Arafa)'
-        },
+        name: holidayNames.eidFitr,
         description: 'Marks the end of Ramadan, the month of fasting for Muslims.'
     },
 
@@ -147,10 +118,7 @@ export const movableHolidays = {
         key: 'siklet',
         movable: true,
         tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
-        name: {
-            amharic: 'ስቅለት',
-            english: 'Good Friday (Siklet)'
-        },
+        name: holidayNames.siklet,
         description: 'Marks the crucifixion of Jesus Christ.'
     },
 
@@ -158,10 +126,7 @@ export const movableHolidays = {
         key: 'fasika',
         movable: true,
         tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
-        name: {
-            amharic: 'ፋሲካ',
-            english: 'Ethiopian Easter (Fasika)'
-        },
+        name: holidayNames.fasika,
         description: 'Celebrates the resurrection of Jesus Christ. One of the most important Christian holidays in Ethiopia.'
     },
 
@@ -169,10 +134,7 @@ export const movableHolidays = {
         key: 'eidAdha',
         movable: true,
         tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.MUSLIM],
-        name: {
-            amharic: 'ዒድ አል አድሐ ',
-            english: 'Eid al-Adha'
-        },
+        name: holidayNames.eidAdha,
         description: 'Commemorates Abraham’s willingness to sacrifice his son as an act of obedience to God.'
     },
 
@@ -180,14 +142,11 @@ export const movableHolidays = {
         key: 'moulid',
         movable: true,
         tags: [HolidayTags.RELIGIOUS, HolidayTags.MUSLIM],
-        name: {
-            amharic: 'መውሊድ',
-            english: 'Birth of Prophet Mohammed (Moulid)'
-        },
+        name: holidayNames.moulid,
         description: 'Celebrates the birthday of the Prophet Mohammed.'
     },
 }
-// TODO: Impove the acuracy of the Eid dates by using astronomical calculations or lunar observations.
+
 
 /**
  * Calculates the date of Fasika (Ethiopian Easter) for a given Ethiopian year.
@@ -284,132 +243,165 @@ export function getSikletDate(ethYear) {
 /**
  * Estimates the date of Eid al-Fitr for a given Ethiopian year.
  *
- * The calculation is based on a reference Eid date in the Ethiopian year 2014 (Gregorian 2022-05-02),
- * and shifts the date by approximately 10.875 days per Ethiopian year difference.
- * The result is an estimate and may be off by ±1 day.
- *
  * @param {number} ethiopianYear - The Ethiopian year for which to estimate Eid al-Fitr.
- * @returns {Object} An object containing:
- *   - {Object} gregorian: The estimated Gregorian date ({ year, month, day }).
- *   - {Object} ethiopian: The corresponding Ethiopian date ({ year, month, day }).
- *   - {string} note: A note indicating the estimate's accuracy.
+ * @param {number} [ethiopianMonth=9] - The Ethiopian month (defaults to 9 if not provided).
+ * @returns {{
+ *   gregorian: { year: number, month: number, day: number },
+ *   ethiopian: { year: number, month: number, day: number },
+ *   note: string
+ * }} An object containing the estimated Gregorian and Ethiopian dates for Eid al-Fitr, and a note about the estimation accuracy.
+ *
+ * @remarks
+ * The calculation is based on a base date and shifts by an average number of days per year.
+ * The result is an estimate and may be off by ±1 day.
+ * Requires `toGC` (Ethiopian to Gregorian) and `toEC` (Gregorian to Ethiopian) conversion functions.
  */
-export function getEidFitrDate(ethiopianYear) {
-    const baseEthiopianYear = 2014;
-    const baseEidDate = { year: 2022, month: 5, day: 2 }; // Eid in 2014 E.C.
-    const daysPerYearShift = 10.875;
+export function getEidFitrDate(ethiopianYear, ethiopianMonth = 9) {
+    const gregorianYear = toGC(ethiopianYear, ethiopianMonth, 1).year;
+    const year = Number(gregorianYear);
+    if (Number.isNaN(year)) throw new Error("Year must be a valid number");
 
-    let gregorianDate;
+    // 1 Shawwal = Eid al-Fitr
+    const hijriYearStart = getHijriYear(new Date(year, 0, 1));
+    const hijriYearEnd = getHijriYear(new Date(year, 11, 31));
 
-    const gregorianBaseYear = ethiopianYear + 8;
-    const yearDiff = ethiopianYear - baseEthiopianYear;
-    const baseDate = new Date(gregorianBaseYear, 4, 2);
+    const eidStartYear = hijriToGregorian(hijriYearStart, 10, 1, year);
+    if (eidStartYear) {
+        return {
+            gregorian: {
+                year: eidStartYear.getFullYear(),
+                month: eidStartYear.getMonth() + 1,
+                day: eidStartYear.getDate(),
+            },
+            ethiopian: toEC(eidStartYear.getFullYear(), eidStartYear.getMonth() + 1, eidStartYear.getDate()),
+        };
+    }
 
-    const daysToShift = Math.round(yearDiff * daysPerYearShift);
+    const eidEndYear = hijriToGregorian(hijriYearEnd, 10, 1, year);
+    if (eidEndYear) {
+        return {
+            gregorian: {
+                year: eidEndYear.getFullYear(),
+                month: eidEndYear.getMonth() + 1,
+                day: eidEndYear.getDate(),
+            },
+            ethiopian: toEC(eidEndYear.getFullYear(), eidEndYear.getMonth() + 1, eidEndYear.getDate()),
+        };
+    }
 
-    baseDate.setDate(baseDate.getDate() - daysToShift);
-
-    gregorianDate = {
-        year: baseDate.getFullYear(),
-        month: baseDate.getMonth() + 1,
-        day: baseDate.getDate(),
-    };
-
-    const ethiopianDate = toEC(
-        gregorianDate.year,
-        gregorianDate.month,
-        gregorianDate.day
-    );
-
-    const result = {
-        gregorian: gregorianDate,
-        ethiopian: ethiopianDate,
-        note: 'Estimated ±1 day',
-    };
-
-    return result;
+    return null;
 }
 
 /**
- * Estimates the date of Eid al-Adha for a given Ethiopian year.
+ * Returns the Gregorian and Ethiopian date for Eid al-Adha in a given Ethiopian year.
+ * 
+ * Eid al-Adha falls on the 10th day of the 12th Hijri month (Dhu al-Hijjah).
+ * This function estimates the corresponding Gregorian date and converts it
+ * to the Ethiopian calendar as well.
  *
- * Uses a base Gregorian date and shifts approx. 10.875 days per Ethiopian year.
- * Result is an estimate and may be off by ±1 day.
- *
- * @param {number} ethiopianYear - Ethiopian year.
- * @returns {Object} Estimated date in Gregorian and Ethiopian calendars with note.
+ * @param {number} ethiopianYear - The Ethiopian year to search within.
+ * @param {number} [ethiopianMonth=12] - Optional Ethiopian month to approximate the Gregorian year (defaults to 12).
+ * @returns {{
+ *   gregorian: { year: number, month: number, day: number },
+ *   ethiopian: { year: number, month: number, day: number }
+ * } | null} - An object containing both Gregorian and Ethiopian dates of Eid al-Adha,
+ *            or `null` if the date couldn't be determined.
+ * 
+ * @throws {Error} If the input year is not a valid number.
  */
-export function getEidAdhaDate(ethiopianYear) {
-    const baseEthiopianYear = 2014;
-    const baseEidAdhaDate = { year: 2022, month: 7, day: 9 }; // Eid al-Adha in 2014 E.C.
-    const daysPerYearShift = 10.875;
+export function getEidAdhaDate(ethiopianYear, ethiopianMonth = 12) {
+    const gregorianYear = toGC(ethiopianYear, ethiopianMonth, 1).year;
+    const year = Number(gregorianYear);
+    if (Number.isNaN(year)) throw new Error("Year must be a valid number");
 
-    const gregorianBaseYear = ethiopianYear + 8;
-    const yearDiff = ethiopianYear - baseEthiopianYear;
+    // Eid al-Adha is on 10 Dhu al-Hijjah (Hijri month 12)
+    const hijriMonth = 12;
+    const hijriDay = 10;
 
-    const baseDate = new Date(gregorianBaseYear, baseEidAdhaDate.month - 1, baseEidAdhaDate.day);
-    const daysToShift = Math.round(yearDiff * daysPerYearShift);
+    const hijriYearStart = getHijriYear(new Date(year, 0, 1));
+    const hijriYearEnd = getHijriYear(new Date(year, 11, 31));
 
-    baseDate.setDate(baseDate.getDate() - daysToShift);
+    const eidStart = hijriToGregorian(hijriYearStart, hijriMonth, hijriDay, year);
+    if (eidStart) {
+        return {
+            gregorian: {
+                year: eidStart.getFullYear(),
+                month: eidStart.getMonth() + 1,
+                day: eidStart.getDate(),
+            },
+            ethiopian: toEC(eidStart.getFullYear(), eidStart.getMonth() + 1, eidStart.getDate()),
+        };
+    }
 
-    const gregorianDate = {
-        year: baseDate.getFullYear(),
-        month: baseDate.getMonth() + 1,
-        day: baseDate.getDate(),
-    };
+    const eidEnd = hijriToGregorian(hijriYearEnd, hijriMonth, hijriDay, year);
+    if (eidEnd) {
+        return {
+            gregorian: {
+                year: eidEnd.getFullYear(),
+                month: eidEnd.getMonth() + 1,
+                day: eidEnd.getDate(),
+            },
+            ethiopian: toEC(eidEnd.getFullYear(), eidEnd.getMonth() + 1, eidEnd.getDate()),
+        };
+    }
 
-    const ethiopianDate = toEC(
-        gregorianDate.year,
-        gregorianDate.month,
-        gregorianDate.day
-    );
-
-    return {
-        gregorian: gregorianDate,
-        ethiopian: ethiopianDate,
-        note: 'Estimated ±1 day',
-    };
+    return null;
 }
 
 /**
- * Estimates the date of Moulid (Birth of Prophet Mohammed) for a given Ethiopian year.
+ * Calculates the date of Mawlid (Moulid) for a given Ethiopian year.
  *
- * Uses a base Gregorian date and shifts approx. 10.875 days per Ethiopian year.
- * Result is an estimate and may be off by ±1 day.
+ * Mawlid is celebrated on 12 Rabi' al-awwal in the Islamic (Hijri) calendar.
+ * This function attempts to find the corresponding Gregorian and Ethiopian dates
+ * for Mawlid within the Gregorian year that overlaps with the provided Ethiopian year.
  *
- * @param {number} ethiopianYear - Ethiopian year.
- * @returns {Object} Estimated date in Gregorian and Ethiopian calendars with note.
+ * @param {number} ethiopianYear - The Ethiopian year for which to calculate Mawlid.
+ * @param {number} [ethiopianMonth=10] - The Ethiopian month to use as a reference (default is 10).
+ * @returns {Object|null} An object containing the Gregorian and Ethiopian dates of Mawlid, or null if not found.
+ * @throws {Error} If the provided year is not a valid number.
+ *
+ * @example
+ * const mawlid = getMoulidDate(2016);
+ *  mawlid = {
+ *    gregorian: { year: 2023, month: 10, day: 28 },
+ *    ethiopian: { year: 2016, month: 2, day: 18 }
+ *  }
  */
-export function getMoulidDate(ethiopianYear) {
-    const baseEthiopianYear = 2014;
-    const baseMoulidDate = { year: 2022, month: 10, day: 8 }; // Moulid in 2014 E.C.
-    const daysPerYearShift = 10.875;
+export function getMoulidDate(ethiopianYear, ethiopianMonth = 10) {
+    const gregorianYear = toGC(ethiopianYear, ethiopianMonth, 1).year;
+    const year = Number(gregorianYear);
+    if (Number.isNaN(year)) throw new Error("Year must be a valid number");
 
-    const gregorianBaseYear = ethiopianYear + 8;
-    const yearDiff = ethiopianYear - baseEthiopianYear;
+    // Try to get hijri year at start and end of Gregorian year
+    const hijriYearStart = getHijriYear(new Date(year, 0, 1));
+    const hijriYearEnd = getHijriYear(new Date(year, 11, 31));
 
-    const baseDate = new Date(gregorianBaseYear, baseMoulidDate.month - 1, baseMoulidDate.day);
-    const daysToShift = Math.round(yearDiff * daysPerYearShift);
+    // Check Mawlid in both hijri years (12 Rabi' al-awwal)
+    const mawlidStartYear = hijriToGregorian(hijriYearStart, 3, 12, year);
+    if (mawlidStartYear) {
+        return {
+            gregorian: {
+                year: mawlidStartYear.getFullYear(),
+                month: mawlidStartYear.getMonth() + 1,
+                day: mawlidStartYear.getDate(),
+            },
+            ethiopian: toEC(mawlidStartYear.getFullYear(), mawlidStartYear.getMonth() + 1, mawlidStartYear.getDate()),
+        };
+    }
 
-    baseDate.setDate(baseDate.getDate() - daysToShift);
+    const mawlidEndYear = hijriToGregorian(hijriYearEnd, 3, 12, year);
+    if (mawlidEndYear) {
+        return {
+            gregorian: {
+                year: mawlidEndYear.getFullYear(),
+                month: mawlidEndYear.getMonth() + 1,
+                day: mawlidEndYear.getDate(),
+            },
+            ethiopian: toEC(mawlidEndYear.getFullYear(), mawlidEndYear.getMonth() + 1, mawlidEndYear.getDate()),
+        };
+    }
 
-    const gregorianDate = {
-        year: baseDate.getFullYear(),
-        month: baseDate.getMonth() + 1,
-        day: baseDate.getDate(),
-    };
-
-    const ethiopianDate = toEC(
-        gregorianDate.year,
-        gregorianDate.month,
-        gregorianDate.day
-    );
-
-    return {
-        gregorian: gregorianDate,
-        ethiopian: ethiopianDate,
-        note: 'Estimated ±1 day',
-    };
+    return null;
 }
 
 /**
@@ -449,9 +441,9 @@ export function getHolidaysInMonth(ethYear, ethMonth) {
     // Calculate movable holidays for the year
     const fasika = getFasikaDate(ethYear);
     const siklet = getSikletDate(ethYear);
-    const eidFitr = getEidFitrDate(ethYear);
-    const eidAdha = getEidAdhaDate(ethYear);
-    const moulid = getMoulidDate(ethYear);
+    const eidFitr = getEidFitrDate(ethYear, ethMonth);
+    const eidAdha = getEidAdhaDate(ethYear, ethMonth);
+    const moulid = getMoulidDate(ethYear, ethMonth);
 
     // Add movable holidays if they fall in the month
     [fasika, siklet, eidFitr, eidAdha, moulid].forEach(movable => {
@@ -480,3 +472,4 @@ export function getHolidaysInMonth(ethYear, ethMonth) {
 
     return holidays;
 }
+

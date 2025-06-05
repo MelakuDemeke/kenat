@@ -116,3 +116,57 @@ export function fromDateToEC(dateObj) {
         dateObj.getDate()
     );
 }
+
+// muslim conversions
+
+export const islamicFormatter = new Intl.DateTimeFormat('en-TN-u-ca-islamic', {
+  day: 'numeric',
+  month: 'numeric',
+  year: 'numeric',
+});
+
+/**
+ * Get Hijri year from a Gregorian date
+ * @param {Date} date
+ * @returns {number} hijri year
+ */
+export function getHijriYear(date) {
+  const parts = islamicFormatter.formatToParts(date);
+  let hYear = null;
+  parts.forEach(({ type, value }) => {
+    if (type === 'year') hYear = parseInt(value, 10);
+  });
+  return hYear;
+}
+
+/**
+ * Find Gregorian date for given Hijri date within a specific Gregorian year
+ * @param {number} hYear - Hijri year
+ * @param {number} hMonth - Hijri month
+ * @param {number} hDay - Hijri day
+ * @param {number} gregorianYear - Gregorian year to limit search
+ * @returns {Date|null}
+ */
+export function hijriToGregorian(hYear, hMonth, hDay, gregorianYear) {
+  const baseDate = new Date(gregorianYear - 1, 0, 1);
+  for (let offset = 0; offset <= 730; offset++) {
+    const testDate = new Date(baseDate);
+    testDate.setDate(testDate.getDate() + offset);
+
+    const parts = islamicFormatter.formatToParts(testDate);
+    const hijriParts = {};
+    parts.forEach(({ type, value }) => {
+      if (type !== 'literal') hijriParts[type] = parseInt(value, 10);
+    });
+
+    if (
+      hijriParts.year === hYear &&
+      hijriParts.month === hMonth &&
+      hijriParts.day === hDay &&
+      testDate.getFullYear() === gregorianYear
+    ) {
+      return testDate;
+    }
+  }
+  return null;
+}
