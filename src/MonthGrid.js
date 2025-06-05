@@ -5,14 +5,13 @@ import { daysOfWeek, monthNames } from './constants.js';
 import { getWeekday } from './utils.js';
 
 export class MonthGrid {
-  constructor({ year, month, weekStart = 1, useGeez = false, weekdayLang = 'english', holidayLang= 'amharic' } = {}) {
+  constructor({ year, month, weekStart = 1, useGeez = false, weekdayLang = 'english' } = {}) {
     const current = Kenat.now().getEthiopian();
     this.year = year || current.year;
     this.month = month || current.month;
     this.weekStart = weekStart;
     this.useGeez = useGeez;
     this.weekdayLang = weekdayLang;
-    this.holidayLang = holidayLang;
   }
 
   static create(config = {}) {
@@ -30,7 +29,7 @@ export class MonthGrid {
     const labels = daysOfWeek[this.weekdayLang] || daysOfWeek.amharic;
     const monthLabels = monthNames[this.weekdayLang] || monthNames.amharic;
 
-    const monthHolidays = getHolidaysInMonth({ethYear: y, ethMonth: m, lang: this.holidayLang});
+    const monthHolidays = getHolidaysInMonth(y, m);
     const holidayMap = {};
     monthHolidays.forEach(h => {
       const key = `${h.ethiopian.year}-${h.ethiopian.month}-${h.ethiopian.day}`;
