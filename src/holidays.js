@@ -342,22 +342,25 @@ export function getEidAdhaDate(ethiopianYear, ethiopianMonth = 12) {
 
 
 
+
 /**
- * Calculates the Gregorian and Ethiopian dates for Mawlid (12th day of Rabi' al-awwal)
- * for a given Ethiopian year.
+ * Calculates the date of Mawlid (Moulid) for a given Ethiopian year.
  *
- * @param {number} ethiopianYear - The Ethiopian year for which to find Mawlid.
- * @param {number} [ethiopianMonth=10] - The Ethiopian month (defaults to 10).
+ * Mawlid is celebrated on 12 Rabi' al-awwal in the Islamic (Hijri) calendar.
+ * This function attempts to find the corresponding Gregorian and Ethiopian dates
+ * for Mawlid within the Gregorian year that overlaps with the provided Ethiopian year.
+ *
+ * @param {number} ethiopianYear - The Ethiopian year for which to calculate Mawlid.
+ * @param {number} [ethiopianMonth=10] - The Ethiopian month to use as a reference (default is 10).
  * @returns {Object|null} An object containing the Gregorian and Ethiopian dates of Mawlid, or null if not found.
- * @returns {Object} return.gregorian - The Gregorian date of Mawlid.
- * @returns {number} return.gregorian.year - The Gregorian year.
- * @returns {number} return.gregorian.month - The Gregorian month (1-based).
- * @returns {number} return.gregorian.day - The Gregorian day.
- * @returns {Object} return.ethiopian - The Ethiopian date of Mawlid.
- * @returns {number} return.ethiopian.year - The Ethiopian year.
- * @returns {number} return.ethiopian.month - The Ethiopian month (1-based).
- * @returns {number} return.ethiopian.day - The Ethiopian day.
  * @throws {Error} If the provided year is not a valid number.
+ *
+ * @example
+ * const mawlid = getMoulidDate(2016);
+ *  mawlid = {
+ *    gregorian: { year: 2023, month: 10, day: 28 },
+ *    ethiopian: { year: 2016, month: 2, day: 18 }
+ *  }
  */
 export function getMoulidDate(ethiopianYear, ethiopianMonth = 10) {
     const gregorianYear = toGC(ethiopianYear, ethiopianMonth, 1).year;
