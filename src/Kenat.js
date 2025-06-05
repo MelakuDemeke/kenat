@@ -4,6 +4,7 @@ import { monthNames, daysOfWeek } from './constants.js';
 import { toEthiopianTime, toGregorianTime } from './timeConverter.js';
 import { toGeez } from './geezConverter.js';
 import { getHolidaysInMonth } from './holidays.js';
+import { MonthGrid } from './MonthGrid.js';
 import { getEthiopianDaysInMonth, isEthiopianLeapYear, getWeekday } from './utils.js';
 import {
     formatStandard,
@@ -233,6 +234,46 @@ export class Kenat {
         const { year, month } = this.getEthiopian();
         const calendar = this.getMonthCalendar(year, month, useGeez);
         printMonthCalendarGrid(year, month, calendar, useGeez);
+    }
+
+    /**
+     * Generates a calendar for all 13 months of a given year.
+     *
+     * @param {number} year - The year for which to generate the calendar.
+     * @param {Object} [options={}] - Optional configuration for calendar generation.
+     * @param {boolean} [options.useGeez=false] - Whether to use Geez numerals for the calendar.
+     * @param {string} [options.weekdayLang='amharic'] - The language to use for weekday names.
+     * @param {number} [options.weekStart=0] - The day the week starts on (0 for Sunday, 1 for Monday, etc.).
+     * @returns {Array<Object>} An array of month objects, each containing:
+     *   - {number} month: The month number (1-13).
+     *   - {string} monthName: The name of the month.
+     *   - {number} year: The year of the month.
+     *   - {Array<string>} headers: The headers for the days of the week.
+     *   - {Array<Array<Object>>} days: The grid of days for the month.
+     */
+    static getYearCalendar(year, options = {}) {
+        const { useGeez = false, weekdayLang = 'amharic', weekStart = 0 } = options;
+        const fullYear = [];
+
+        for (let month = 1; month <= 13; month++) {
+            const monthGrid = MonthGrid.create({
+                year,
+                month,
+                useGeez,
+                weekdayLang,
+                weekStart
+            });
+
+            fullYear.push({
+                month,
+                monthName: monthGrid.monthName,
+                year: monthGrid.year,
+                headers: monthGrid.headers,
+                days: monthGrid.days
+            });
+        }
+
+        return fullYear;
     }
 
     // Arithmetic methods start here
