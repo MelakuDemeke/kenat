@@ -237,6 +237,53 @@ export class Kenat {
     }
 
     /**
+     * Generates a full-featured, display-ready calendar view for a given Ethiopian month and year.
+     *
+     * This method wraps `MonthGrid.create()` to return structured month data,
+     * including weekday headers, holidays, today markers, and optionally localized text or Ge'ez numerals.
+     *
+     * @param {number} year - The Ethiopian year (e.g., 2017).
+     * @param {number} month - The Ethiopian month (1–13).
+     * @param {Object} [options={}] - Optional configuration for localization and layout.
+     * @param {boolean} [options.useGeez=false] - Whether to display numerals in Ge'ez.
+     * @param {string} [options.weekdayLang='amharic'] - Language for weekday labels (e.g., 'amharic', 'english').
+     * @param {number} [options.weekStart=0] - Week start day (0 = Sunday, 1 = Monday, etc.).
+     * @returns {{
+     *   month: number,
+     *   monthName: string,
+     *   year: number,
+     *   headers: string[],
+     *   days: Array<{
+     *     ethiopian: { year: number|string, month: number|string, day: number|string },
+     *     gregorian: { year: number, month: number, day: number },
+     *     weekday: number,
+     *     weekdayName: string,
+     *     isToday: boolean,
+     *     holidays: Array<Object>
+     *   }>
+     * }} A structured calendar object for the given month, suitable for display or rendering.
+     */
+    static getMonthCalendar(year, month, options = {}) {
+        const { useGeez = false, weekdayLang = 'amharic', weekStart = 0 } = options;
+
+        const monthGrid = MonthGrid.create({
+            year,
+            month,
+            useGeez,
+            weekdayLang,
+            weekStart
+        });
+
+        return {
+            month,
+            monthName: monthGrid.monthName,
+            year: monthGrid.year,
+            headers: monthGrid.headers,
+            days: monthGrid.days
+        };
+    }
+
+    /**
      * Generates a calendar for all 13 months of a given year.
      *
      * @param {number} year - The year for which to generate the calendar.
