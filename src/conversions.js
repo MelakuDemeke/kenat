@@ -139,15 +139,23 @@ export function getHijriYear(date) {
   return hYear;
 }
 
+const hijriToGregorianCache = new Map();
+
 /**
- * Find Gregorian date for given Hijri date within a specific Gregorian year
- * @param {number} hYear - Hijri year
- * @param {number} hMonth - Hijri month
- * @param {number} hDay - Hijri day
- * @param {number} gregorianYear - Gregorian year to limit search
- * @returns {Date|null}
+ * Converts a Hijri date to the corresponding Gregorian date within a given Gregorian year.
+ *
+ * @param {number} hYear - Hijri year (e.g., 1445)
+ * @param {number} hMonth - Hijri month (1–12)
+ * @param {number} hDay - Hijri day (1–30)
+ * @param {number} gregorianYear - Target Gregorian year to restrict the search range
+ * @returns {Date|null} Gregorian Date object or null if not found
  */
 export function hijriToGregorian(hYear, hMonth, hDay, gregorianYear) {
+  const cacheKey = `${hYear}-${hMonth}-${hDay}-${gregorianYear}`;
+  if (hijriToGregorianCache.has(cacheKey)) {
+    return hijriToGregorianCache.get(cacheKey);
+  }
+
   const baseDate = new Date(gregorianYear - 1, 0, 1);
   for (let offset = 0; offset <= 730; offset++) {
     const testDate = new Date(baseDate);
@@ -165,8 +173,11 @@ export function hijriToGregorian(hYear, hMonth, hDay, gregorianYear) {
       hijriParts.day === hDay &&
       testDate.getFullYear() === gregorianYear
     ) {
+      hijriToGregorianCache.set(cacheKey, testDate);
       return testDate;
     }
   }
+
+  hijriToGregorianCache.set(cacheKey, null);
   return null;
 }
