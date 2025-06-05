@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Full Year Ethiopian Calendar</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    .year-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+    .month-card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1rem;
+      background: #f9f9f9;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.5rem;
+    }
+    th, td {
+      text-align: center;
+      padding: 0.25rem;
+      border: 1px solid #ddd;
+    }
+    .today {
+      background-color: #d4edda;
+      font-weight: bold;
+    }
+    .holiday {
+      background-color: #fce8e6;
+    }
+    .holiday-labels {
+      font-size: 0.7em;
+      color: #d9534f;
+    }
+  </style>
+</head>
+<body>
+  <div id="calendar">Loading...</div>
+  <script type="module" src="./fullYearCalendar.js"></script>
+</body>
+</html>
