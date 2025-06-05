@@ -1,4 +1,4 @@
-import { toEC, toGC } from './conversions.js';
+import { toEC, toGC, hijriToGregorian, getHijriYear } from './conversions.js';
 import { holidayNames } from './constants.js';
 
 export const HolidayTags = {
@@ -364,53 +364,12 @@ export function getMoulidDate(ethiopianYear, ethiopianMonth = 10) {
     const year = Number(gregorianYear);
     if (Number.isNaN(year)) throw new Error("Year must be a valid number");
 
-    const islamicFormatter = new Intl.DateTimeFormat('en-TN-u-ca-islamic', {
-        day: 'numeric',
-        month: 'numeric',
-        year: 'numeric',
-    });
-
-    // Helper: find hijri year from a gregorian date
-    function getHijriYear(date) {
-        const parts = islamicFormatter.formatToParts(date);
-        let hYear = null;
-        parts.forEach(({ type, value }) => {
-            if (type === 'year') hYear = parseInt(value, 10);
-        });
-        return hYear;
-    }
-
-    // Hijri to Gregorian finder (brute force search)
-    function hijriToGregorian(hYear, hMonth, hDay) {
-        const baseDate = new Date(year - 1, 0, 1); // start searching from Jan 1 previous year
-        const formatter = islamicFormatter;
-
-        for (let offset = 0; offset <= 730; offset++) { // search 2 years for safety
-            const testDate = new Date(baseDate);
-            testDate.setDate(testDate.getDate() + offset);
-            const parts = formatter.formatToParts(testDate);
-            const hijriParts = {};
-            parts.forEach(({ type, value }) => {
-                if (type !== 'literal') hijriParts[type] = parseInt(value, 10);
-            });
-            if (
-                hijriParts.year === hYear &&
-                hijriParts.month === hMonth &&
-                hijriParts.day === hDay &&
-                testDate.getFullYear() === year
-            ) {
-                return testDate;
-            }
-        }
-        return null;
-    }
-
     // Try to get hijri year at start and end of Gregorian year
     const hijriYearStart = getHijriYear(new Date(year, 0, 1));
     const hijriYearEnd = getHijriYear(new Date(year, 11, 31));
 
     // Check Mawlid in both hijri years (12 Rabi' al-awwal)
-    const mawlidStartYear = hijriToGregorian(hijriYearStart, 3, 12);
+    const mawlidStartYear = hijriToGregorian(hijriYearStart, 3, 12, year);
     if (mawlidStartYear) {
         return {
             gregorian: {
@@ -422,7 +381,7 @@ export function getMoulidDate(ethiopianYear, ethiopianMonth = 10) {
         };
     }
 
-    const mawlidEndYear = hijriToGregorian(hijriYearEnd, 3, 12);
+    const mawlidEndYear = hijriToGregorian(hijriYearEnd, 3, 12, year);
     if (mawlidEndYear) {
         return {
             gregorian: {
@@ -434,7 +393,6 @@ export function getMoulidDate(ethiopianYear, ethiopianMonth = 10) {
         };
     }
 
-    // If none found, return null
     return null;
 }
 
