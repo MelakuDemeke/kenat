@@ -309,39 +309,43 @@ export function getEidFitrDate(ethiopianYear, ethiopianMonth = 9) {
  * Requires `toGC` (Ethiopian to Gregorian) and `toEC` (Gregorian to Ethiopian) conversion functions.
  */
 export function getEidAdhaDate(ethiopianYear, ethiopianMonth = 12) {
-    const baseEthiopianYear = 2014;
-    const baseEidAdhaDate = { year: 2022, month: 7, day: 9 }; // Eid al-Adha in 2014 E.C.
-    const daysPerYearShift = 10.875;
+    const gregorianYear = toGC(ethiopianYear, ethiopianMonth, 1).year;
+    const year = Number(gregorianYear);
+    if (Number.isNaN(year)) throw new Error("Year must be a valid number");
 
-    const gregorianBaseYear = toGC(ethiopianYear, ethiopianMonth, 1).year;
-    const yearDiff = ethiopianYear - baseEthiopianYear;
+    // Eid al-Adha is on 10 Dhu al-Hijjah (Hijri month 12)
+    const hijriMonth = 12;
+    const hijriDay = 10;
 
-    const baseDate = new Date(gregorianBaseYear, baseEidAdhaDate.month - 1, baseEidAdhaDate.day);
-    const daysToShift = Math.round(yearDiff * daysPerYearShift);
+    const hijriYearStart = getHijriYear(new Date(year, 0, 1));
+    const hijriYearEnd = getHijriYear(new Date(year, 11, 31));
 
-    baseDate.setDate(baseDate.getDate() - daysToShift);
+    const eidStart = hijriToGregorian(hijriYearStart, hijriMonth, hijriDay, year);
+    if (eidStart) {
+        return {
+            gregorian: {
+                year: eidStart.getFullYear(),
+                month: eidStart.getMonth() + 1,
+                day: eidStart.getDate(),
+            },
+            ethiopian: toEC(eidStart.getFullYear(), eidStart.getMonth() + 1, eidStart.getDate()),
+        };
+    }
 
-    const gregorianDate = {
-        year: baseDate.getFullYear(),
-        month: baseDate.getMonth() + 1,
-        day: baseDate.getDate(),
-    };
+    const eidEnd = hijriToGregorian(hijriYearEnd, hijriMonth, hijriDay, year);
+    if (eidEnd) {
+        return {
+            gregorian: {
+                year: eidEnd.getFullYear(),
+                month: eidEnd.getMonth() + 1,
+                day: eidEnd.getDate(),
+            },
+            ethiopian: toEC(eidEnd.getFullYear(), eidEnd.getMonth() + 1, eidEnd.getDate()),
+        };
+    }
 
-    const ethiopianDate = toEC(
-        gregorianDate.year,
-        gregorianDate.month,
-        gregorianDate.day
-    );
-
-    return {
-        gregorian: gregorianDate,
-        ethiopian: ethiopianDate,
-        note: 'Estimated ±1 day',
-    };
+    return null;
 }
-
-
-
 
 /**
  * Calculates the date of Mawlid (Moulid) for a given Ethiopian year.
