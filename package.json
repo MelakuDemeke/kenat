@@ -45,7 +45,7 @@
   "bugs": {
     "url": "https://github.com/MelakuDemeke/kenat/issues"
   },
-  "homepage": "https://kenat-doc.vercel.app/",
+  "homepage": "https://www.kenat.systems/",
   "devDependencies": {
     "jest": "^29.7.0",
     "jsdoc": "^4.0.4"
