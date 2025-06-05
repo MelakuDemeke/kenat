@@ -4,7 +4,7 @@ import { toArabic } from '../../src/geezConverter.js';
 let monthGridInstance;
 
 // Settings
-let useGeez = true;
+let useGeez = false;
 let weekdayLang = 'amharic';
 let weekStart = 1;
 
