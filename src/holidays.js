@@ -243,15 +243,18 @@ export function getSikletDate(ethYear) {
 /**
  * Estimates the date of Eid al-Fitr for a given Ethiopian year.
  *
- * The calculation is based on a reference Eid date in the Ethiopian year 2014 (Gregorian 2022-05-02),
- * and shifts the date by approximately 10.875 days per Ethiopian year difference.
- * The result is an estimate and may be off by ±1 day.
- *
  * @param {number} ethiopianYear - The Ethiopian year for which to estimate Eid al-Fitr.
- * @returns {Object} An object containing:
- *   - {Object} gregorian: The estimated Gregorian date ({ year, month, day }).
- *   - {Object} ethiopian: The corresponding Ethiopian date ({ year, month, day }).
- *   - {string} note: A note indicating the estimate's accuracy.
+ * @param {number} [ethiopianMonth=9] - The Ethiopian month (defaults to 9 if not provided).
+ * @returns {{
+ *   gregorian: { year: number, month: number, day: number },
+ *   ethiopian: { year: number, month: number, day: number },
+ *   note: string
+ * }} An object containing the estimated Gregorian and Ethiopian dates for Eid al-Fitr, and a note about the estimation accuracy.
+ *
+ * @remarks
+ * The calculation is based on a base date and shifts by an average number of days per year.
+ * The result is an estimate and may be off by ±1 day.
+ * Requires `toGC` (Ethiopian to Gregorian) and `toEC` (Gregorian to Ethiopian) conversion functions.
  */
 export function getEidFitrDate(ethiopianYear, ethiopianMonth = 9) {
     const baseEthiopianYear = 2014;
@@ -292,11 +295,18 @@ export function getEidFitrDate(ethiopianYear, ethiopianMonth = 9) {
 /**
  * Estimates the date of Eid al-Adha for a given Ethiopian year.
  *
- * Uses a base Gregorian date and shifts approx. 10.875 days per Ethiopian year.
- * Result is an estimate and may be off by ±1 day.
+ * @param {number} ethiopianYear - The Ethiopian year for which to estimate Eid al-Adha.
+ * @param {number} [ethiopianMonth=12] - The Ethiopian month (defaults to 12 if not provided).
+ * @returns {{
+ *   gregorian: { year: number, month: number, day: number },
+ *   ethiopian: { year: number, month: number, day: number },
+ *   note: string
+ * }} An object containing the estimated Gregorian and Ethiopian dates for Eid al-Adha, and a note about the estimation accuracy.
  *
- * @param {number} ethiopianYear - Ethiopian year.
- * @returns {Object} Estimated date in Gregorian and Ethiopian calendars with note.
+ * @remarks
+ * This function uses a base date and an average yearly shift to estimate the date of Eid al-Adha.
+ * The result is approximate and may be off by ±1 day.
+ * Requires `toGC` (Ethiopian to Gregorian) and `toEC` (Gregorian to Ethiopian) conversion functions.
  */
 export function getEidAdhaDate(ethiopianYear, ethiopianMonth = 12) {
     const baseEthiopianYear = 2014;
@@ -330,14 +340,22 @@ export function getEidAdhaDate(ethiopianYear, ethiopianMonth = 12) {
     };
 }
 
+
 /**
- * Estimates the date of Moulid (Birth of Prophet Mohammed) for a given Ethiopian year.
+ * Calculates the estimated date of Moulid (Mawlid) for a given Ethiopian year.
  *
- * Uses a base Gregorian date and shifts approx. 10.875 days per Ethiopian year.
- * Result is an estimate and may be off by ±1 day.
+ * @param {number} ethiopianYear - The Ethiopian year for which to calculate the Moulid date.
+ * @param {number} [ethiopianMonth=10] - The Ethiopian month (defaults to 10 if not provided).
+ * @returns {{
+ *   gregorian: { year: number, month: number, day: number },
+ *   ethiopian: { year: number, month: number, day: number },
+ *   note: string
+ * }} An object containing the estimated Gregorian and Ethiopian dates for Moulid, and a note about the estimation accuracy.
  *
- * @param {number} ethiopianYear - Ethiopian year.
- * @returns {Object} Estimated date in Gregorian and Ethiopian calendars with note.
+ * @remarks
+ * The calculation is based on a reference Moulid date in 2014 E.C. and shifts by approximately 10.875 days per year.
+ * The result is an estimation and may be off by ±1 day.
+ * Requires `toGC` (Ethiopian to Gregorian) and `toEC` (Gregorian to Ethiopian) conversion functions.
  */
 export function getMoulidDate(ethiopianYear, ethiopianMonth = 10) {
     const baseEthiopianYear = 2014;
