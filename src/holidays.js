@@ -341,53 +341,103 @@ export function getEidAdhaDate(ethiopianYear, ethiopianMonth = 12) {
 }
 
 
+
 /**
- * Calculates the estimated date of Moulid (Mawlid) for a given Ethiopian year.
+ * Calculates the Gregorian and Ethiopian dates for Mawlid (12th day of Rabi' al-awwal)
+ * for a given Ethiopian year.
  *
- * @param {number} ethiopianYear - The Ethiopian year for which to calculate the Moulid date.
- * @param {number} [ethiopianMonth=10] - The Ethiopian month (defaults to 10 if not provided).
- * @returns {{
- *   gregorian: { year: number, month: number, day: number },
- *   ethiopian: { year: number, month: number, day: number },
- *   note: string
- * }} An object containing the estimated Gregorian and Ethiopian dates for Moulid, and a note about the estimation accuracy.
- *
- * @remarks
- * The calculation is based on a reference Moulid date in 2014 E.C. and shifts by approximately 10.875 days per year.
- * The result is an estimation and may be off by ±1 day.
- * Requires `toGC` (Ethiopian to Gregorian) and `toEC` (Gregorian to Ethiopian) conversion functions.
+ * @param {number} ethiopianYear - The Ethiopian year for which to find Mawlid.
+ * @param {number} [ethiopianMonth=10] - The Ethiopian month (defaults to 10).
+ * @returns {Object|null} An object containing the Gregorian and Ethiopian dates of Mawlid, or null if not found.
+ * @returns {Object} return.gregorian - The Gregorian date of Mawlid.
+ * @returns {number} return.gregorian.year - The Gregorian year.
+ * @returns {number} return.gregorian.month - The Gregorian month (1-based).
+ * @returns {number} return.gregorian.day - The Gregorian day.
+ * @returns {Object} return.ethiopian - The Ethiopian date of Mawlid.
+ * @returns {number} return.ethiopian.year - The Ethiopian year.
+ * @returns {number} return.ethiopian.month - The Ethiopian month (1-based).
+ * @returns {number} return.ethiopian.day - The Ethiopian day.
+ * @throws {Error} If the provided year is not a valid number.
  */
 export function getMoulidDate(ethiopianYear, ethiopianMonth = 10) {
-    const baseEthiopianYear = 2014;
-    const baseMoulidDate = { year: 2022, month: 10, day: 8 }; // Moulid in 2014 E.C.
-    const daysPerYearShift = 10.875;
+    const gregorianYear = toGC(ethiopianYear, ethiopianMonth, 1).year;
+    const year = Number(gregorianYear);
+    if (Number.isNaN(year)) throw new Error("Year must be a valid number");
 
-    const gregorianBaseYear = toGC(ethiopianYear, ethiopianMonth, 1).year;
-    const yearDiff = ethiopianYear - baseEthiopianYear;
+    const islamicFormatter = new Intl.DateTimeFormat('en-TN-u-ca-islamic', {
+        day: 'numeric',
+        month: 'numeric',
+        year: 'numeric',
+    });
 
-    const baseDate = new Date(gregorianBaseYear, baseMoulidDate.month - 1, baseMoulidDate.day);
-    const daysToShift = Math.round(yearDiff * daysPerYearShift);
+    // Helper: find hijri year from a gregorian date
+    function getHijriYear(date) {
+        const parts = islamicFormatter.formatToParts(date);
+        let hYear = null;
+        parts.forEach(({ type, value }) => {
+            if (type === 'year') hYear = parseInt(value, 10);
+        });
+        return hYear;
+    }
 
-    baseDate.setDate(baseDate.getDate() - daysToShift);
+    // Hijri to Gregorian finder (brute force search)
+    function hijriToGregorian(hYear, hMonth, hDay) {
+        const baseDate = new Date(year - 1, 0, 1); // start searching from Jan 1 previous year
+        const formatter = islamicFormatter;
 
-    const gregorianDate = {
-        year: baseDate.getFullYear(),
-        month: baseDate.getMonth() + 1,
-        day: baseDate.getDate(),
-    };
+        for (let offset = 0; offset <= 730; offset++) { // search 2 years for safety
+            const testDate = new Date(baseDate);
+            testDate.setDate(testDate.getDate() + offset);
+            const parts = formatter.formatToParts(testDate);
+            const hijriParts = {};
+            parts.forEach(({ type, value }) => {
+                if (type !== 'literal') hijriParts[type] = parseInt(value, 10);
+            });
+            if (
+                hijriParts.year === hYear &&
+                hijriParts.month === hMonth &&
+                hijriParts.day === hDay &&
+                testDate.getFullYear() === year
+            ) {
+                return testDate;
+            }
+        }
+        return null;
+    }
 
-    const ethiopianDate = toEC(
-        gregorianDate.year,
-        gregorianDate.month,
-        gregorianDate.day
-    );
+    // Try to get hijri year at start and end of Gregorian year
+    const hijriYearStart = getHijriYear(new Date(year, 0, 1));
+    const hijriYearEnd = getHijriYear(new Date(year, 11, 31));
 
-    return {
-        gregorian: gregorianDate,
-        ethiopian: ethiopianDate,
-        note: 'Estimated ±1 day',
-    };
+    // Check Mawlid in both hijri years (12 Rabi' al-awwal)
+    const mawlidStartYear = hijriToGregorian(hijriYearStart, 3, 12);
+    if (mawlidStartYear) {
+        return {
+            gregorian: {
+                year: mawlidStartYear.getFullYear(),
+                month: mawlidStartYear.getMonth() + 1,
+                day: mawlidStartYear.getDate(),
+            },
+            ethiopian: toEC(mawlidStartYear.getFullYear(), mawlidStartYear.getMonth() + 1, mawlidStartYear.getDate()),
+        };
+    }
+
+    const mawlidEndYear = hijriToGregorian(hijriYearEnd, 3, 12);
+    if (mawlidEndYear) {
+        return {
+            gregorian: {
+                year: mawlidEndYear.getFullYear(),
+                month: mawlidEndYear.getMonth() + 1,
+                day: mawlidEndYear.getDate(),
+            },
+            ethiopian: toEC(mawlidEndYear.getFullYear(), mawlidEndYear.getMonth() + 1, mawlidEndYear.getDate()),
+        };
+    }
+
+    // If none found, return null
+    return null;
 }
+
 
 /**
  * Returns a list of holidays occurring in a given Ethiopian month and year.
