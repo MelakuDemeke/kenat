@@ -52,3 +52,29 @@ export function addEthiopianTime(baseTime, duration) {
     // Step 4: Convert back to Ethiopian time
     return toEthiopianTime(newHour, newMinute);
 }
+
+/**
+ * Subtracts a duration from an Ethiopian time.
+ * @param {{hour: number, minute?: number, period: 'day' | 'night'}} baseTime - The original Ethiopian time.
+ * @param {{hours?: number, minutes?: number}} duration - The time to subtract.
+ * @returns {{hour: number, minute: number, period: 'day' | 'night'}}
+ */
+export function subtractEthiopianTime(baseTime, duration) {
+    const { hour, minute = 0, period } = baseTime;
+    const { hours = 0, minutes = 0 } = duration;
+
+    // Step 1: Convert to Gregorian 24hr time
+    const gregTime = toGregorianTime(hour, minute, period);
+
+    // Step 2: Subtract duration
+    let totalMinutes = gregTime.hour * 60 + gregTime.minute - (hours * 60 + minutes);
+
+    // Step 3: Normalize (wrap to 0–1439)
+    totalMinutes = ((totalMinutes % 1440) + 1440) % 1440;
+
+    const newHour = Math.floor(totalMinutes / 60);
+    const newMinute = totalMinutes % 60;
+
+    // Step 4: Convert back to Ethiopian time
+    return toEthiopianTime(newHour, newMinute);
+}
