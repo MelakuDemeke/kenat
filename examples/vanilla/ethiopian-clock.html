@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ethiopian Time Clock</title>
+  <style>
+    body {
+      font-family: monospace, monospace;
+      text-align: center;
+      margin: 2rem;
+      background: #f5f5f5;
+    }
+    #digital-clock {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    #analog-clock {
+      background: #eee;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: block;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <h2>Ethiopian Time Clock</h2>
+  <div id="digital-clock">--:-- --</div>
+  <canvas id="analog-clock" width="300" height="300"></canvas>
+
+  <script type="module" src="./ethiopian-clock.js"></script>
+</body>
+</html>

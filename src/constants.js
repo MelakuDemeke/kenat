@@ -83,3 +83,8 @@ export const holidayNames = {
     english: 'Birth of Prophet Mohammed (Moulid)'
   }
 };
+
+export const PERIOD_LABELS = {
+  day: 'ከሰዓት',
+  night: 'ማታ',
+};
