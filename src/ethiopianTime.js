@@ -87,3 +87,31 @@ export function subtractEthiopianTime(baseTime, duration) {
     // Step 4: Convert back to Ethiopian time
     return toEthiopianTime(newHour, newMinute);
 }
+
+/**
+ * Calculates the time difference between two Ethiopian times.
+ * Result is the absolute difference, in hours and minutes.
+ * 
+ * @param {{hour: number, minute?: number, period: 'day' | 'night'}} time1 
+ * @param {{hour: number, minute?: number, period: 'day' | 'night'}} time2 
+ * @returns {{hours: number, minutes: number}} difference
+ */
+export function getTimeDifference(time1, time2) {
+    const t1 = toGregorianTime(time1.hour, time1.minute ?? 0, time1.period);
+    const t2 = toGregorianTime(time2.hour, time2.minute ?? 0, time2.period);
+
+    // Convert both to total minutes from start of day
+    const total1 = t1.hour * 60 + t1.minute;
+    const total2 = t2.hour * 60 + t2.minute;
+
+    // Absolute difference in minutes
+    let diff = Math.abs(total1 - total2);
+
+    // Since time wraps in a 24-hour cycle, adjust if difference is > 12 hours
+    if (diff > 720) diff = 1440 - diff;
+
+    return {
+        hours: Math.floor(diff / 60),
+        minutes: diff % 60,
+    };
+}
