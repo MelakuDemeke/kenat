@@ -1,89 +1,99 @@
-import { Time } from '../../src/Time.js';  // Adjust path to your Time class file
+import { Time } from '../../src/Time.js';  // Adjust path as needed
+import { toGeez } from '../../src/geezConverter.js';
 
-function getCurrentEthiopianTime() {
-  const now = new Date();
-  return Time.fromGregorian(now.getHours(), now.getMinutes());
+const digitalClock = document.getElementById('digitalClock');
+const geezToggleBtn = document.getElementById('geezToggle');
+const canvas = document.getElementById('clockCanvas');
+const ctx = canvas.getContext('2d');
+const radius = canvas.height / 2;
+ctx.translate(radius, radius);
+
+let useGeez = true;
+
+geezToggleBtn.addEventListener('click', () => {
+  useGeez = !useGeez;
+  geezToggleBtn.textContent = `Use Geez Numerals: ${useGeez ? 'ON' : 'OFF'}`;
+  drawClock();
+});
+
+function drawClock() {
+  drawFace(ctx, radius);
+  drawNumbers(ctx, radius);
+  drawTime(ctx, radius);
 }
 
-function formatDigital(time) {
-  return time.format({ useGeez: false, showPeriodLabel: true, zeroAsDash: false });
-}
-
-function updateDigitalClock() {
-  const ethTime = getCurrentEthiopianTime();
-  const digitalClockEl = document.getElementById('digital-clock');
-  digitalClockEl.textContent = formatDigital(ethTime);
-}
-
-function drawAnalogClock() {
-  const canvas = document.getElementById('analog-clock');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const radius = canvas.height / 2;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.save();
-  ctx.translate(radius, radius);
-
-  const ethTime = getCurrentEthiopianTime();
-  const hour = ethTime.hour % 12;
-  const minute = ethTime.minute;
-
-  // Clock face
+function drawFace(ctx, radius) {
   ctx.beginPath();
-  ctx.arc(0, 0, radius - 5, 0, 2 * Math.PI);
-  ctx.fillStyle = '#fff';
+  ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+  ctx.fillStyle = 'white';
   ctx.fill();
+
   ctx.strokeStyle = '#333';
-  ctx.lineWidth = 8;
+  ctx.lineWidth = radius * 0.05;
   ctx.stroke();
 
-  // Hour marks
-  for (let i = 0; i < 12; i++) {
-    const ang = (i * Math.PI) / 6;
-    ctx.rotate(ang);
-    ctx.beginPath();
-    ctx.moveTo(0, -radius + 15);
-    ctx.lineTo(0, -radius + 30);
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 4;
-    ctx.stroke();
-    ctx.rotate(-ang);
+  ctx.beginPath();
+  ctx.arc(0, 0, radius * 0.05, 0, 2 * Math.PI);
+  ctx.fillStyle = '#333';
+  ctx.fill();
+}
+
+function drawNumbers(ctx, radius) {
+  const angIncrement = (2 * Math.PI) / 12;
+  ctx.font = `${radius * 0.15}px Arial`;
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'center';
+
+  for (let num = 1; num <= 12; num++) {
+    let numeral = useGeez ? toGeez(num) : num.toString();
+
+    let ang = num * angIncrement - Math.PI / 2;
+    let x = radius * 0.75 * Math.cos(ang);
+    let y = radius * 0.75 * Math.sin(ang);
+    ctx.fillStyle = '#000';
+    ctx.fillText(numeral, x, y);
   }
+}
+
+function drawTime(ctx, radius) {
+  const now = new Date();
+  const time = Time.fromGregorian(now.getHours(), now.getMinutes());
+
+  // Calculate angles for hands based on Ethiopian time
+  const hour = time.hour % 12;
+  const minute = time.minute;
+  const second = now.getSeconds();
 
   // Hour hand
-  let hourAngle = ((hour + minute / 60) * Math.PI) / 6;
-  ctx.save();
-  ctx.rotate(hourAngle);
-  ctx.beginPath();
-  ctx.moveTo(0, 10);
-  ctx.lineTo(0, -radius / 2);
-  ctx.lineWidth = 8;
-  ctx.strokeStyle = '#000';
-  ctx.stroke();
-  ctx.restore();
+  const hourAngle = ((hour + minute / 60) * Math.PI) / 6 - Math.PI / 2;
+  drawHand(ctx, hourAngle, radius * 0.5, radius * 0.07);
 
   // Minute hand
-  let minuteAngle = (minute * Math.PI) / 30;
-  ctx.save();
-  ctx.rotate(minuteAngle);
+  const minuteAngle = (minute * Math.PI) / 30 - Math.PI / 2;
+  drawHand(ctx, minuteAngle, radius * 0.75, radius * 0.05);
+
+  // Second hand
+  const secondAngle = (second * Math.PI) / 30 - Math.PI / 2;
+  drawHand(ctx, secondAngle, radius * 0.85, radius * 0.02, 'red');
+
+  // Update digital clock
+  digitalClock.textContent = time.format({ useGeez, showPeriodLabel: true, zeroAsDash: false });
+}
+
+function drawHand(ctx, pos, length, width, color = '#333') {
   ctx.beginPath();
-  ctx.moveTo(0, 20);
-  ctx.lineTo(0, -radius + 40);
-  ctx.lineWidth = 5;
-  ctx.strokeStyle = '#000';
+  ctx.lineWidth = width;
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = color;
+  ctx.moveTo(0, 0);
+  ctx.lineTo(length * Math.cos(pos), length * Math.sin(pos));
   ctx.stroke();
-  ctx.restore();
-
-  ctx.restore();
 }
 
-function startClocks() {
-  updateDigitalClock();
-  drawAnalogClock();
-  setInterval(() => {
-    updateDigitalClock();
-    drawAnalogClock();
-  }, 1000);
+function update() {
+  ctx.clearRect(-radius, -radius, canvas.width, canvas.height);
+  drawClock();
+  requestAnimationFrame(update);
 }
 
-startClocks();
+update();

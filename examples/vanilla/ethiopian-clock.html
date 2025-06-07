@@ -6,30 +6,44 @@
   <title>Ethiopian Time Clock</title>
   <style>
     body {
-      font-family: monospace, monospace;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       text-align: center;
-      margin: 2rem;
-      background: #f5f5f5;
+      padding: 2rem;
+      background: #f9f9f9;
     }
-    #digital-clock {
-      font-size: 3rem;
-      margin-bottom: 20px;
-      color: #333;
+    #digitalClock {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
     }
-    #analog-clock {
-      background: #eee;
+    #geezToggle {
+      margin-bottom: 2rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+    }
+    #analogClock {
+      margin: 0 auto;
+      background: #fff;
+      border: 5px solid #333;
       border-radius: 50%;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 250px;
+      height: 250px;
+      position: relative;
+    }
+    #analogClock canvas {
       display: block;
       margin: 0 auto;
+      background: transparent;
     }
   </style>
 </head>
 <body>
-  <h2>Ethiopian Time Clock</h2>
-  <div id="digital-clock">--:-- --</div>
-  <canvas id="analog-clock" width="300" height="300"></canvas>
+  <h1>Ethiopian Time Clock</h1>
+  <button id="geezToggle">Use Geez Numerals: ON</button>
+  <div id="digitalClock">--:-- --</div>
+  <div id="analogClock">
+    <canvas id="clockCanvas" width="250" height="250"></canvas>
+  </div>
 
-  <script type="module" src="./ethiopian-clock.js"></script>
+  <script type="module" src="ethiopian-clock.js"></script>
 </body>
 </html>
