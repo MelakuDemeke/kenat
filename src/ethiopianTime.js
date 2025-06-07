@@ -1,13 +1,22 @@
 /**
- * Converts a Gregorian time (24hr format) to Ethiopian time.
- * @param {number} hour - Hour in 24hr format (0–23)
- * @param {number} minute - Minute (0–59)
- * @returns {{hour: number, minute: number, period: 'day' | 'night'}}
+ * Converts a given hour and minute in standard time to Ethiopian time.
+ *
+ * Ethiopian time starts at 6 AM standard time (0 Ethiopian hour).
+ * The day period is from 6 AM to 6 PM, and the night period is from 6 PM to 6 AM.
+ *
+ * @param {number} hour - The hour in standard time (0-23).
+ * @param {number} [minute=0] - The minute in standard time (0-59).
+ * @returns {{ hour: number, minute: number, period: 'day' | 'night' }} 
+ *   An object containing the Ethiopian hour, minute, and period ('day' or 'night').
  */
 export function toEthiopianTime(hour, minute = 0) {
-    let ethHour = (hour + 6) % 12;
-    ethHour = ethHour === 0 ? 12 : ethHour;
     const period = hour >= 6 && hour < 18 ? 'day' : 'night';
+    let ethHour = hour - 6;
+    if (ethHour < 0) ethHour += 12;
+    else ethHour = ethHour % 12;
+
+    ethHour = ethHour === 0 ? 12 : ethHour;
+
     return { hour: ethHour, minute, period };
 }
 
