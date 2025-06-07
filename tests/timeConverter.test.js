@@ -1,4 +1,4 @@
-import { toEthiopianTime, toGregorianTime } from '../src/timeConverter.js';
+import { toEthiopianTime, toGregorianTime } from '../src/ethiopianTime.js';
 import { Kenat } from '../src/Kenat.js';
 
 describe('Time Conversion Tests', () => {

@@ -1,7 +1,7 @@
 import { toGC, toEC } from './conversions.js';
 import { printMonthCalendarGrid } from './render/printMonthCalendarGrid.js';
 import { monthNames, daysOfWeek } from './constants.js';
-import { toEthiopianTime, toGregorianTime } from './timeConverter.js';
+import { toEthiopianTime, toGregorianTime } from './ethiopianTime.js';
 import { toGeez } from './geezConverter.js';
 import { getHolidaysInMonth } from './holidays.js';
 import { MonthGrid } from './MonthGrid.js';
