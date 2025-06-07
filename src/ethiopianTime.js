@@ -1,3 +1,6 @@
+import { toGeez } from './geezConverter.js';
+import { PERIOD_LABELS } from './constants.js';
+
 /**
  * Converts a given hour and minute in standard time to Ethiopian time.
  *
@@ -114,4 +117,36 @@ export function getTimeDifference(time1, time2) {
         hours: Math.floor(diff / 60),
         minutes: diff % 60,
     };
+}
+
+
+// formating start here
+
+export function formatEthiopianTime(time, options = {}) {
+  const { hour, minute = 0, period } = time;
+  const {
+    useGeez = true,
+    showPeriodLabel = true,
+    zeroAsDash = true,
+  } = options;
+
+  const formatNum = (num) => {
+    if (useGeez) return toGeez(num);
+    return num.toString().padStart(2, '0');
+  };
+
+  const hourStr = formatNum(hour);
+
+  let minuteStr;
+  if (zeroAsDash && minute === 0) {
+    minuteStr = '_';
+  } else if (minute < 10 && !useGeez) {
+    minuteStr = formatNum(minute);
+  } else {
+    minuteStr = formatNum(minute);
+  }
+
+  const label = showPeriodLabel ? (PERIOD_LABELS[period] ?? '') : '';
+
+  return `${hourStr}:${minuteStr}${label ? ' ' + label : ''}`;
 }
