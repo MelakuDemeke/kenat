@@ -1,93 +1,99 @@
+import { InvalidEthiopianDateError, InvalidGregorianDateError } from './errors.js'
 import { getGregorianDateOfEthiopianNewYear } from './newYearDates.js';
-import { dayOfYear, monthDayFromDayOfYear, isGregorianLeapYear } from './utils.js';
+import { dayOfYear, monthDayFromDayOfYear, isGregorianLeapYear, isEthiopianLeapYear } from './utils.js';
 
 /**
- * Convert Ethiopian date to Gregorian date.
+ * Converts an Ethiopian date to its corresponding Gregorian date.
  *
- * @param {number} ethYear - Ethiopian year
- * @param {number} ethMonth - Ethiopian month (1-13)
- * @param {number} ethDay - Ethiopian day (1-30 for months 1-12, 1-5/6 for month 13)
- * @returns {{year: number, month: number, day: number}} Gregorian date
+ * @param {number} ethYear - The Ethiopian year.
+ * @param {number} ethMonth - The Ethiopian month (1-13).
+ * @param {number} ethDay - The Ethiopian day of the month.
+ * @returns {{ year: number, month: number, day: number }} The equivalent Gregorian date.
+ * @throws {InvalidEthiopianDateError} If the provided Ethiopian date is invalid.
  */
 export function toGC(ethYear, ethMonth, ethDay) {
-    // Get Gregorian new year date for the Ethiopian year
-    const newYear = getGregorianDateOfEthiopianNewYear(ethYear);
+  // Validate month
+  if (ethMonth < 1 || ethMonth > 13) {
+    throw new InvalidEthiopianDateError(ethYear, ethMonth, ethDay)
+  }
 
-    // Calculate the number of days since Ethiopian New Year for the input date
-    // Months 1-12 have 30 days, month 13 (Pagume) has 5 or 6 days
-    const daysSinceNewYear = (ethMonth - 1) * 30 + ethDay - 1;
+  // Validate day
+  const maxDay = ethMonth === 13 ? (isEthiopianLeapYear(ethYear) ? 6 : 5) : 30
+  if (ethDay < 1 || ethDay > maxDay) {
+    throw new InvalidEthiopianDateError(ethYear, ethMonth, ethDay)
+  }
 
-    // Calculate the day of the year in Gregorian calendar for Ethiopian New Year
-    const gregorianNewYearDayOfYear = dayOfYear(newYear.gregorianYear, newYear.month, newYear.day);
+  const newYear = getGregorianDateOfEthiopianNewYear(ethYear)
 
-    // Calculate total day of year in Gregorian calendar
-    let gregorianDayOfYear = gregorianNewYearDayOfYear + daysSinceNewYear;
+  const daysSinceNewYear = (ethMonth - 1) * 30 + ethDay - 1
+  const newYearDOY = dayOfYear(newYear.gregorianYear, newYear.month, newYear.day)
 
-    // Handle leap year overflow (when day of year > 365/366)
-    const gregorianYearLength = isGregorianLeapYear(newYear.gregorianYear) ? 366 : 365;
-    let gregorianYear = newYear.gregorianYear;
+  let gregorianDOY = newYearDOY + daysSinceNewYear
+  let gregorianYear = newYear.gregorianYear
+  const yearLength = isGregorianLeapYear(gregorianYear) ? 366 : 365
 
-    if (gregorianDayOfYear > gregorianYearLength) {
-        gregorianDayOfYear -= gregorianYearLength;
-        gregorianYear += 1;
-    }
+  if (gregorianDOY > yearLength) {
+    gregorianDOY -= yearLength
+    gregorianYear += 1
+  }
 
-    // Convert day of year back to Gregorian month and day
-    const { month, day } = monthDayFromDayOfYear(gregorianYear, gregorianDayOfYear);
-
-    return { year: gregorianYear, month, day };
+  const { month, day } = monthDayFromDayOfYear(gregorianYear, gregorianDOY)
+  return { year: gregorianYear, month, day }
 }
 
+
 /**
- * Convert Gregorian date to Ethiopian date.
+ * Converts a Gregorian date to the Ethiopian calendar (EC) date.
  *
- * @param {number} gYear - Gregorian year
- * @param {number} gMonth - Gregorian month (1-12)
- * @param {number} gDay - Gregorian day
- * @returns {{year: number, month: number, day: number}} Ethiopian date
+ * @param {number} gYear - The Gregorian year (e.g., 2024).
+ * @param {number} gMonth - The Gregorian month (1-12).
+ * @param {number} gDay - The Gregorian day of the month (1-31).
+ * @returns {{ year: number, month: number, day: number }} The corresponding Ethiopian calendar date.
+ * @throws {InvalidGregorianDateError} If the input date is invalid or out of supported range (1900-01-01 to 2100-12-31).
  */
 export function toEC(gYear, gMonth, gDay) {
-    const oneDay = 1000 * 60 * 60 * 24;
-    const oneYear = 365 * oneDay;
-    const fourYears = 1461 * oneDay; // 365*4 + 1 leap day
+  const isValidDate = (y, m, d) => {
+    const date = new Date(Date.UTC(y, m - 1, d))
+    return (
+      date.getUTCFullYear() === y &&
+      date.getUTCMonth() === m - 1 &&
+      date.getUTCDate() === d
+    )
+  }
 
-    // Reference: Meskerem 1, 1964 = September 12, 1971 (Gregorian)
-    const baseDate = new Date(Date.UTC(1971, 8, 12)); // Sep 12, 1971
-    const inputDate = new Date(Date.UTC(gYear, gMonth - 1, gDay));
+  const inputDate = new Date(Date.UTC(gYear, gMonth - 1, gDay))
+  const minDate = new Date(Date.UTC(1900, 0, 1))
+  const maxDate = new Date(Date.UTC(2100, 11, 31))
 
-    // Optional range check function
-    if (inputDate < new Date(Date.UTC(1900, 0, 1)) || inputDate > new Date(Date.UTC(2100, 11, 31))) {
-        throw `Out of range input year: ${gYear}`;
-    }
+  if (!isValidDate(gYear, gMonth, gDay) || inputDate < minDate || inputDate > maxDate) {
+    throw new InvalidGregorianDateError(gYear, gMonth, gDay)
+  }
 
-    const difference = inputDate.getTime() - baseDate.getTime();
-    const fourYearsPassed = Math.floor(difference / fourYears);
+  const oneDay = 86400000
+  const oneYear = 365 * oneDay
+  const fourYears = 1461 * oneDay
 
-    let remainingYears = Math.floor(
-        (difference - fourYearsPassed * fourYears) / oneYear
-    );
+  const baseDate = new Date(Date.UTC(1971, 8, 12))
 
-    if (remainingYears === 4) {
-        remainingYears = 3;
-    }
+  const diff = inputDate.getTime() - baseDate.getTime()
+  const fourYearCycles = Math.floor(diff / fourYears)
+  let remainingYears = Math.floor((diff - fourYearCycles * fourYears) / oneYear)
 
-    const remainingMonths = Math.floor(
-        (difference - fourYearsPassed * fourYears - remainingYears * oneYear) /
-        (30 * oneDay)
-    );
+  if (remainingYears === 4) remainingYears = 3
 
-    const remainingDays = Math.floor(
-        (difference -
-            fourYearsPassed * fourYears -
-            remainingYears * oneYear -
-            remainingMonths * 30 * oneDay) / oneDay
-    );
+  const remainingMonths = Math.floor(
+    (diff - fourYearCycles * fourYears - remainingYears * oneYear) / (30 * oneDay)
+  )
 
-    const ethYear = 1964 + 4 * fourYearsPassed + remainingYears;
-    const month = remainingMonths + 1;
-    const day = remainingDays + 1;
+  const remainingDays = Math.floor(
+    (diff - fourYearCycles * fourYears - remainingYears * oneYear - remainingMonths * 30 * oneDay) / oneDay
+  )
 
-    return { year: ethYear, month, day };
+  const ethYear = 1964 + fourYearCycles * 4 + remainingYears
+  const month = remainingMonths + 1
+  const day = remainingDays + 1
+
+  return { year: ethYear, month, day }
 }
 
 /**
@@ -99,8 +105,8 @@ export function toEC(gYear, gMonth, gDay) {
  * @returns {Date} A JavaScript Date object representing the equivalent Gregorian date in UTC.
  */
 export function toGCDate(ethYear, ethMonth, ethDay) {
-    const { year, month, day } = toGC(ethYear, ethMonth, ethDay);
-    return new Date(Date.UTC(year, month - 1, day));
+  const { year, month, day } = toGC(ethYear, ethMonth, ethDay);
+  return new Date(Date.UTC(year, month - 1, day));
 }
 
 /**
@@ -110,11 +116,11 @@ export function toGCDate(ethYear, ethMonth, ethDay) {
  * @returns {*} The Ethiopian Calendar date, as returned by the `toEC` function.
  */
 export function fromDateToEC(dateObj) {
-    return toEC(
-        dateObj.getFullYear(),
-        dateObj.getMonth() + 1,
-        dateObj.getDate()
-    );
+  return toEC(
+    dateObj.getFullYear(),
+    dateObj.getMonth() + 1,
+    dateObj.getDate()
+  );
 }
 
 // muslim conversions
