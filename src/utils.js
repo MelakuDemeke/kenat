@@ -37,6 +37,26 @@ export function validateEthiopianDateObject(dateObj, funcName, paramName) {
 }
 
 /**
+ * Validates that the input is a valid Ethiopian time object.
+ * @param {Object} timeObj - The object to validate.
+ * @param {string} funcName - The name of the function being validated.
+ * @param {string} paramName - The name of the parameter being validated.
+ * @throws {InvalidInputTypeError} if the object is invalid.
+ */
+export function validateEthiopianTimeObject(timeObj, funcName, paramName) {
+    if (typeof timeObj !== 'object' || timeObj === null) {
+        throw new InvalidInputTypeError(funcName, paramName, 'object', timeObj);
+    }
+    if (typeof timeObj.period !== 'string' || (timeObj.period !== 'day' && timeObj.period !== 'night')) {
+        throw new InvalidInputTypeError(funcName, `${paramName}.period`, "'day' or 'night'", timeObj.period);
+    }
+    validateNumericInputs(funcName, {
+        [`${paramName}.hour`]: timeObj.hour,
+        [`${paramName}.minute`]: timeObj.minute,
+    });
+}
+
+/**
  * Calculates the day of the year for a given date.
  *
  * @param {number} year - The full year (e.g., 2024).

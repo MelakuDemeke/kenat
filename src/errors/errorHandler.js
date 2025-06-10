@@ -139,3 +139,12 @@ export class InvalidTimeError extends KenatError {
         super(message);
     }
 }
+
+/**
+ * Thrown for invalid configuration options passed to MonthGrid.
+ */
+export class InvalidGridConfigError extends KenatError {
+    constructor(message) {
+        super(message);
+    }
+}
