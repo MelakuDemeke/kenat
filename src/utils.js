@@ -1,5 +1,40 @@
 import { toGC, toEC } from './conversions.js';
 import { monthNames } from './constants.js';
+import { InvalidInputTypeError } from './errors/errorHandler.js';
+
+// --- Validation Helpers ---
+
+/**
+ * Validates that all provided date parts are numbers.
+ * @param {string} funcName - The name of the function being validated.
+ * @param {Object} dateParts - An object where keys are param names and values are the inputs.
+ * @throws {InvalidInputTypeError} if any value is not a number.
+ */
+export function validateNumericInputs(funcName, dateParts) {
+    for (const [name, value] of Object.entries(dateParts)) {
+        if (typeof value !== 'number' || isNaN(value)) {
+            throw new InvalidInputTypeError(funcName, name, 'number', value);
+        }
+    }
+}
+
+/**
+ * Validates that the input is a valid Ethiopian date object.
+ * @param {Object} dateObj - The object to validate.
+ * @param {string} funcName - The name of the function being validated.
+ * @param {string} paramName - The name of the parameter being validated.
+ * @throws {InvalidInputTypeError} if the object is invalid.
+ */
+export function validateEthiopianDateObject(dateObj, funcName, paramName) {
+    if (typeof dateObj !== 'object' || dateObj === null) {
+        throw new InvalidInputTypeError(funcName, paramName, 'object', dateObj);
+    }
+    validateNumericInputs(funcName, {
+        [`${paramName}.year`]: dateObj.year,
+        [`${paramName}.month`]: dateObj.month,
+        [`${paramName}.day`]: dateObj.day,
+    });
+}
 
 /**
  * Calculates the day of the year for a given date.
