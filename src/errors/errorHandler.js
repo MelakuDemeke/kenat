@@ -97,3 +97,12 @@ export class UnrecognizedInputError extends KenatError {
         };
     }
 }
+
+/**
+ * Thrown for errors occurring during Ge'ez numeral conversion.
+ */
+export class GeezConverterError extends KenatError {
+    constructor(message) {
+        super(message);
+    }
+}
