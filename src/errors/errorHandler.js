@@ -106,3 +106,27 @@ export class GeezConverterError extends KenatError {
         super(message);
     }
 }
+
+/**
+ * Thrown when a function receives an argument of an incorrect type.
+ */
+export class InvalidInputTypeError extends KenatError {
+    constructor(functionName, parameterName, expectedType, receivedValue) {
+        const receivedType = typeof receivedValue;
+        super(`Invalid type for parameter '${parameterName}' in function '${functionName}'. Expected '${expectedType}' but got '${receivedType}'.`);
+        this.functionName = functionName;
+        this.parameterName = parameterName;
+        this.expectedType = expectedType;
+        this.receivedValue = receivedValue;
+    }
+
+    toJSON() {
+        return {
+            ...super.toJSON(),
+            functionName: this.functionName,
+            parameterName: this.parameterName,
+            expectedType: this.expectedType,
+            receivedType: typeof this.receivedValue,
+        };
+    }
+}
