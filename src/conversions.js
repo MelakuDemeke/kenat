@@ -1,5 +1,5 @@
 import { InvalidEthiopianDateError, InvalidGregorianDateError, InvalidInputTypeError } from './errors/errorHandler.js'
-import { getGregorianDateOfEthiopianNewYear } from './newYearDates.js';
+import { getGregorianDateOfEthiopianNewYear } from './utils.js';
 import { dayOfYear, monthDayFromDayOfYear, isGregorianLeapYear, isEthiopianLeapYear } from './utils.js';
 
 /**

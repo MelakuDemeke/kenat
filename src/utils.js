@@ -136,3 +136,34 @@ export function isValidEthiopianDate(year, month, day) {
     }
     return true;
 }
+
+/**
+ * Helper: Get Ethiopian New Year for a Gregorian year.
+ * @param {number} gYear - The Gregorian year.
+ * @returns {{gregorianYear: number, month: number, day: number}}
+ * @throws {InvalidInputTypeError} If gYear is not a number.
+ */
+export function getEthiopianNewYearForGregorian(gYear) {
+    validateNumericInputs('getEthiopianNewYearForGregorian', { gYear });
+    const prevGYear = gYear - 1;
+    const newYearDay = isGregorianLeapYear(prevGYear) ? 12 : 11;
+    return {
+        gregorianYear: gYear,
+        month: 9,
+        day: newYearDay
+    };
+}
+
+/**
+ * Returns the Gregorian date of the Ethiopian New Year for the given Ethiopian year.
+ *
+ * @param {number} ethiopianYear - Ethiopian calendar year.
+ * @returns {{gregorianYear: number, month: number, day: number}}
+ * @throws {InvalidInputTypeError} If ethiopianYear is not a number.
+ */
+export function getGregorianDateOfEthiopianNewYear(ethiopianYear) {
+    validateNumericInputs('getGregorianDateOfEthiopianNewYear', { ethiopianYear });
+    const gregorianYear = ethiopianYear + 7;
+    const newYearDay = isGregorianLeapYear(gregorianYear + 1) ? 12 : 11;
+    return { gregorianYear, month: 9, day: newYearDay };
+}
