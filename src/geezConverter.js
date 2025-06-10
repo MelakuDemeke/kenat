@@ -13,6 +13,10 @@
  * @author Melaku Demeke
  * @license MIT
  */
+/* /src/geezConverter.js (Updated) */
+/* /src/geezConverter.js (Updated) */
+
+import { GeezConverterError } from './errors/errorHandler.js';
 
 const symbols = {
     ones: ['', '፩', '፪', '፫', '፬', '፭', '፮', '፯', '፰', '፱'],
@@ -23,52 +27,54 @@ const symbols = {
 
 /**
  * Converts a natural number to Ethiopic numeral string.
- * 
+ *
  * @param {number|string} input - The number to convert (positive integer only).
  * @returns {string} Ethiopic numeral string.
- * @throws {Error} If input is not a valid positive integer.
+ * @throws {GeezConverterError} If input is not a valid positive integer.
  */
 export function toGeez(input) {
-    if (!/^\d+$/.test(input.toString())) {
-        throw new Error("Input must be a natural number.");
+    if (typeof input !== 'number' && typeof input !== 'string') {
+        throw new GeezConverterError("Input must be a number or a string.");
     }
 
-    let number = parseInt(input, 10);
-    if (number === 0) return '0';
+    const num = Number(input);
 
-    let result = '';
-    let blocks = [];
-    let index = 0;
-
-    // Break number into pairs of 2 digits from the right
-    while (number > 0) {
-        blocks.unshift(number % 100);
-        number = Math.floor(number / 100);
+    if (isNaN(num) || !Number.isInteger(num) || num < 0) {
+        throw new GeezConverterError("Input must be a non-negative integer.");
     }
+    
+    if (num === 0) return '0'; // Often Ge'ez doesn't have a zero, but useful for modern contexts.
 
-    for (let i = 0; i < blocks.length; i++) {
-        const block = blocks[i];
-        const isLastBlock = i === blocks.length - 1;
-        const [tensDigit, onesDigit] = [Math.floor(block / 10), block % 10];
-        let part = '';
-
-        if (block !== 0) {
-            if (!(blocks.length > 1 && i === 0 && block === 1)) {
-                part = symbols.tens[tensDigit] + symbols.ones[onesDigit];
-            }
-
-            const position = blocks.length - i - 1;
-            if (position % 2 === 0 && position !== 0) {
-                part += symbols.tenThousand;
-            } else if (position % 2 !== 0 && position !== 0) {
-                part += symbols.hundred;
-            }
-        }
-
-        result += part;
+    // Helper for numbers 1-99
+    function convertBelow100(n) {
+        if (n <= 0) return '';
+        const tensDigit = Math.floor(n / 10);
+        const onesDigit = n % 10;
+        return symbols.tens[tensDigit] + symbols.ones[onesDigit];
     }
-
-    return result;
+    
+    if (num < 100) {
+        return convertBelow100(num);
+    }
+    
+    if (num === 100) return symbols.hundred;
+    
+    if (num < 10000) {
+        const hundreds = Math.floor(num / 100);
+        const remainder = num % 100;
+        // For numbers like 101, it's ፻፩, not ፩፻፩. If the hundred part is 1, don't add a prefix.
+        const hundredPart = (hundreds > 1 ? convertBelow100(hundreds) : '') + symbols.hundred;
+        return hundredPart + convertBelow100(remainder);
+    }
+    
+    // For numbers >= 10000, use recursion
+    const tenThousandPart = Math.floor(num / 10000);
+    const remainder = num % 10000;
+    
+    // If the ten-thousand part is 1, no prefix is needed (e.g., ፼, not ፩፼)
+    const tenThousandGeez = (tenThousandPart > 1 ? toGeez(tenThousandPart) : '') + symbols.tenThousand;
+    
+    return tenThousandGeez + (remainder > 0 ? toGeez(remainder) : '');
 }
 
 
@@ -77,44 +83,48 @@ export function toGeez(input) {
  *
  * @param {string} geezStr - The Ge'ez numeral string to convert.
  * @returns {number} The Arabic numeral representation of the input string.
- * @throws {Error} If the input contains an unknown Ge'ez numeral character.
+ * @throws {GeezConverterError} If the input is not a valid Ge'ez numeral string.
  */
 export function toArabic(geezStr) {
-    const reverseMap = {};
-    if (typeof geezStr !== 'string' || geezStr.trim() === '') {
-        throw new Error('Geez input must be a non-empty string.');
+    if (typeof geezStr !== 'string') {
+        throw new GeezConverterError('Input must be a non-empty string.');
+    }
+    if (geezStr.trim() === '') {
+        return 0; // Or throw error, depending on desired behavior for empty string
     }
 
-    // Build reverse map from existing symbols
-    symbols.ones.forEach((char, i) => {
-        if (char) reverseMap[char] = i;
-    });
-    symbols.tens.forEach((char, i) => {
-        if (char) reverseMap[char] = i * 10;
-    });
+    const reverseMap = {};
+    symbols.ones.forEach((char, i) => { if (char) reverseMap[char] = i; });
+    symbols.tens.forEach((char, i) => { if (char) reverseMap[char] = i * 10; });
     reverseMap[symbols.hundred] = 100;
     reverseMap[symbols.tenThousand] = 10000;
 
-    let result = 0;
-    let temp = 0;
+    let total = 0;
+    let currentNumber = 0;
 
     for (const char of geezStr) {
         const value = reverseMap[char];
 
         if (value === undefined) {
-            throw new Error(`Unknown Ge'ez numeral: ${char}`);
+            throw new GeezConverterError(`Unknown Ge'ez numeral: ${char}`);
         }
 
         if (value === 100 || value === 10000) {
-            temp = (temp || 1) * value;
-            result += temp;
-            temp = 0;
+            // If currentNumber is 0, it implies a standalone ፻ or ፼, so treat it as 1 * multiplier.
+            currentNumber = (currentNumber || 1) * value;
+
+            // ፼ acts as a separator for large numbers. Add the completed segment to the total.
+            if (value === 10000) {
+                total += currentNumber;
+                currentNumber = 0;
+            }
         } else {
-            temp += value;
+            // Add simple digit values (1-99)
+            currentNumber += value;
         }
     }
 
-    result += temp;
-
-    return result;
+    // Add any remaining part (for numbers that don't end in ፼)
+    total += currentNumber; 
+    return total;
 }

@@ -1,64 +1,158 @@
-// Time.js
 import { toGeez } from './geezConverter.js';
 import { PERIOD_LABELS } from './constants.js';
+import { InvalidTimeError } from './errors/errorHandler.js';
+import { validateNumericInputs } from './utils.js';
 
 export class Time {
+    /**
+     * Constructs a Time instance representing an Ethiopian time.
+     * @param {number} hour - The Ethiopian hour (1-12).
+     * @param {number} [minute=0] - The minute (0-59).
+     * @param {string} [period='day'] - The period ('day' or 'night').
+     * @throws {InvalidTimeError} If any time component is invalid.
+     */
     constructor(hour, minute = 0, period = 'day') {
-        if (hour < 1 || hour > 12) throw new Error("Invalid Ethiopian hour");
+        validateNumericInputs('Time.constructor', { hour, minute });
+
+        if (hour < 1 || hour > 12) {
+            throw new InvalidTimeError(`Invalid Ethiopian hour: ${hour}. Must be between 1 and 12.`);
+        }
+        if (minute < 0 || minute > 59) {
+            throw new InvalidTimeError(`Invalid minute: ${minute}. Must be between 0 and 59.`);
+        }
+        if (period !== 'day' && period !== 'night') {
+            throw new InvalidTimeError(`Invalid period: "${period}". Must be 'day' or 'night'.`);
+        }
+
         this.hour = hour;
         this.minute = minute;
         this.period = period;
     }
 
+    /**
+     * Creates a Time instance from a Gregorian 24-hour time.
+     * @param {number} hour - The Gregorian hour (0-23).
+     * @param {number} [minute=0] - The minute (0-59).
+     * @returns {Time} A new Time instance.
+     * @throws {InvalidTimeError} If the Gregorian time is invalid.
+     */
     static fromGregorian(hour, minute = 0) {
-        const period = hour >= 6 && hour < 18 ? 'day' : 'night';
-        let ethHour = hour - 6;
-        if (ethHour < 0) ethHour += 12;
-        else ethHour = ethHour % 12;
-        ethHour = ethHour === 0 ? 12 : ethHour;
+        validateNumericInputs('Time.fromGregorian', { hour, minute });
+
+        if (hour < 0 || hour > 23) {
+            throw new InvalidTimeError(`Invalid Gregorian hour: ${hour}. Must be between 0 and 23.`);
+        }
+        if (minute < 0 || minute > 59) {
+            throw new InvalidTimeError(`Invalid minute: ${minute}. Must be between 0 and 59.`);
+        }
+
+        // Normalize Gregorian hour to an Ethiopian base (where 6 AM is 0)
+        let tempHour = hour - 6;
+        if (tempHour < 0) {
+            tempHour += 24;
+        }
+
+        const period = (tempHour < 12) ? 'day' : 'night';
+        let ethHour = tempHour % 12;
+        ethHour = (ethHour === 0) ? 12 : ethHour;
+
         return new Time(ethHour, minute, period);
     }
 
+    /**
+     * Converts the Ethiopian time to Gregorian 24-hour format.
+     * @returns {{hour: number, minute: number}}
+     */
     toGregorian() {
-        let hour = (this.hour % 12) + 6;
-        if (this.period === 'night') hour += 12;
-        if (hour >= 24) hour -= 24;
-        return { hour, minute: this.minute };
+        // Convert Ethiopian 1-12 hour to a 0-11 offset, where 12 o'clock is 0.
+        let gregHour = this.hour % 12;
+
+        if (this.period === 'day') {
+            gregHour += 6;
+        } else { // 'night'
+            gregHour += 18;
+        }
+
+        // Handle the 24-hour wrap-around (e.g., 6 night becomes 24, which should be 0)
+        gregHour = gregHour % 24;
+
+        return { hour: gregHour, minute: this.minute };
     }
 
+    /**
+     * Adds a duration to the current time.
+     * @param {{hours?: number, minutes?: number}} duration - Object with hours and/or minutes to add.
+     * @returns {Time} A new Time instance with the added duration.
+     */
     add(duration) {
+        if (typeof duration !== 'object' || duration === null) {
+            throw new InvalidTimeError('Duration must be an object.');
+        }
         const { hours = 0, minutes = 0 } = duration;
+        validateNumericInputs('Time.add', { hours, minutes });
+
         const greg = this.toGregorian();
         let totalMinutes = greg.hour * 60 + greg.minute + hours * 60 + minutes;
-        totalMinutes = ((totalMinutes % 1440) + 1440) % 1440;
+        totalMinutes = ((totalMinutes % 1440) + 1440) % 1440; // Normalize to a 24-hour cycle
+        
         const newHour = Math.floor(totalMinutes / 60);
         const newMinute = totalMinutes % 60;
+        
         return Time.fromGregorian(newHour, newMinute);
     }
-
+    
+    /**
+     * Subtracts a duration from the current time.
+     * @param {{hours?: number, minutes?: number}} duration - Object with hours and/or minutes to subtract.
+     * @returns {Time} A new Time instance with the subtracted duration.
+     */
     subtract(duration) {
+        if (typeof duration !== 'object' || duration === null) {
+            throw new InvalidTimeError('Duration must be an object.');
+        }
         const { hours = 0, minutes = 0 } = duration;
-        const greg = this.toGregorian();
-        let totalMinutes = greg.hour * 60 + greg.minute - (hours * 60 + minutes);
-        totalMinutes = ((totalMinutes % 1440) + 1440) % 1440;
-        const newHour = Math.floor(totalMinutes / 60);
-        const newMinute = totalMinutes % 60;
-        return Time.fromGregorian(newHour, newMinute);
+
+        return this.add({ hours: -hours, minutes: -minutes });
     }
 
+    /**
+     * Calculates the difference between this time and another.
+     * @param {Time} otherTime - Another Time instance to compare against.
+     * @returns {{hours: number, minutes: number}} An object with the absolute difference.
+     */
     diff(otherTime) {
+        if (!(otherTime instanceof Time)) {
+            throw new InvalidTimeError('Can only compare with another Time instance.');
+        }
         const t1 = this.toGregorian();
         const t2 = otherTime.toGregorian();
-        let diff = Math.abs(t1.hour * 60 + t1.minute - (t2.hour * 60 + t2.minute));
+        const totalMinutes1 = t1.hour * 60 + t1.minute;
+        const totalMinutes2 = t2.hour * 60 + t2.minute;
+
+        let diff = Math.abs(totalMinutes1 - totalMinutes2);
+
+        // Time wraps in a 24h cycle, so find the shortest path
         if (diff > 720) diff = 1440 - diff;
+        
         return {
             hours: Math.floor(diff / 60),
             minutes: diff % 60,
         };
     }
 
+    /**
+     * Formats the time as a string.
+     * @param {Object} [options] - Formatting options.
+     * @param {string} [options.lang] - The language for the period label. Defaults to 'english' if useGeez is false, otherwise 'amharic'.
+     * @param {boolean} [options.useGeez=true] - Whether to use Ge'ez numerals.
+     * @param {boolean} [options.showPeriodLabel=true] - Whether to show the period label.
+     * @param {boolean} [options.zeroAsDash=true] - Whether to represent zero minutes as a dash.
+     * @returns {string} The formatted time string.
+     */
     format(options = {}) {
-        const { useGeez = true, showPeriodLabel = true, zeroAsDash = true } = options;
+        // If useGeez is explicitly false, the default language should be English.
+        const defaultLang = options.useGeez === false ? 'english' : 'amharic';
+        const { lang = defaultLang, useGeez = true, showPeriodLabel = true, zeroAsDash = true } = options;
 
         const formatNum = (num) => {
             if (useGeez) return toGeez(num);
@@ -70,14 +164,23 @@ export class Time {
         let minuteStr;
         if (zeroAsDash && this.minute === 0) {
             minuteStr = '_';
-        } else if (this.minute < 10 && !useGeez) {
-            minuteStr = formatNum(this.minute);
         } else {
-            minuteStr = formatNum(this.minute);
+            minuteStr = useGeez ? toGeez(this.minute) : this.minute.toString().padStart(2, '0');
         }
-
-        const label = showPeriodLabel ? (PERIOD_LABELS[this.period] ?? '') : '';
-
-        return `${hourStr}:${minuteStr}${label ? ' ' + label : ''}`;
+        
+        let periodLabel = '';
+        if (showPeriodLabel) {
+            if (lang === 'english') {
+                 // Use English labels for the period
+                 periodLabel = this.period; // 'day' or 'night'
+            } else {
+                 // Default to Amharic labels from constants
+                 const amharicLabels = { day: 'ጠዋት', night: 'ማታ' };
+                 periodLabel = amharicLabels[this.period];
+            }
+        }
+        
+        const label = periodLabel ? ` ${periodLabel}` : '';
+        return `${hourStr}:${minuteStr}${label}`;
     }
 }

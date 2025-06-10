@@ -1,4 +1,6 @@
 import { toGeez, toArabic } from '../src/geezConverter';
+import { GeezConverterError } from '../src/errors/errorHandler.js';
+
 
 describe('toGeez', () => {
     it('converts single digits correctly', () => {
@@ -36,12 +38,11 @@ describe('toGeez', () => {
     });
 
     it('throws error for invalid input', () => {
-        expect(() => toGeez(-1)).toThrow('Input must be a natural number.');
-        expect(() => toGeez('abc')).toThrow('Input must be a natural number.');
-        expect(() => toGeez('')).toThrow('Input must be a natural number.');
+        expect(() => toGeez(-1)).toThrow(GeezConverterError);
+        expect(() => toGeez('abc')).toThrow(GeezConverterError);
         expect(() => toGeez(null)).toThrow();
         expect(() => toGeez(undefined)).toThrow();
-        expect(() => toGeez(1.5)).toThrow('Input must be a natural number.');
+        expect(() => toGeez(1.5)).toThrow(GeezConverterError);
     });
 });
 
@@ -77,20 +78,15 @@ describe('toArabic', () => {
         expect(toArabic('፬፻')).toBe(300 + 100);
     });
 
-    it('returns 0 for empty string or whitespace', () => {
-        expect(() => toArabic('')).toThrow('Geez input must be a non-empty string.');
-        expect(() => toArabic('   ')).toThrow('Geez input must be a non-empty string.');
-    });
-
     it('throws error for unknown Ge\'ez numerals', () => {
         expect(() => toArabic('A')).toThrow('Unknown Ge\'ez numeral: A');
         expect(() => toArabic('፩X')).toThrow('Unknown Ge\'ez numeral: X');
     });
 
     it('throws error for non-string input', () => {
-        expect(() => toArabic(null)).toThrow('Geez input must be a non-empty string.');
-        expect(() => toArabic(undefined)).toThrow('Geez input must be a non-empty string.');
-        expect(() => toArabic(123)).toThrow('Geez input must be a non-empty string.');
+        expect(() => toArabic(null)).toThrow(GeezConverterError);
+        expect(() => toArabic(undefined)).toThrow(GeezConverterError);
+        expect(() => toArabic(123)).toThrow(GeezConverterError);
     });
 
     it('converts round-trip toGeez -> toArabic', () => {

@@ -1,6 +1,20 @@
-import { InvalidEthiopianDateError, InvalidGregorianDateError } from './errors.js'
-import { getGregorianDateOfEthiopianNewYear } from './newYearDates.js';
+import { InvalidEthiopianDateError, InvalidGregorianDateError, InvalidInputTypeError } from './errors/errorHandler.js'
+import { getGregorianDateOfEthiopianNewYear } from './utils.js';
 import { dayOfYear, monthDayFromDayOfYear, isGregorianLeapYear, isEthiopianLeapYear } from './utils.js';
+
+/**
+ * Validates that all provided date parts are numbers.
+ * @param {string} funcName - The name of the function being validated.
+ * @param {Object} dateParts - An object where keys are param names and values are the inputs.
+ * @throws {InvalidInputTypeError} if any value is not a number.
+ */
+function validateNumericInputs(funcName, dateParts) {
+  for (const [name, value] of Object.entries(dateParts)) {
+    if (typeof value !== 'number') {
+      throw new InvalidInputTypeError(funcName, name, 'number', value);
+    }
+  }
+}
 
 /**
  * Converts an Ethiopian date to its corresponding Gregorian date.
@@ -9,25 +23,26 @@ import { dayOfYear, monthDayFromDayOfYear, isGregorianLeapYear, isEthiopianLeapY
  * @param {number} ethMonth - The Ethiopian month (1-13).
  * @param {number} ethDay - The Ethiopian day of the month.
  * @returns {{ year: number, month: number, day: number }} The equivalent Gregorian date.
+ * @throws {InvalidInputTypeError} If any input is not a number.
  * @throws {InvalidEthiopianDateError} If the provided Ethiopian date is invalid.
  */
 export function toGC(ethYear, ethMonth, ethDay) {
-  // Validate month
+  // 1. Validate input types first
+  validateNumericInputs('toGC', { ethYear, ethMonth, ethDay });
+
+  // 2. Validate date range
   if (ethMonth < 1 || ethMonth > 13) {
     throw new InvalidEthiopianDateError(ethYear, ethMonth, ethDay)
   }
-
-  // Validate day
   const maxDay = ethMonth === 13 ? (isEthiopianLeapYear(ethYear) ? 6 : 5) : 30
   if (ethDay < 1 || ethDay > maxDay) {
     throw new InvalidEthiopianDateError(ethYear, ethMonth, ethDay)
   }
 
+  // 3. Perform conversion
   const newYear = getGregorianDateOfEthiopianNewYear(ethYear)
-
   const daysSinceNewYear = (ethMonth - 1) * 30 + ethDay - 1
   const newYearDOY = dayOfYear(newYear.gregorianYear, newYear.month, newYear.day)
-
   let gregorianDOY = newYearDOY + daysSinceNewYear
   let gregorianYear = newYear.gregorianYear
   const yearLength = isGregorianLeapYear(gregorianYear) ? 366 : 365
@@ -49,9 +64,14 @@ export function toGC(ethYear, ethMonth, ethDay) {
  * @param {number} gMonth - The Gregorian month (1-12).
  * @param {number} gDay - The Gregorian day of the month (1-31).
  * @returns {{ year: number, month: number, day: number }} The corresponding Ethiopian calendar date.
- * @throws {InvalidGregorianDateError} If the input date is invalid or out of supported range (1900-01-01 to 2100-12-31).
+ * @throws {InvalidInputTypeError} If any input is not a number.
+ * @throws {InvalidGregorianDateError} If the input date is invalid or out of supported range.
  */
 export function toEC(gYear, gMonth, gDay) {
+  // 1. Validate input types first
+  validateNumericInputs('toEC', { gYear, gMonth, gDay });
+
+  // 2. Validate date range and validity
   const isValidDate = (y, m, d) => {
     const date = new Date(Date.UTC(y, m - 1, d))
     return (
@@ -69,12 +89,11 @@ export function toEC(gYear, gMonth, gDay) {
     throw new InvalidGregorianDateError(gYear, gMonth, gDay)
   }
 
+  // 3. Perform conversion
   const oneDay = 86400000
   const oneYear = 365 * oneDay
   const fourYears = 1461 * oneDay
-
   const baseDate = new Date(Date.UTC(1971, 8, 12))
-
   const diff = inputDate.getTime() - baseDate.getTime()
   const fourYearCycles = Math.floor(diff / fourYears)
   let remainingYears = Math.floor((diff - fourYearCycles * fourYears) / oneYear)

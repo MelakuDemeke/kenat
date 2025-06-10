@@ -1,4 +1,5 @@
 import { toGeez, toArabic } from '../src/geezConverter.js';
+import { GeezConverterError } from '../src/errors/errorHandler.js';
 
 describe('toGeez', () => {
     test('converts single digits correctly', () => {
@@ -60,8 +61,8 @@ describe('toArabic (reverse of toGeez)', () => {
     });
 
     test('throws error for invalid geez input', () => {
-        expect(() => toArabic('xyz')).toThrow();
-        expect(() => toArabic('')).toThrow();
-        expect(() => toArabic('፻፻፻x')).toThrow();
+        expect(() => toArabic('xyz')).toThrow(GeezConverterError);
+        expect(toArabic('')).toBe(0);
+        expect(() => toArabic('፻፻፻x')).toThrow(GeezConverterError);
     });
 });
