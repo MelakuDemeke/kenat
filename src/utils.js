@@ -84,3 +84,20 @@ export function getWeekday({ year, month, day }) {
     const g = toGC(year, month, day);
     return new Date(g.year, g.month - 1, g.day).getDay();
 }
+
+/**
+ * Checks if a given Ethiopian date is valid.
+ * @param {number} year - Ethiopian year
+ * @param {number} month - Ethiopian month (1-13)
+ * @param {number} day - Ethiopian day (1-30 or 1-5/6)
+ * @returns {boolean} - True if the date is valid, otherwise false.
+ */
+export function isValidEthiopianDate(year, month, day) {
+    if (month < 1 || month > 13) {
+        return false;
+    }
+    if (day < 1 || day > getEthiopianDaysInMonth(year, month)) {
+        return false;
+    }
+    return true;
+}

@@ -1,0 +1,99 @@
+/* /src/errors/index.js */
+
+/**
+ * Base class for all custom errors in the Kenat library.
+ */
+export class KenatError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+    }
+
+    /**
+     * Provides a serializable representation of the error.
+     * @returns {Object} A plain object with error details.
+     */
+    toJSON() {
+        return {
+            type: this.name,
+            message: this.message,
+        };
+    }
+}
+
+/**
+ * Thrown when an Ethiopian date is numerically invalid (e.g., month 14).
+ */
+export class InvalidEthiopianDateError extends KenatError {
+    constructor(year, month, day) {
+        super(`Invalid Ethiopian date: ${year}/${month}/${day}`);
+        this.date = { year, month, day };
+    }
+
+    toJSON() {
+        return {
+            ...super.toJSON(),
+            date: this.date,
+            validRange: {
+                month: "1–13",
+                day: "1–30 (or 5/6 for the 13th month)",
+            },
+        };
+    }
+}
+
+/**
+ * Thrown when a Gregorian date is numerically invalid.
+ */
+export class InvalidGregorianDateError extends KenatError {
+    constructor(year, month, day) {
+        super(`Invalid Gregorian date: ${year}/${month}/${day}`);
+        this.date = { year, month, day };
+    }
+
+    toJSON() {
+        return {
+            ...super.toJSON(),
+            date: this.date,
+            validRange: {
+                month: "1–12",
+                day: "1–31 (depending on month)",
+            },
+        };
+    }
+}
+
+/**
+ * Thrown when a date string provided to the constructor has an invalid format.
+ */
+export class InvalidDateFormatError extends KenatError {
+    constructor(inputString) {
+        super(`Invalid date string format: "${inputString}". Expected 'yyyy/mm/dd' or 'yyyy-mm-dd'.`);
+        this.inputString = inputString;
+    }
+
+    toJSON() {
+        return {
+            ...super.toJSON(),
+            inputString: this.inputString,
+        };
+    }
+}
+
+/**
+ * Thrown when the Kenat constructor receives an input type it cannot handle.
+ */
+export class UnrecognizedInputError extends KenatError {
+    constructor(input) {
+        const inputType = typeof input;
+        super(`Unrecognized input type for Kenat constructor: ${inputType}`);
+        this.input = input;
+    }
+
+    toJSON() {
+        return {
+            ...super.toJSON(),
+            inputType: typeof this.input,
+        };
+    }
+}

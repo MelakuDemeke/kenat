@@ -5,7 +5,12 @@ import { toEthiopianTime, toGregorianTime } from './ethiopianTime.js';
 import { toGeez } from './geezConverter.js';
 import { getHolidaysInMonth } from './holidays.js';
 import { MonthGrid } from './MonthGrid.js';
-import { getEthiopianDaysInMonth, isEthiopianLeapYear, getWeekday } from './utils.js';
+import { getEthiopianDaysInMonth, isValidEthiopianDate } from './utils.js';
+import {
+    InvalidEthiopianDateError,
+    InvalidDateFormatError,
+    UnrecognizedInputError
+} from './errors/errorHandler.js';
 import {
     formatStandard,
     formatInGeezAmharic,
@@ -32,32 +37,73 @@ import {
  */
 
 export class Kenat {
-
     /**
-     * Constructs a Kenat instance from an Ethiopian date string in 'yyyy/mm/dd' format,
-     * or defaults to the current Gregorian date converted to Ethiopian date if no argument is provided.
+     * Constructs a Kenat instance.
+     * Can be initialized with:
+     * - An Ethiopian date string (e.g., '2016/1/1', '2016-1-1').
+     * - An object with { year, month, day }.
+     * - A native JavaScript Date object (will be converted from Gregorian).
+     * - No arguments, for the current date.
      *
-     * @param {string} [ethiopianDateStr] - The Ethiopian date string in 'yyyy/mm/dd' format.
-     * @throws {Error} If the provided date string does not match the 'yyyy/mm/dd' format.
+     * @param {string|Object|Date} [input] - The date input.
+     * @param {Object} [timeObj] - An optional time object.
+     * @throws {InvalidEthiopianDateError} If the provided Ethiopian date is invalid.
+     * @throws {InvalidDateFormatError} If the provided date string format is invalid.
+     * @throws {UnrecognizedInputError} If the input format is unrecognized.
      */
-    constructor(ethiopianDateStr, timeObj = null) {
-        if (!ethiopianDateStr) {
-            // default to current Gregorian date → Ethiopian
+    constructor(input, timeObj = null) {
+        let year, month, day;
+
+        if (!input) {
+            // Default to current Gregorian date -> Ethiopian
             const today = new Date();
-            this.ethiopian = toEC(
+            const ethiopianToday = toEC(
                 today.getFullYear(),
                 today.getMonth() + 1,
                 today.getDate()
             );
+            year = ethiopianToday.year;
+            month = ethiopianToday.month;
+            day = ethiopianToday.day;
             this.time = toEthiopianTime(today.getHours(), today.getMinutes());
-
-        } else if (/^\d{4}\/\d{1,2}\/\d{1,2}$/.test(ethiopianDateStr)) {
-            const [year, month, day] = ethiopianDateStr.split('/').map(Number);
-            this.ethiopian = { year, month, day };
+        } else if (input instanceof Date) {
+            // Input is a JS Date object
+            const ethiopianDate = toEC(
+                input.getFullYear(),
+                input.getMonth() + 1,
+                input.getDate()
+            );
+            year = ethiopianDate.year;
+            month = ethiopianDate.month;
+            day = ethiopianDate.day;
+            this.time = toEthiopianTime(input.getHours(), input.getMinutes());
+        } else if (typeof input === 'object' && input !== null && 'year' in input && 'month' in input && 'day' in input) {
+            // Input is an object { year, month, day }
+            year = input.year;
+            month = input.month;
+            day = input.day;
+            this.time = timeObj || { hour: 12, minute: 0, period: 'day' };
+        } else if (typeof input === 'string') {
+            // Input is a string, try to parse it
+            const parts = input.split(/[-/]/).map(Number);
+            if (parts.length === 3 && !parts.some(isNaN)) {
+                [year, month, day] = parts;
+            } else {
+                // Throw the new custom error for bad string formats
+                throw new InvalidDateFormatError(input);
+            }
             this.time = timeObj || { hour: 12, minute: 0, period: 'day' };
         } else {
-            throw new Error("Kenat only accepts Ethiopian date in 'yyyy/mm/dd' format.");
+            // Throw the new custom error for any other unrecognized type
+            throw new UnrecognizedInputError(input);
         }
+
+        // Centralized validation
+        if (!isValidEthiopianDate(year, month, day)) {
+            throw new InvalidEthiopianDateError(year, month, day);
+        }
+
+        this.ethiopian = { year, month, day };
     }
 
     /**

@@ -1,5 +1,5 @@
 import { toEC, toGC } from "../src/conversions";
-import { InvalidGregorianDateError } from "../src/errors";
+import { InvalidGregorianDateError } from "../src/errors/errorHandler.js";
 
 describe('Ethiopian to Gregorian conversion', () => {
 
