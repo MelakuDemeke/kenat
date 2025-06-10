@@ -5,7 +5,7 @@ import { toEthiopianTime, toGregorianTime } from './ethiopianTime.js';
 import { toGeez } from './geezConverter.js';
 import { getHolidaysInMonth } from './holidays.js';
 import { MonthGrid } from './MonthGrid.js';
-import { getEthiopianDaysInMonth, isValidEthiopianDate } from './utils.js';
+import { getEthiopianDaysInMonth, isValidEthiopianDate, isEthiopianLeapYear, getWeekday } from './utils.js';
 import {
     InvalidEthiopianDateError,
     InvalidDateFormatError,
@@ -458,5 +458,68 @@ export class Kenat {
             ? (period === 'day' ? 'ጠዋት' : 'ማታ')
             : (period === 'day' ? 'day' : 'night');
         return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} ${suffix}`;
+    }
+
+    /**
+     * Checks if the current Kenat instance's date is before another Kenat instance's date.
+     * @param {Kenat} other - The other Kenat instance to compare against.
+     * @returns {boolean} True if the current date is before the other date.
+     */
+    isBefore(other) {
+        return this.diffInDays(other) < 0;
+    }
+
+    /**
+     * Checks if the current Kenat instance's date is after another Kenat instance's date.
+     * @param {Kenat} other - The other Kenat instance to compare against.
+     * @returns {boolean} True if the current date is after the other date.
+     */
+    isAfter(other) {
+        return this.diffInDays(other) > 0;
+    }
+
+    /**
+     * Checks if the current Kenat instance's date is the same as another Kenat instance's date.
+     * @param {Kenat} other - The other Kenat instance to compare against.
+     * @returns {boolean} True if the dates are the same.
+     */
+    isSameDay(other) {
+        const otherEth = other.getEthiopian();
+        return this.ethiopian.year === otherEth.year &&
+            this.ethiopian.month === otherEth.month &&
+            this.ethiopian.day === otherEth.day;
+    }
+
+    /**
+     * Returns a new Kenat instance set to the first day of the current month.
+     * @returns {Kenat} A new Kenat instance.
+     */
+    startOfMonth() {
+        return new Kenat(`${this.ethiopian.year}/${this.ethiopian.month}/1`);
+    }
+
+    /**
+     * Returns a new Kenat instance set to the last day of the current month.
+     * @returns {Kenat} A new Kenat instance.
+     */
+    endOfMonth() {
+        const lastDay = getEthiopianDaysInMonth(this.ethiopian.year, this.ethiopian.month);
+        return new Kenat(`${this.ethiopian.year}/${this.ethiopian.month}/${lastDay}`);
+    }
+
+    /**
+     * Checks if the current Ethiopian year is a leap year.
+     * @returns {boolean} True if it is a leap year.
+     */
+    isLeapYear() {
+        return isEthiopianLeapYear(this.ethiopian.year);
+    }
+
+    /**
+     * Returns the weekday number for the current date.
+     * @returns {number} The day of the week (0 for Sunday, 6 for Saturday).
+     */
+    weekday() {
+        return getWeekday(this.ethiopian);
     }
 }

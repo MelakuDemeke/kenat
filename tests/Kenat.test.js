@@ -56,3 +56,55 @@ describe('Kenat class', () => {
     });
 
 });
+
+describe('Kenat API Helper Methods', () => {
+    const date1 = new Kenat("2016/8/15");
+    const date2 = new Kenat("2016/8/20");
+    const date3 = new Kenat("2016/8/15");
+    const leapYearDate = new Kenat("2015/1/1");
+    const nonLeapYearDate = new Kenat("2016/1/1");
+
+    test('isBefore() should correctly compare dates', () => {
+        expect(date1.isBefore(date2)).toBe(true);
+        expect(date2.isBefore(date1)).toBe(false);
+        expect(date1.isBefore(date3)).toBe(false);
+    });
+
+    test('isAfter() should correctly compare dates', () => {
+        expect(date2.isAfter(date1)).toBe(true);
+        expect(date1.isAfter(date2)).toBe(false);
+        expect(date1.isAfter(date3)).toBe(false);
+    });
+
+    test('isSameDay() should correctly compare dates', () => {
+        expect(date1.isSameDay(date3)).toBe(true);
+        expect(date1.isSameDay(date2)).toBe(false);
+    });
+
+    test('startOfMonth() should return the first day of the month', () => {
+        const start = date1.startOfMonth();
+        expect(start.getEthiopian()).toEqual({ year: 2016, month: 8, day: 1 });
+    });
+
+    test('endOfMonth() should return the last day of a standard month', () => {
+        const end = date1.endOfMonth();
+        expect(end.getEthiopian()).toEqual({ year: 2016, month: 8, day: 30 });
+    });
+
+    test('endOfMonth() should return the last day of Pagume in a leap year', () => {
+        const pagume = new Kenat("2015/13/1"); // 2015 is a leap year
+        const end = pagume.endOfMonth();
+        expect(end.getEthiopian()).toEqual({ year: 2015, month: 13, day: 6 });
+    });
+
+    test('isLeapYear() should correctly identify leap years', () => {
+        expect(leapYearDate.isLeapYear()).toBe(true);
+        expect(nonLeapYearDate.isLeapYear()).toBe(false);
+    });
+
+    test('weekday() should return the correct day of the week', () => {
+        // May 23, 2024 is a Thursday, which is index 4
+        const specificDate = new Kenat("2016/9/15");
+        expect(specificDate.weekday()).toBe(4);
+    });
+});
