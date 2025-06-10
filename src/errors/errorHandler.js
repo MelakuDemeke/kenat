@@ -130,3 +130,12 @@ export class InvalidInputTypeError extends KenatError {
         };
     }
 }
+
+/**
+ * Thrown for errors related to invalid time components.
+ */
+export class InvalidTimeError extends KenatError {
+    constructor(message) {
+        super(message);
+    }
+}
