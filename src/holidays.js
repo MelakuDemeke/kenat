@@ -1,13 +1,9 @@
 import { toEC, toGC, hijriToGregorian, getHijriYear } from "./conversions.js";
-import { holidayInfo, movableHolidayTewsak } from "./constants.js";
+import { holidayInfo, HolidayTags, keyToTewsakMap } from "./constants.js";
 import { validateNumericInputs } from "./utils.js";
 import { InvalidInputTypeError, UnknownHolidayError } from "./errors/errorHandler.js";
 import { getMovableHoliday } from "./bahireHasab.js";
 
-export const HolidayTags = {
-    PUBLIC: "public", RELIGIOUS: "religious", CHRISTIAN: "christian",
-    MUSLIM: "muslim", STATE: "state", CULTURAL: "cultural", OTHER: "other",
-};
 
 const fixedHolidays = {
     enkutatash: { month: 1, day: 1, tags: [HolidayTags.PUBLIC, HolidayTags.CULTURAL] },
@@ -38,12 +34,7 @@ const movableHolidays = {
     moulid: { tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.MUSLIM] },
 };
 
-const keyToTewsakMap = {
-    nineveh: 'NINEVEH', abiyTsome: 'ABIY_TSOME', debreZeit: 'DEBRE_ZEIT',
-    hosanna: 'HOSANNA', siklet: 'SIKLET', fasika: 'TINSAYE',
-    rikbeKahnat: 'RIKBE_KAHNAT', erget: 'ERGET', paraclete: 'PARACLETE',
-    tsomeHawaryat: 'TSOME_HAWARYAT', tsomeDihnet: 'TSOME_DIHENET'
-};
+
 
 /**
  * CORRECTED: Internal helper to robustly find all occurrences of an Islamic holiday within an Ethiopian year.

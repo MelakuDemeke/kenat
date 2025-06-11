@@ -22,6 +22,18 @@ export const daysOfWeek = {
   ],
 };
 
+export const HolidayTags = {
+    PUBLIC: "public", RELIGIOUS: "religious", CHRISTIAN: "christian",
+    MUSLIM: "muslim", STATE: "state", CULTURAL: "cultural", OTHER: "other",
+};
+
+export const keyToTewsakMap = {
+    nineveh: 'NINEVEH', abiyTsome: 'ABIY_TSOME', debreZeit: 'DEBRE_ZEIT',
+    hosanna: 'HOSANNA', siklet: 'SIKLET', fasika: 'TINSAYE',
+    rikbeKahnat: 'RIKBE_KAHNAT', erget: 'ERGET', paraclete: 'PARACLETE',
+    tsomeHawaryat: 'TSOME_HAWARYAT', tsomeDihnet: 'TSOME_DIHENET'
+};
+
 export const PERIOD_LABELS = {
   day: 'ከሰዓት',
   night: 'ማታ',
