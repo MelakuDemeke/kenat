@@ -158,9 +158,98 @@ export function getMoulidDate(ethiopianYear, ethiopianMonth = 10) {
     return null;
 }
 
+const keyToTewsakMap = {
+    nineveh: 'NINEVEH',
+    abiyTsome: 'ABIY_TSOME',
+    debreZeit: 'DEBRE_ZEIT',
+    hosanna: 'HOSANNA',
+    siklet: 'SIKLET',
+    fasika: 'TINSAYE', // Note the mapping here
+    rikbeKahnat: 'RIKBE_KAHNAT',
+    erget: 'ERGET',
+    paraclete: 'PARACLETE',
+    tsomeHawaryat: 'TSOME_HAWARYAT',
+    tsomeDihnet: 'TSOME_DIHENET'
+};
 
 /**
- * Returns a list of holidays occurring in a specific Ethiopian month and year.
+ * Retrieves a specific holiday for a given year.
+ *
+ * @param {string} holidayKey - The key of the holiday (e.g., 'fasika', 'enkutatash').
+ * @param {number} ethYear - The Ethiopian year.
+ * @param {Object} [options={}] - Options for language.
+ * @param {string} [options.lang='amharic'] - The language for names and descriptions.
+ * @returns {Object|null} A holiday object or null if the key is invalid.
+ */
+export function getHoliday(holidayKey, ethYear, options = {}) {
+    validateNumericInputs('getHoliday', { ethYear });
+    const { lang = 'amharic' } = options;
+
+    const info = holidayInfo[holidayKey];
+    if (!info) {
+        return null; // Return null for unknown holiday keys
+    }
+
+    const name = info?.name?.[lang] || info?.name?.english;
+    const description = info?.description?.[lang] || info?.description?.english;
+
+    // Check if it's a fixed holiday
+    if (fixedHolidays[holidayKey]) {
+        const rules = fixedHolidays[holidayKey];
+        return {
+            key: holidayKey,
+            tags: rules.tags,
+            movable: false,
+            name,
+            description,
+            ethiopian: { year: ethYear, month: rules.month, day: rules.day },
+        };
+    }
+
+    // Check if it's a movable Christian holiday
+    const tewsakKey = keyToTewsakMap[holidayKey];
+    if (tewsakKey) {
+        const date = getMovableHoliday(tewsakKey, ethYear);
+        return {
+            key: holidayKey,
+            tags: movableHolidays[holidayKey].tags,
+            movable: true,
+            name,
+            description,
+            ethiopian: date,
+            gregorian: toGC(date.year, date.month, date.day),
+        };
+    }
+
+    // Check if it's a movable Muslim holiday
+    let muslimDateData;
+    if (holidayKey === 'eidFitr') {
+        muslimDateData = getEidFitrDate(ethYear);
+    } else if (holidayKey === 'eidAdha') {
+        muslimDateData = getEidAdhaDate(ethYear);
+    } else if (holidayKey === 'moulid') {
+        muslimDateData = getMoulidDate(ethYear);
+    }
+
+    if (muslimDateData) {
+        return {
+            key: holidayKey,
+            tags: movableHolidays[holidayKey].tags,
+            movable: true,
+            name,
+            description,
+            ethiopian: muslimDateData.ethiopian,
+            gregorian: muslimDateData.gregorian,
+        };
+    }
+
+    return null; // Should not be reached if holidayInfo is the source of truth
+}
+
+
+
+/**
+ * Returns a list of all holidays occurring in a specific Ethiopian month and year.
  *
  * @param {number} ethYear - The Ethiopian year.
  * @param {number} ethMonth - The Ethiopian month (1-13).
@@ -174,76 +263,12 @@ export function getHolidaysInMonth(ethYear, ethMonth, lang = 'amharic') {
     }
 
     const holidays = [];
+    const allHolidayKeys = Object.keys(holidayInfo);
 
-    // Process fixed holidays
-    Object.entries(fixedHolidays).forEach(([key, rules]) => {
-        if (rules.month === ethMonth) {
-            const info = holidayInfo[key];
-            holidays.push({
-                key,
-                tags: rules.tags,
-                movable: false,
-                name: info?.name?.[lang] || info?.name?.english,
-                description: info?.description?.[lang] || info?.description?.english,
-                ethiopian: { year: ethYear, month: rules.month, day: rules.day },
-            });
-        }
-    });
-
-    // A mapping from the calculation key (from movableHolidayTewsak) to the public holiday key
-    const tewsakToKeyMap = {
-        NINEVEH: 'nineveh',
-        ABIY_TSOME: 'abiyTsome',
-        DEBRE_ZEIT: 'debreZeit',
-        HOSANNA: 'hosanna',
-        SIKLET: 'siklet',
-        TINSAYE: 'fasika', // Note the mapping here
-        RIKBE_KAHNAT: 'rikbeKahnat',
-        ERGET: 'erget',
-        PARACLETE: 'paraclete',
-        TSOME_HAWARYAT: 'tsomeHawaryat',
-        TSOME_DIHENET: 'tsomeDihnet'
-    };
-
-    // Process movable Christian holidays
-    Object.keys(tewsakToKeyMap).forEach(tewsakKey => {
-        const date = getMovableHoliday(tewsakKey, ethYear);
-        if (date.month === ethMonth) {
-            const holidayKey = tewsakToKeyMap[tewsakKey];
-            const rules = movableHolidays[holidayKey];
-            const info = holidayInfo[holidayKey];
-            holidays.push({
-                key: holidayKey,
-                tags: rules.tags,
-                movable: true,
-                name: info?.name?.[lang] || info?.name?.english,
-                description: info?.description?.[lang] || info?.description?.english,
-                ethiopian: date,
-                gregorian: toGC(date.year, date.month, date.day),
-            });
-        }
-    });
-
-    // Process movable Muslim holidays
-    const muslimMovable = {
-        eidFitr: getEidFitrDate(ethYear, ethMonth),
-        eidAdha: getEidAdhaDate(ethYear, ethMonth),
-        moulid: getMoulidDate(ethYear, ethMonth),
-    };
-
-    Object.entries(muslimMovable).forEach(([key, data]) => {
-        if (data && data.ethiopian.month === ethMonth) {
-            const rules = movableHolidays[key];
-            const info = holidayInfo[key];
-            holidays.push({
-                key,
-                tags: rules.tags,
-                movable: true,
-                name: info?.name?.[lang] || info?.name?.english,
-                description: info?.description?.[lang] || info?.description?.english,
-                ethiopian: data.ethiopian,
-                gregorian: data.gregorian,
-            });
+    allHolidayKeys.forEach(key => {
+        const holiday = getHoliday(key, ethYear, { lang });
+        if (holiday && holiday.ethiopian.month === ethMonth) {
+            holidays.push(holiday);
         }
     });
 
