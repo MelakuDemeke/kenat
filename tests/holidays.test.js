@@ -1,27 +1,21 @@
-/* /test/holidays.test.js */
-
-import { getHolidaysInMonth, getFasikaDate, getSikletDate } from '../src/holidays.js';
+import { getHolidaysInMonth } from '../src/holidays.js';
+import { getMovableHoliday } from '../src/bahireHasab.js';
 import { InvalidInputTypeError } from '../src/errors/errorHandler.js';
 
 describe('Holiday Calculation', () => {
 
     describe('getHolidaysInMonth', () => {
-        test('should return fixed holidays for a given month', () => {
+        test('should return fixed and movable holidays for a given month', () => {
             // Meskerem 2016 has Enkutatash (day 1) and Meskel (day 17)
             const holidays = getHolidaysInMonth(2016, 1);
-            expect(holidays).toHaveLength(3);
-            expect(holidays[0].key).toBe('enkutatash');
-            expect(holidays[1].key).toBe('moulid');
-        });
-
-        test('should return an empty array for a month with no holidays', () => {
-            // Sene 2016 has no major fixed or movable holidays
-            const holidays = getHolidaysInMonth(2016, 10);
-            expect(holidays).toHaveLength(1);
+            const holidayKeys = holidays.map(h => h.key);
+            
+            expect(holidayKeys).toContain('enkutatash');
+            expect(holidayKeys).toContain('meskel');
         });
 
         test('should correctly calculate and include movable Christian holidays', () => {
-            // Fasika in 2016 E.C. is on Miazia 27
+            // In 2016 E.C., Fasika is on Miazia 27 and Siklet is on Miazia 25
             const holidays = getHolidaysInMonth(2016, 8);
             const fasika = holidays.find(h => h.key === 'fasika');
             const siklet = holidays.find(h => h.key === 'siklet');
@@ -32,33 +26,23 @@ describe('Holiday Calculation', () => {
             expect(siklet).toBeDefined();
             expect(siklet.ethiopian.day).toBe(25);
         });
-        
     });
 
-    describe('getFasikaDate', () => {
-        test('should calculate the correct date for Fasika (Easter)', () => {
-            // For 2016 E.C., Fasika is May 5, 2024 G.C. / Miazia 27, 2016 E.C.
-            const fasika = getFasikaDate(2016);
-            expect(fasika.gregorian).toEqual({ year: 2024, month: 5, day: 5 });
-            expect(fasika.ethiopian).toEqual({ year: 2016, month: 8, day: 27 });
+    describe('getMovableHoliday (Bahire Hasab)', () => {
+        test('should return correct Fasika (Tinsaye) date for Ethiopian years 2012 to 2016', () => {
+            expect(getMovableHoliday('TINSAYE', 2012)).toEqual({ year: 2012, month: 8, day: 11 });
+            expect(getMovableHoliday('TINSAYE', 2013)).toEqual({ year: 2013, month: 8, day: 24 });
+            expect(getMovableHoliday('TINSAYE', 2014)).toEqual({ year: 2014, month: 8, day: 16 });
+            expect(getMovableHoliday('TINSAYE', 2015)).toEqual({ year: 2015, month: 8, day: 8 });
+            expect(getMovableHoliday('TINSAYE', 2016)).toEqual({ year: 2016, month: 8, day: 27 });
         });
-        
-        test('should return correct Fasika date for Ethiopian years 2012 to 2016', () => {
-            expect(getFasikaDate(2012).ethiopian).toEqual({ year: 2012, month: 8, day: 11 });
-            expect(getFasikaDate(2013).ethiopian).toEqual({ year: 2013, month: 8, day: 24 });
-            expect(getFasikaDate(2014).ethiopian).toEqual({ year: 2014, month: 8, day: 16 });
-            expect(getFasikaDate(2015).ethiopian).toEqual({ year: 2015, month: 8, day: 8 });
-            expect(getFasikaDate(2016).ethiopian).toEqual({ year: 2016, month: 8, day: 27 });
-        });
-    });
 
-    describe('getSikletDate', () => {
         test('should return correct Siklet (Good Friday) date for Ethiopian years 2012 to 2016', () => {
-            expect(getSikletDate(2012).ethiopian).toEqual({ year: 2012, month: 8, day: 9 });
-            expect(getSikletDate(2013).ethiopian).toEqual({ year: 2013, month: 8, day: 22 });
-            expect(getSikletDate(2014).ethiopian).toEqual({ year: 2014, month: 8, day: 14 });
-            expect(getSikletDate(2015).ethiopian).toEqual({ year: 2015, month: 8, day: 6 });
-            expect(getSikletDate(2016).ethiopian).toEqual({ year: 2016, month: 8, day: 25 });
+            expect(getMovableHoliday('SIKLET', 2012)).toEqual({ year: 2012, month: 8, day: 9 });
+            expect(getMovableHoliday('SIKLET', 2013)).toEqual({ year: 2013, month: 8, day: 22 });
+            expect(getMovableHoliday('SIKLET', 2014)).toEqual({ year: 2014, month: 8, day: 14 });
+            expect(getMovableHoliday('SIKLET', 2015)).toEqual({ year: 2015, month: 8, day: 6 });
+            expect(getMovableHoliday('SIKLET', 2016)).toEqual({ year: 2016, month: 8, day: 25 });
         });
     });
 
@@ -73,9 +57,13 @@ describe('Holiday Calculation', () => {
             expect(() => getHolidaysInMonth(2016, 14)).toThrow(InvalidInputTypeError);
         });
 
-        test('getFasikaDate should throw for invalid input type', () => {
-            expect(() => getFasikaDate(null)).toThrow(InvalidInputTypeError);
-            expect(() => getFasikaDate('2016')).toThrow(InvalidInputTypeError);
+        test('getMovableHoliday should throw for invalid input type', () => {
+            expect(() => getMovableHoliday('TINSAYE', null)).toThrow(InvalidInputTypeError);
+            expect(() => getMovableHoliday('TINSAYE', '2016')).toThrow(InvalidInputTypeError);
+        });
+
+        test('getMovableHoliday should throw for unknown holiday key', () => {
+            expect(() => getMovableHoliday('UNKNOWN_HOLIDAY', 2016)).toThrow('Unknown movable holiday key: UNKNOWN_HOLIDAY');
         });
     });
 

@@ -3,7 +3,7 @@ import { printMonthCalendarGrid } from './render/printMonthCalendarGrid.js';
 import { monthNames, daysOfWeek } from './constants.js';
 import { toEthiopianTime, toGregorianTime } from './ethiopianTime.js';
 import { toGeez } from './geezConverter.js';
-import { getHolidaysInMonth } from './holidays.js';
+import { getBahireHasab } from './bahireHasab.js';
 import { MonthGrid } from './MonthGrid.js';
 import { getEthiopianDaysInMonth, isValidEthiopianDate, isEthiopianLeapYear, getWeekday } from './utils.js';
 import {
@@ -143,6 +143,16 @@ export class Kenat {
      */
     setTime(hour, minute, period) {
         this.time = { hour, minute, period };
+    }
+
+    /**
+     * Calculates and returns the Bahire Hasab values for the current instance's year.
+     *
+     * @returns {Object} An object containing all the calculated Bahire Hasab values
+     * (ameteAlem, evangelist, wenber, metqi, nineveh, etc.).
+     */
+    getBahireHasab() {
+        return getBahireHasab(this.ethiopian.year);
     }
 
     // Format Methods

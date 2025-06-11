@@ -2,6 +2,7 @@ import { toEC, toGC, hijriToGregorian, getHijriYear } from "./conversions.js";
 import { holidayNames } from "./constants.js";
 import { validateNumericInputs } from "./utils.js";
 import { InvalidInputTypeError } from "./errors/errorHandler.js";
+import { getMovableHoliday } from "./bahireHasab.js";
 
 export const HolidayTags = {
     PUBLIC: "public",
@@ -142,48 +143,67 @@ export const movableHolidays = {
         name: holidayNames.moulid,
         description: "Celebrates the birthday of the Prophet Mohammed.",
     },
+    abiyTsome: {
+        key: "abiyTsome",
+        movable: true,
+        tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
+        name: holidayNames.abiyTsome,
+        description: "The Great Lent, a 55-day fasting period before Easter.",
+    },
+    debreZeit: {
+        key: "debreZeit",
+        movable: true,
+        tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
+        name: holidayNames.debreZeit,
+        description:
+            "Mid-Lent Sunday, commemorating Jesus's sermon on the Mount of Olives.",
+    },
+    hosanna: {
+        key: "hosanna",
+        movable: true,
+        tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
+        name: holidayNames.hosanna,
+        description:
+            "Palm Sunday, commemorating Jesus's triumphal entry into Jerusalem.",
+    },
+    rikbeKahnat: {
+        key: "rikbeKahnat",
+        movable: true,
+        tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
+        name: holidayNames.rikbeKahnat,
+        description: "The Meeting of the Priests, 24 days after Easter.",
+    },
+    erget: {
+        key: "erget",
+        movable: true,
+        tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
+        name: holidayNames.erget,
+        description: "The Ascension of Jesus into heaven, 40 days after Easter.",
+    },
+    paraclete: {
+        key: "paraclete",
+        movable: true,
+        tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
+        name: holidayNames.paraclete,
+        description:
+            "Pentecost, celebrating the descent of the Holy Spirit upon the Apostles, 50 days after Easter.",
+    },
+    tsomeHawaryat: {
+        key: "tsomeHawaryat",
+        movable: true,
+        tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
+        name: holidayNames.tsomeHawaryat,
+        description:
+            "The Fast of the Apostles, which begins the day after Pentecost.",
+    },
+    tsomeDihnet: {
+        key: "tsomeDihnet",
+        movable: true,
+        tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
+        name: holidayNames.tsomeDihnet,
+        description: "The Fast of Salvation, observed on Wednesdays and Fridays.",
+    },
 };
-
-export function getFasikaDate(ethYear) {
-    validateNumericInputs("getFasikaDate", { ethYear });
-    const gYear = ethYear + 8;
-    const a = gYear % 4,
-        b = gYear % 7,
-        c = gYear % 19;
-    const d = (19 * c + 15) % 30;
-    const e = (2 * a + 4 * b - d + 34) % 7;
-    const month = Math.floor((d + e + 114) / 31);
-    const day = ((d + e + 114) % 31) + 1;
-    const easterGregorian = new Date(Date.UTC(gYear, month - 1, day + 13));
-    const gYearFinal = easterGregorian.getUTCFullYear();
-    const gMonth = easterGregorian.getUTCMonth() + 1;
-    const gDay = easterGregorian.getUTCDate();
-    const {
-        year: eYear,
-        month: eMonth,
-        day: eDay,
-    } = toEC(gYearFinal, gMonth, gDay);
-    return {
-        gregorian: { year: gYearFinal, month: gMonth, day: gDay },
-        ethiopian: { year: eYear, month: eMonth, day: eDay },
-    };
-}
-
-export function getSikletDate(ethYear) {
-    validateNumericInputs("getSikletDate", { ethYear });
-    const fasika = getFasikaDate(ethYear);
-    const { year, month, day } = fasika.gregorian;
-    const fasikaDate = new Date(Date.UTC(year, month - 1, day));
-    fasikaDate.setUTCDate(fasikaDate.getUTCDate() - 2);
-    const gYear = fasikaDate.getUTCFullYear(),
-        gMonth = fasikaDate.getUTCMonth() + 1,
-        gDay = fasikaDate.getUTCDate();
-    const eth = toEC(gYear, gMonth, gDay);
-    return {
-        gregorian: { year: gYear, month: gMonth, day: gDay },
-        ethiopian: { year: eth.year, month: eth.month, day: eth.day },
-    };
-}
 
 export function getEidFitrDate(ethiopianYear, ethiopianMonth = 9) {
     validateNumericInputs("getEidFitrDate", { ethiopianYear, ethiopianMonth });
@@ -325,6 +345,7 @@ export function getHolidaysInMonth(ethYear, ethMonth) {
     }
 
     const holidays = [];
+    // Add fixed holidays
     Object.values(fixedHolidayName).forEach((holiday) => {
         if (holiday.month === ethMonth) {
             holidays.push({
@@ -334,28 +355,45 @@ export function getHolidaysInMonth(ethYear, ethMonth) {
         }
     });
 
-    const fasika = getFasikaDate(ethYear),
-        siklet = getSikletDate(ethYear);
-    const eidFitr = getEidFitrDate(ethYear, ethMonth),
-        eidAdha = getEidAdhaDate(ethYear, ethMonth);
-    const moulid = getMoulidDate(ethYear, ethMonth);
+    // Calculate and add movable Christian holidays using Bahire Hasab
+    const christianMovable = {
+        fasika: getMovableHoliday('TINSAYE', ethYear),
+        siklet: getMovableHoliday('SIKLET', ethYear),
+        abiyTsome: getMovableHoliday('ABIY_TSOME', ethYear),
+        debreZeit: getMovableHoliday('DEBRE_ZEIT', ethYear),
+        hosanna: getMovableHoliday('HOSANNA', ethYear),
+        rikbeKahnat: getMovableHoliday('RIKBE_KAHNAT', ethYear),
+        erget: getMovableHoliday('ERGET', ethYear),
+        paraclete: getMovableHoliday('PARACLETE', ethYear),
+        tsomeHawaryat: getMovableHoliday('TSOME_HAWARYAT', ethYear),
+        tsomeDihnet: getMovableHoliday('TSOME_DIHENET', ethYear),
+    };
 
-    [fasika, siklet, eidFitr, eidAdha, moulid].forEach((movable) => {
-        if (movable && movable.ethiopian.month === ethMonth) {
-            let holidayKey = null;
-            if (movable === fasika) holidayKey = "fasika";
-            else if (movable === siklet) holidayKey = "siklet";
-            else if (movable === eidFitr) holidayKey = "eidFitr";
-            else if (movable === eidAdha) holidayKey = "eidAdha";
-            else if (movable === moulid) holidayKey = "moulid";
-            if (holidayKey && movableHolidays[holidayKey]) {
-                holidays.push({
-                    ...movableHolidays[holidayKey],
-                    ethiopian: movable.ethiopian,
-                    gregorian: movable.gregorian,
-                    note: movable.note || null,
-                });
-            }
+    Object.entries(christianMovable).forEach(([key, date]) => {
+        if (date.month === ethMonth) {
+            holidays.push({
+                ...movableHolidays[key],
+                ethiopian: date,
+                gregorian: toGC(date.year, date.month, date.day),
+            });
+        }
+    });
+
+    // Calculate and add movable Muslim holidays (existing logic)
+    const muslimMovable = {
+        eidFitr: getEidFitrDate(ethYear, ethMonth),
+        eidAdha: getEidAdhaDate(ethYear, ethMonth),
+        moulid: getMoulidDate(ethYear, ethMonth),
+    };
+
+    Object.entries(muslimMovable).forEach(([key, data]) => {
+        if (data && data.ethiopian.month === ethMonth) {
+            holidays.push({
+                ...movableHolidays[key],
+                ethiopian: data.ethiopian,
+                gregorian: data.gregorian,
+                note: data.note || null,
+            });
         }
     });
 
