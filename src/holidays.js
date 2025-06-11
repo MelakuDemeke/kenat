@@ -45,11 +45,119 @@ const movableHolidays = {
     moulid: { tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.MUSLIM] },
 };
 
-// These functions remain for calculating Islamic holidays
-function getEidFitrDate(ethiopianYear, ethiopianMonth = 9) { /* ... existing code ... */ }
-function getEidAdhaDate(ethiopianYear, ethiopianMonth = 12) { /* ... existing code ... */ }
-function getMoulidDate(ethiopianYear, ethiopianMonth = 10) { /* ... existing code ... */ }
-// NOTE: I've omitted the full code for these three functions for brevity, but they should remain unchanged.
+export function getEidFitrDate(ethiopianYear, ethiopianMonth = 9) {
+    validateNumericInputs("getEidFitrDate", { ethiopianYear, ethiopianMonth });
+    const gregorianYear = toGC(ethiopianYear, ethiopianMonth, 1).year;
+    const year = Number(gregorianYear);
+    const hijriYearStart = getHijriYear(new Date(year, 0, 1)),
+        hijriYearEnd = getHijriYear(new Date(year, 11, 31));
+    const eidStartYear = hijriToGregorian(hijriYearStart, 10, 1, year);
+    if (eidStartYear)
+        return {
+            gregorian: {
+                year: eidStartYear.getFullYear(),
+                month: eidStartYear.getMonth() + 1,
+                day: eidStartYear.getDate(),
+            },
+            ethiopian: toEC(
+                eidStartYear.getFullYear(),
+                eidStartYear.getMonth() + 1,
+                eidStartYear.getDate()
+            ),
+        };
+    const eidEndYear = hijriToGregorian(hijriYearEnd, 10, 1, year);
+    if (eidEndYear)
+        return {
+            gregorian: {
+                year: eidEndYear.getFullYear(),
+                month: eidEndYear.getMonth() + 1,
+                day: eidEndYear.getDate(),
+            },
+            ethiopian: toEC(
+                eidEndYear.getFullYear(),
+                eidEndYear.getMonth() + 1,
+                eidEndYear.getDate()
+            ),
+        };
+    return null;
+}
+
+export function getEidAdhaDate(ethiopianYear, ethiopianMonth = 12) {
+    validateNumericInputs("getEidAdhaDate", { ethiopianYear, ethiopianMonth });
+    const gregorianYear = toGC(ethiopianYear, ethiopianMonth, 1).year;
+    const year = Number(gregorianYear);
+    const hijriMonth = 12,
+        hijriDay = 10;
+    const hijriYearStart = getHijriYear(new Date(year, 0, 1)),
+        hijriYearEnd = getHijriYear(new Date(year, 11, 31));
+    const eidStart = hijriToGregorian(hijriYearStart, hijriMonth, hijriDay, year);
+    if (eidStart)
+        return {
+            gregorian: {
+                year: eidStart.getFullYear(),
+                month: eidStart.getMonth() + 1,
+                day: eidStart.getDate(),
+            },
+            ethiopian: toEC(
+                eidStart.getFullYear(),
+                eidStart.getMonth() + 1,
+                eidStart.getDate()
+            ),
+        };
+    const eidEnd = hijriToGregorian(hijriYearEnd, hijriMonth, hijriDay, year);
+    if (eidEnd)
+        return {
+            gregorian: {
+                year: eidEnd.getFullYear(),
+                month: eidEnd.getMonth() + 1,
+                day: eidEnd.getDate(),
+            },
+            ethiopian: toEC(
+                eidEnd.getFullYear(),
+                eidEnd.getMonth() + 1,
+                eidEnd.getDate()
+            ),
+        };
+    return null;
+}
+
+export function getMoulidDate(ethiopianYear, ethiopianMonth = 10) {
+    validateNumericInputs("getMoulidDate", { ethiopianYear, ethiopianMonth });
+    const gregorianYear = toGC(ethiopianYear, ethiopianMonth, 1).year;
+    const year = Number(gregorianYear);
+    const hijriYearStart = getHijriYear(new Date(year, 0, 1)),
+        hijriYearEnd = getHijriYear(new Date(year, 11, 31));
+    const mawlidStartYear = hijriToGregorian(hijriYearStart, 3, 12, year);
+    if (mawlidStartYear)
+        return {
+            gregorian: {
+                year: mawlidStartYear.getFullYear(),
+                month: mawlidStartYear.getMonth() + 1,
+                day: mawlidStartYear.getDate(),
+            },
+            ethiopian: toEC(
+                mawlidStartYear.getFullYear(),
+                mawlidStartYear.getMonth() + 1,
+                mawlidStartYear.getDate()
+            ),
+        };
+    const mawlidEndYear = hijriToGregorian(hijriYearEnd, 3, 12, year);
+    if (mawlidEndYear)
+        return {
+            gregorian: {
+                year: mawlidEndYear.getFullYear(),
+                month: mawlidEndYear.getMonth() + 1,
+                day: mawlidEndYear.getDate(),
+            },
+            ethiopian: toEC(
+                mawlidEndYear.getFullYear(),
+                mawlidEndYear.getMonth() + 1,
+                mawlidEndYear.getDate()
+            ),
+        };
+    return null;
+}
+
 
 /**
  * Returns a list of holidays occurring in a specific Ethiopian month and year.
