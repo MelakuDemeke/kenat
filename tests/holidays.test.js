@@ -1,6 +1,7 @@
 import { getHolidaysInMonth } from '../src/holidays.js';
 import { getMovableHoliday } from '../src/bahireHasab.js';
 import { InvalidInputTypeError } from '../src/errors/errorHandler.js';
+import { UnknownHolidayError } from '../src/errors/errorHandler.js';
 
 describe('Holiday Calculation', () => {
 
@@ -63,7 +64,7 @@ describe('Holiday Calculation', () => {
         });
 
         test('getMovableHoliday should throw for unknown holiday key', () => {
-            expect(() => getMovableHoliday('UNKNOWN_HOLIDAY', 2016)).toThrow('Unknown movable holiday key: UNKNOWN_HOLIDAY');
+            expect(() => getMovableHoliday('UNKNOWN_HOLIDAY', 2016)).toThrow(UnknownHolidayError);
         });
     });
 
