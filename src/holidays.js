@@ -2,7 +2,7 @@ import { toEC, toGC, hijriToGregorian, getHijriYear } from "./conversions.js";
 import { holidayNames } from "./constants.js";
 import { validateNumericInputs } from "./utils.js";
 import { InvalidInputTypeError } from "./errors/errorHandler.js";
-import { getMovableHoliday } from "./bahireHasab.js";
+import { getMovableHoliday, getBahireHasab } from "./bahireHasab.js";
 
 export const HolidayTags = {
     PUBLIC: "public",
@@ -203,6 +203,14 @@ export const movableHolidays = {
         name: holidayNames.tsomeDihnet,
         description: "The Fast of Salvation, observed on Wednesdays and Fridays.",
     },
+    nineveh: {
+        key: 'nineveh',
+        movable: true,
+        tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
+        name: holidayNames.nineveh,
+        description: 'A three-day fast commemorating the repentance of the people of Nineveh.'
+    },
+
 };
 
 export function getEidFitrDate(ethiopianYear, ethiopianMonth = 9) {
@@ -355,8 +363,10 @@ export function getHolidaysInMonth(ethYear, ethMonth) {
         }
     });
 
+    const { nineveh } = getBahireHasab(ethYear); 
     // Calculate and add movable Christian holidays using Bahire Hasab
     const christianMovable = {
+        nineveh: nineveh,
         fasika: getMovableHoliday('TINSAYE', ethYear),
         siklet: getMovableHoliday('SIKLET', ethYear),
         abiyTsome: getMovableHoliday('ABIY_TSOME', ethYear),

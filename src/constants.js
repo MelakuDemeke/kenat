@@ -77,10 +77,26 @@ export const holidayNames = {
     amharic: "ርክበ ካህናት",
     english: "Meeting of the Priests (Rikbe Kahnat)",
   },
-  erget: { amharic: "ዕርገት", english: "Ascension (Erget)" },
-  paraclete: { amharic: "ጰራቅሊጦስ", english: "Pentecost (Paraclete)" },
-  tsomeHawaryat: { amharic: "ጾመ ሐዋርያት", english: "Apostles' Fast" },
-  tsomeDihnet: { amharic: "ጾመ ድኅነት", english: "Fast of Salvation" },
+  erget: {
+    amharic: "ዕርገት",
+    english: "Ascension (Erget)"
+  },
+  paraclete: {
+    amharic: "ጰራቅሊጦስ",
+    english: "Pentecost (Paraclete)"
+  },
+  tsomeHawaryat: {
+    amharic: "ጾመ ሐዋርያት",
+    english: "Apostles' Fast"
+  },
+  tsomeDihnet: {
+    amharic: "ጾመ ድኅነት",
+    english: "Fast of Salvation"
+  },
+  nineveh: {
+    amharic: 'ጾመ ነነዌ',
+    english: 'Fast of Nineveh'
+  },
   enkutatash: {
     amharic: "እንቁጣጣሽ",
     english: "Ethiopian New Year (Enkutatash)",
