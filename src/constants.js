@@ -1,204 +1,140 @@
 export const monthNames = {
   english: [
-    "Meskerem",
-    "Tikimt",
-    "Hidar",
-    "Tahsas",
-    "Tir",
-    "Yekatit",
-    "Megabit",
-    "Miazia",
-    "Ginbot",
-    "Sene",
-    "Hamle",
-    "Nehase",
-    "Pagume",
+    "Meskerem", "Tikimt", "Hidar", "Tahsas", "Tir", "Yekatit",
+    "Megabit", "Miazia", "Ginbot", "Sene", "Hamle", "Nehase", "Pagume"
   ],
   amharic: [
-    "መስከረም",
-    "ጥቅምት",
-    "ህዳር",
-    "ታህሳስ",
-    "ጥር",
-    "የካቲት",
-    "መጋቢት",
-    "ሚያዝያ",
-    "ግንቦት",
-    "ሰኔ",
-    "ሀምሌ",
-    "ነሐሴ",
-    "ጳጉሜ",
+    "መስከረም", "ጥቅምት", "ህዳር", "ታህሳስ", "ጥር", "የካቲት",
+    "መጋቢት", "ሚያዝያ", "ግንቦት", "ሰኔ", "ሀምሌ", "ነሐሴ", "ጳጉሜ"
   ],
   gregorian: [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
   ],
-  //   TODO: add oromifa, tigrigna, afar, somali, sidama, wolaytta, gambela languges
 };
 
 export const daysOfWeek = {
   english: [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
+    "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
   ],
-  amharic: ["እሑድ", "ሰኞ", "ማክሰኞ", "ረቡዕ", "ሐሙስ", "ዓርብ", "ቅዳሜ"],
-  //   TODO: add oromifa, tigrigna, afar, somali, sidama, wolaytta, gambela languges
-};
-
-export const holidayNames = {
-  abiyTsome: {
-    amharic: "ዐቢይ ጾም",
-    english: "Great Lent (Abiy Tsome)",
-  },
-  debreZeit: {
-    amharic: "ደብረ ዘይት",
-    english: "Mid-Lent (Debre Zeit)",
-  },
-  hosanna: {
-    amharic: "ሆሳዕና",
-    english: "Palm Sunday (Hosanna)",
-  },
-  rikbeKahnat: {
-    amharic: "ርክበ ካህናት",
-    english: "Meeting of the Priests (Rikbe Kahnat)",
-  },
-  erget: {
-    amharic: "ዕርገት",
-    english: "Ascension (Erget)"
-  },
-  paraclete: {
-    amharic: "ጰራቅሊጦስ",
-    english: "Pentecost (Paraclete)"
-  },
-  tsomeHawaryat: {
-    amharic: "ጾመ ሐዋርያት",
-    english: "Apostles' Fast"
-  },
-  tsomeDihnet: {
-    amharic: "ጾመ ድኅነት",
-    english: "Fast of Salvation"
-  },
-  nineveh: {
-    amharic: 'ጾመ ነነዌ',
-    english: 'Fast of Nineveh'
-  },
-  enkutatash: {
-    amharic: "እንቁጣጣሽ",
-    english: "Ethiopian New Year (Enkutatash)",
-    // oromifa: '...', etc.
-  },
-  meskel: {
-    amharic: "መስቀል",
-    english: "Finding of the True Cross (Meskel)",
-  },
-  beherbehereseb: {
-    amharic: "የብሔር ብሔረሰቦች ቀን",
-    english: "Ethiopian National Unity Day",
-  },
-  gena: {
-    amharic: "ገና",
-    english: "Ethiopian Christmas (Genna)",
-  },
-  timket: {
-    amharic: "ጥምቀት",
-    english: "Ethiopian Epiphany (Timket)",
-  },
-  martyrsDay: {
-    amharic: "የሰማዕታት ቀን",
-    english: "Ethiopian Martyrs’ Day",
-  },
-  adwa: {
-    amharic: "የአድዋ ድል በዓል",
-    english: "Victory of Adwa",
-  },
-  labour: {
-    amharic: "የሰራተኞች ቀን",
-    english: "International Labour Day",
-  },
-  patriots: {
-    amharic: "የአርበኞች (የድል) ቀን",
-    english: "Ethiopian Patriots’ Victory Day",
-  },
-  eidFitr: {
-    amharic: "ዒድ አል ፈጥር",
-    english: "Eid al-Fitr (Arafa)",
-  },
-  siklet: {
-    amharic: "ስቅለት",
-    english: "Good Friday (Siklet)",
-  },
-  fasika: {
-    amharic: "ፋሲካ",
-    english: "Ethiopian Easter (Fasika)",
-  },
-  eidAdha: {
-    amharic: "ዒድ አል አድሐ",
-    english: "Eid al-Adha",
-  },
-  moulid: {
-    amharic: "መውሊድ",
-    english: "Birth of Prophet Mohammed (Moulid)",
-  },
+  amharic: [
+    "እሑድ", "ሰኞ", "ማክሰኞ", "ረቡዕ", "ሐሙስ", "ዓርብ", "ቅዳሜ"
+  ],
 };
 
 export const PERIOD_LABELS = {
-  day: "ከሰዓት",
-  night: "ማታ",
+  day: 'ከሰዓት',
+  night: 'ማታ',
 };
 
+// Renamed from holidayNames and restructured for i18n
+export const holidayInfo = {
+  enkutatash: {
+    name: { amharic: 'እንቁጣጣሽ', english: 'Ethiopian New Year (Enkutatash)' },
+    description: { amharic: 'የኢትዮጵያ አዲስ ዓመት መጀመሪያ፤ የዝናብ ወቅት ማብቃቱን እና ዳግም መታደስን ያመለክታል።', english: 'Marks the start of the Ethiopian year; symbolizes renewal and the end of the rainy season.' }
+  },
+  meskel: {
+    name: { amharic: 'መስቀል', english: 'Finding of the True Cross (Meskel)' },
+    description: { amharic: 'በ4ኛው መቶ ክፍለ ዘመን በንግሥት እሌኒ አማካኝነት የጌታችን መስቀል መገኘቱን ያከብራል።', english: 'Commemorates the discovery of the True Cross by Empress Helena in the 4th century.' }
+  },
+  beherbehereseb: {
+    name: { amharic: 'የብሔር ብሔረሰቦች ቀን', english: 'Nations, Nationalities, and Peoples\' Day' },
+    description: { amharic: 'የኢትዮጵያ ብሔር ብሔረሰቦችን ልዩነት የሚያከብር፣ እኩል መብታቸውን የሚያረጋግጥ እና በባህልና ቋንቋ አንድነትን የሚያጠናክር በዓል ነው።', english: 'Acknowledges and celebrates the diversity of Ethiopia\'s ethnic groups, affirming their equal rights and fostering unity.' }
+  },
+  gena: {
+    name: { amharic: 'ገና', english: 'Ethiopian Christmas (Genna)' },
+    description: { amharic: 'የኢየሱስ ክርስቶስን ልደት የሚያከብር የኢትዮጵያ ኦርቶዶክስ ተዋሕዶ ቤተ ክርስቲያን በዓል።', english: 'Ethiopian Orthodox Christmas celebrating the birth of Jesus Christ.' }
+  },
+  timket: {
+    name: { amharic: 'ጥምቀት', english: 'Ethiopian Epiphany (Timket)' },
+    description: { amharic: 'የኢየሱስ ክርስቶስን በዮርዳኖስ ወንዝ መጠመቁን ያከብራል።', english: 'Commemorates the baptism of Jesus in the Jordan River.' }
+  },
+  martyrsDay: {
+    name: { amharic: 'የሰማዕታት ቀን', english: 'Martyrs\' Day' },
+    description: { amharic: 'ለኢትዮጵያ ነፃነትና ክብር ሕይወታቸውን የሠዉ ሰማዕታትን ያስባል።', english: 'Honors those who sacrificed their lives for Ethiopia’s freedom and independence.' }
+  },
+  adwa: {
+    name: { amharic: 'የአድዋ ድል በዓል', english: 'Victory of Adwa' },
+    description: { amharic: 'በ1896 ዓ.ም. ኢትዮጵያ በጣሊያን ቅኝ ገዥዎች ላይ የተቀዳጀችውን ድል ያከብራል።', english: 'Celebrates Ethiopia’s victory over Italian colonizers in 1896.' }
+  },
+  labour: {
+    name: { amharic: 'የሰራተኞች ቀን', english: 'International Labour Day' },
+    description: { amharic: 'ዓለም አቀፍ የሠራተኞችና የሥራ መብቶች ቀን ነው።', english: 'A global celebration of workers and labor rights.' }
+  },
+  patriots: {
+    name: { amharic: 'የአርበኞች ቀን', english: 'Patriots\' Victory Day' },
+    description: { amharic: 'የጣሊያን ወረራን የተቋቋሙ ኢትዮጵያውያን አርበኞችን ድል ያስባል።', english: 'Honors Ethiopian resistance fighters who defeated Italian occupation.' }
+  },
+  nineveh: {
+    name: { amharic: 'ጾመ ነነዌ', english: 'Fast of Nineveh' },
+    description: { amharic: 'የነነዌ ሰዎች ንስሐ መግባታቸውን የሚያስታውስ የሦስት ቀን ጾም ነው።', english: 'A three-day fast commemorating the repentance of the people of Nineveh.' }
+  },
+  abiyTsome: {
+    name: { amharic: 'ዐቢይ ጾም', english: 'Great Lent' },
+    description: { amharic: 'ከፋሲካ በፊት የሚጾም የ55 ቀናት የጾም ወቅት ነው።', english: 'The Great Lent, a 55-day fasting period before Easter.' }
+  },
+  debreZeit: {
+    name: { amharic: 'ደብረ ዘይት', english: 'Mid-Lent Sunday' },
+    description: { amharic: 'ኢየሱስ በደብረ ዘይት ተራራ ያስተማረውን ትምህርት የሚያስታውስ የዐቢይ ጾም አጋማሽ እሑድ።', english: 'Mid-Lent Sunday, commemorating Jesus\'s sermon on the Mount of Olives.' }
+  },
+  hosanna: {
+    name: { amharic: 'ሆሳዕና', english: 'Palm Sunday' },
+    description: { amharic: 'ኢየሱስ በክብር ወደ ኢየሩሳሌም መግባቱን የሚያስታውስ በዓል።', english: 'Palm Sunday, commemorating Jesus\'s triumphal entry into Jerusalem.' }
+  },
+  siklet: {
+    name: { amharic: 'ስቅለት', english: 'Good Friday' },
+    description: { amharic: 'የኢየሱስ ክርስቶስን ስቅለት የሚያስታውስ ነው።', english: 'Marks the crucifixion of Jesus Christ.' }
+  },
+  fasika: {
+    name: { amharic: 'ፋሲካ', english: 'Ethiopian Easter' },
+    description: { amharic: 'የኢየሱስ ክርስቶስን ከሙታን መነሣት ያከብራል። በኢትዮጵያ ውስጥ ካሉ ክርስቲያናዊ በዓላት አንዱና ዋነኛው ነው።', english: 'Celebrates the resurrection of Jesus Christ. One of the most important Christian holidays in Ethiopia.' }
+  },
+  rikbeKahnat: {
+    name: { amharic: 'ርክበ ካህናት', english: 'Meeting of the Priests' },
+    description: { amharic: 'ከፋሲካ 24 ቀናት በኋላ የሚከበር የካህናት መሰባሰብ በዓል ነው።', english: 'The Meeting of the Priests, 24 days after Easter.' }
+  },
+  erget: {
+    name: { amharic: 'ዕርገት', english: 'Ascension' },
+    description: { amharic: 'ከፋሲካ 40 ቀናት በኋላ ኢየሱስ ወደ ሰማይ ማረጉን ያከብራል።', english: 'The Ascension of Jesus into heaven, 40 days after Easter.' }
+  },
+  paraclete: {
+    name: { amharic: 'ጰራቅሊጦስ', english: 'Pentecost' },
+    description: { amharic: 'መንፈስ ቅዱስ በሐዋርያት ላይ መውረዱን የሚያከብር በዓል፣ ከፋሲካ 50 ቀናት በኋላ።', english: 'Pentecost, celebrating the descent of the Holy Spirit upon the Apostles, 50 days after Easter.' }
+  },
+  tsomeHawaryat: {
+    name: { amharic: 'ጾመ ሐዋርያት', english: 'Apostles\' Fast' },
+    description: { amharic: 'ከጰራቅሊጦስ ማግስት የሚጀምር የሐዋርያት ጾም ነው።', english: 'The Fast of the Apostles, which begins the day after Pentecost.' }
+  },
+  tsomeDihnet: {
+    name: { amharic: 'ጾመ ድኅነት', english: 'Fast of Salvation' },
+    description: { amharic: 'በየሳምንቱ ረቡዕ እና ዓርብ የሚጾም የድኅነት ጾም ነው።', english: 'The Fast of Salvation, observed on Wednesdays and Fridays.' }
+  },
+  eidFitr: {
+    name: { amharic: 'ዒድ አል ፈጥር', english: 'Eid al-Fitr' },
+    description: { amharic: 'የረመዳን ጾም ወር መገባደድን የሚያመለክት በዓል።', english: 'Marks the end of Ramadan, the month of fasting for Muslims.' }
+  },
+  eidAdha: {
+    name: { amharic: 'ዒድ አል አድሐ', english: 'Eid al-Adha' },
+    description: { amharic: 'አብርሃም ለእግዚአብሔር በመታዘዝ ልጁን ለመሠዋት ፈቃደኝነቱን የሚያስታውስ በዓል።', english: 'Commemorates Abraham’s willingness to sacrifice his son as an act of obedience to God.' }
+  },
+  moulid: {
+    name: { amharic: 'መውሊድ', english: 'Birth of the Prophet' },
+    description: { amharic: 'የነቢዩ ሙሐመድን የልደት በዓል ያከብራል።', english: 'Celebrates the birthday of the Prophet Mohammed.' }
+  }
+};
+
+// Bahire Hasab related constants
 export const evangelists = {
-  1: "Matthew",
-  2: "Mark",
-  3: "Luke",
-  0: "John",
+  1: 'Matthew', 2: 'Mark', 3: 'Luke', 0: 'John'
 };
-
 export const newYearWeekdayMap = {
-  0: "Monday",
-  1: "Tuesday",
-  2: "Wednesday",
-  3: "Thursday",
-  4: "Friday",
-  5: "Saturday",
-  6: "Sunday",
+  0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday', 4: 'Friday', 5: 'Saturday', 6: 'Sunday'
 };
-
-// As per the text, for calculating Mebaja Hamer
 export const tewsakMap = {
-  Sunday: 7,
-  Monday: 6,
-  Tuesday: 5,
-  Wednesday: 4,
-  Thursday: 3,
-  Friday: 2,
-  Saturday: 8,
+  'Sunday': 7, 'Monday': 6, 'Tuesday': 5, 'Wednesday': 4, 'Thursday': 3, 'Friday': 2, 'Saturday': 8
+};
+export const movableHolidayTewsak = {
+  NINEVEH: 0, ABIY_TSOME: 14, DEBRE_ZEIT: 41, HOSANNA: 62, SIKLET: 67, TINSAYE: 69,
+  RIKBE_KAHNAT: 93, ERGET: 108, PARACLETE: 118, TSOME_HAWARYAT: 119, TSOME_DIHENET: 121,
 };
 
-// Tewsak values for major holidays relative to Nineveh
-export const movableHolidayTewsak = {
-  ABIY_TSOME: 14,
-  DEBRE_ZEIT: 41,
-  HOSANNA: 62,
-  SIKLET: 67, // Good Friday
-  TINSAYE: 69, // Easter/Fasika
-  RIKBE_KAHNAT: 93,
-  ERGET: 108, // Ascension
-  PARACLETE: 118, // Pentecost
-  TSOME_HAWARYAT: 119, // Apostles' Fast
-  TSOME_DIHENET: 121, // Fast of Salvation (Wed/Fri)
-};
