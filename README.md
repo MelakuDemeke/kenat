@@ -12,24 +12,25 @@
 
 ---
 
-## 📌 Overview
+# Kenat / ቀናት
 
-**Kenat** (Amharic: ቀናት) is an all-in-one Ethiopian calendar library for JavaScript. It handles date conversion, formatting (including Geez numerals), time conversion, holidays, and calendar grids — everything you need to build Ethiopian calendar-powered apps.
+📌 **Overview**  
+Kenat (Amharic: ቀናት) is a comprehensive JavaScript library for the Ethiopian calendar. It provides a complete toolset for developers, handling date conversions, advanced formatting, full date arithmetic, and a powerful, authentic holiday calculation system based on the traditional **Bahire Hasab (ባሕረ ሃሳብ)**.
 
 ---
 
 ## ✨ Features
 
-* 🔄 **Bidirectional conversion**: Ethiopian ↔ Gregorian
-* 🗕 Supports all **13 Ethiopian months**, including **Pagume**
-* 🔀 Full **date arithmetic**: Add/subtract days, months, years
-* 🌍 Localized formatting in **Amharic** and **English**
-* 🔢 Convert numbers to **Geez numerals**
-* 🕒 **Ethiopian ↔ Gregorian time** conversion
-* 🗖 Calendar grid generation and printing
-* 🇮 Built-in **Ethiopian holiday detection**
-* 🔍 **Date diff**: years, months, days
-* 🧢 Unit-tested, modular, and extendable
+- 🔄 **Bidirectional Conversion**: Seamlessly convert between Ethiopian and Gregorian calendars.
+- 🗂️ **Complete Holiday System**: Pre-loaded with all public, religious (Christian & Muslim), and cultural holidays.
+- 🔎 **Advanced Holiday Filtering**: Easily filter holidays by tags (e.g., public, christian, muslim).
+- 📖 **Authentic Liturgical Calculations**: Implements Bahire Hasab for movable feasts and fasts.
+- 🔠 **Localized Formatting**: Display dates in both Amharic and English.
+- 🔢 **Geez Numerals**: Convert numbers and dates to traditional Geez numeral equivalents.
+- ➕ **Full Date Arithmetic**: Add or subtract days, months, and years with support for the 13-month calendar.
+- ↔️ **Date Difference**: Calculate precise differences between two dates.
+- 🕒 **Ethiopian Time**: Convert between 24-hour Gregorian and 12-hour Ethiopian time.
+- 🗓️ **Calendar Generation**: Create monthly or yearly calendar grids.
 
 ---
 
@@ -37,180 +38,190 @@
 
 ```bash
 npm install kenat
-```
+````
 
 ---
 
 ## 🔰 Quick Start
 
+Get today’s Ethiopian date:
+
 ```js
-import Kenat, { toEC, toGC } from 'kenat';
+import Kenat from 'kenat';
 
 const today = new Kenat();
+
 console.log(today.getEthiopian());
-// → { year: 2017, month: 9, day: 25 } (based on your system date)
+// → { year: 2017, month: 9, day: 26 }
+
+console.log(today.format({ lang: 'english', showWeekday: true }));
+// → "Friday, Ginbot 26 2017"
 ```
 
 ---
 
-## 🔄 Date Conversion
+## ⛪ Bahire Hasab & Holiday System
+
+### Get All Holidays for a Year
 
 ```js
-const eth = toEC(2025, 5, 30);
-console.log(eth);
-// → { year: 2017, month: 9, day: 22 }
+import { getHolidaysForYear } from 'kenat';
 
-const greg = toGC(2017, 9, 22);
-console.log(greg);
-// → { year: 2025, month: 5, day: 30 }
-```
+const holidaysIn2017 = getHolidaysForYear(2017);
 
----
-
-## 🗕 Month Calendar Generation
-
-```js
-const calendar = today.getMonthCalendar();
-console.log(calendar.slice(0, 2));
+console.log(holidaysIn2017.find(h => h.key === 'fasika'));
 ```
 
 ```js
-[
-  {
-    ethiopian: { year: 2017, month: 9, day: 1, display: 'ግንቦት 1 2017' },
-    gregorian: { year: 2025, month: 5, day: 9, display: '2025-05-09' }
-  },
-  ...
-]
+// Output for Fasika (Easter) in 2017
+{
+  key: 'fasika',
+  tags: ['public', 'religious', 'christian'],
+  movable: true,
+  name: 'ፋሲካ',
+  description: 'የኢየሱስ ክርስቶስን ከሙታን መነሣት ያከብራል።...',
+  ethiopian: { year: 2017, month: 8, day: 21 },
+  gregorian: { year: 2025, month: 4, day: 29 }
+}
 ```
 
----
-
-## 🕒 Time Support
+### Filter Holidays by Tag
 
 ```js
-console.log(Kenat.formatEthiopianTime(today.getCurrentTime(), 'amharic'));
-// → "02:03 ማታ"
+import { getHolidaysForYear, HolidayTags } from 'kenat';
 
-today.setTime(3, 30, 'night');
+const publicHolidays = getHolidaysForYear(2017, {
+  filter: HolidayTags.PUBLIC
+});
+
+const religiousHolidays = getHolidaysForYear(2017, {
+  filter: [HolidayTags.CHRISTIAN, HolidayTags.MUSLIM]
+});
 ```
 
----
-
-## 💖 Holiday Detection
+### Check if a Specific Date is a Holiday
 
 ```js
-import { getHolidaysInMonth } from 'kenat';
+const meskel = new Kenat('2017/1/17');
+console.log(meskel.isHoliday()); // → Returns the Meskel holiday object
 
-const holidays = getHolidaysInMonth(2016, 1);
-console.log(holidays);
+const notHoliday = new Kenat('2017/1/18');
+console.log(notHoliday.isHoliday()); // → []
 ```
 
-```bash
-// Output for January 2016 (Ethiopian calendar)
-[
-  {
-    key: 'enkutatash',
-    month: 1,
-    day: 1,
-    movable: false,
-    tags: [ 'public', 'cultural' ],
-    name: { amharic: 'እንቁጣጣሽ', english: 'Ethiopian New Year (Enkutatash)' },
-    description: 'Marks the start of the Ethiopian year; symbolizes renewal and the end of the rainy season.',
-    ethiopian: { year: 2016, month: 1, day: 1 }
-  },
-  {
-    key: 'moulid',
-    movable: true,
-    tags: [ 'religious', 'muslim' ],
-    name: { amharic: 'መውሊድ', english: 'Birth of Prophet Mohammed (Moulid)' },
-    description: 'Celebrates the birthday of the Prophet Mohammed.',
-    ethiopian: { year: 2016, month: 1, day: 16 },
-    gregorian: { year: 2023, month: 9, day: 27 },
-    note: null
-  },
-  {
-    key: 'meskel',
-    month: 1,
-    day: 17,
-    movable: false,
-    tags: [ 'public', 'religious', 'christian' ],
-    name: { amharic: 'መስቀል', english: 'Finding of the True Cross (Meskel)' },
-    description: 'Commemorates the discovery of the True Cross by Empress Helena in the 4th century.',
-    ethiopian: { year: 2016, month: 1, day: 17 }
+### Access Bahire Hasab Calculations
+
+```js
+const bahireHasab = new Kenat('2017/1/1').getBahireHasab();
+
+console.log(bahireHasab.evangelist);
+// → { name: 'ማቴዎስ', remainder: 1 }
+
+console.log(bahireHasab.movableFeasts.fasika.ethiopian);
+// → { year: 2017, month: 8, day: 21 }
+```
+
+```js
+// Full output of .getBahireHasab() for 2017
+{
+  ameteAlem: 7517,
+  meteneRabiet: 1879,
+  evangelist: { name: 'ማቴዎስ', remainder: 1 },
+  newYear: { dayName: 'ረቡዕ', tinteQemer: 2 },
+  medeb: 12,
+  wenber: 11,
+  abektie: 1,
+  metqi: 29,
+  bealeMetqi: { date: { year: 2017, month: 1, day: 29 }, weekday: 'Wednesday' },
+  mebajaHamer: 3,
+  nineveh: { year: 2017, month: 6, day: 3 },
+  movableFeasts: {
+    nineveh: { /* ... */ },
+    abiyTsome: { /* ... */ },
+    fasika: {
+      key: 'fasika',
+      tags: ['public', 'religious', 'christian'],
+      movable: true,
+      name: 'ፋሲካ',
+      description: 'የኢየሱስ ክርስቶስን ከሙታን መነሣት ያከብራል።...',
+      ethiopian: { year: 2017, month: 8, day: 21 },
+      gregorian: { year: 2025, month: 4, day: 29 }
+    },
+    // ... other movable holidays
   }
-]
+}
 ```
 
 ---
 
-## ➕ Date Arithmetic
+## ➕ More API Examples
+
+### Date Arithmetic
 
 ```js
-const newDate = today.addDays(10);
-console.log(newDate.toString());
-
-const backOneMonth = today.addMonths(-1);
-console.log(backOneMonth.getEthiopian());
+const today = new Kenat();
+const nextWeek = today.addDays(7);
+const lastMonth = today.addMonths(-1);
 ```
 
----
-
-## 📏 Difference Between Dates
+### Date Difference
 
 ```js
 const a = new Kenat('2015/5/15');
 const b = new Kenat('2012/5/15');
 
 console.log(a.diffInDays(b));    // → 1095
-console.log(a.diffInMonths(b));  // → 39
 console.log(a.diffInYears(b));   // → 3
 ```
 
----
-
-## 🗓 Full Year Calendar
+### Geez Numerals
 
 ```js
-const yearGrid = Kenat.getYearCalendar(2016);
-console.log(yearGrid.length);
-console.log(yearGrid[0].monthName);
+import { toGeez } from 'kenat';
+
+console.log(toGeez(2017)); // → "፳፻፲፯"
 ```
 
 ---
 
 ## 📊 API Reference
 
-Refer to the [full documentation](https://github.com/MelakuDemeke/kenat) for method details, utility functions, and component usage.
+Refer to the full documentation site for method details, utility functions, and live examples.
 
 ---
 
 ## 🎉 Coming Soon
 
-* ✅ python, php, dart, and other language suport
-* ↔ Better Islamic date estimation
-* 📱 React/Flutter UI components
+* ✅ Ethiopian Seasons (Tseday, Bega, Kiremt, Meher)
+* ✅ Helpers like `.isSameMonth()` and `.startOfYear()`
+* 🚀 Multi-language ports (Python, PHP, Dart)
 * ⚙️ `.ics` iCalendar export
 
 ---
 
 ## 🧱 Contribution Guide
 
-1. Fork the repo & clone it
-2. Create a new branch: `git checkout -b feature/your-feature`
-3. Write your changes + tests in `/tests`
-4. Run `npm test` before committing
-5. Open a PR with your improvements or bugfix
+1. Fork the repo & clone it.
+2. Create a new branch:
+
+   ```bash
+   git checkout -b feature/your-feature
+   ```
+3. Write your changes and add tests in the `/tests` directory.
+4. Run `npm test` to ensure everything passes.
+5. Open a Pull Request with your improvements or bug fix.
 
 ---
 
 ## 👨‍💻 Author
 
 **Melaku Demeke**
-[GitHub](https://github.com/MelakuDemeke) ・ [LinkedIn](https://www.linkedin.com/in/melakudemeke/)
+[GitHub](https://github.com) ・ [LinkedIn](https://linkedin.com)
 
 ---
 
 ## 📄 License
 
-MIT — see [LICENSE](LICENSE) for details.
+MIT — see `LICENSE` for details.
+
+

@@ -12,9 +12,10 @@ export class MonthGrid {
     const current = Kenat.now().getEthiopian();
     this.year = config.year ?? current.year;
     this.month = config.month ?? current.month;
-    this.weekStart = config.weekStart ?? 1; // Default to Monday
+    this.weekStart = config.weekStart ?? 1;
     this.useGeez = config.useGeez ?? false;
     this.weekdayLang = config.weekdayLang ?? 'amharic';
+    this.holidayFilter = config.holidayFilter ?? null;
   }
 
   _validateConfig(config) {
@@ -22,23 +23,23 @@ export class MonthGrid {
 
     // If one is provided, both must be.
     if ((year !== undefined && month === undefined) || (year === undefined && month !== undefined)) {
-        throw new InvalidGridConfigError('If providing year or month, both must be provided.');
+      throw new InvalidGridConfigError('If providing year or month, both must be provided.');
     }
-    if(year !== undefined) validateNumericInputs('MonthGrid.constructor', { year });
-    if(month !== undefined) validateNumericInputs('MonthGrid.constructor', { month });
+    if (year !== undefined) validateNumericInputs('MonthGrid.constructor', { year });
+    if (month !== undefined) validateNumericInputs('MonthGrid.constructor', { month });
 
 
     if (weekStart !== undefined) {
-        validateNumericInputs('MonthGrid.constructor', { weekStart });
-        if(weekStart < 0 || weekStart > 6) {
-            throw new InvalidGridConfigError(`Invalid weekStart value: ${weekStart}. Must be between 0 and 6.`);
-        }
+      validateNumericInputs('MonthGrid.constructor', { weekStart });
+      if (weekStart < 0 || weekStart > 6) {
+        throw new InvalidGridConfigError(`Invalid weekStart value: ${weekStart}. Must be between 0 and 6.`);
+      }
     }
 
     if (weekdayLang !== undefined) {
-        if(typeof weekdayLang !== 'string' || !Object.keys(daysOfWeek).includes(weekdayLang)) {
-            throw new InvalidGridConfigError(`Invalid weekdayLang: "${weekdayLang}". Must be one of [${Object.keys(daysOfWeek).join(', ')}].`);
-        }
+      if (typeof weekdayLang !== 'string' || !Object.keys(daysOfWeek).includes(weekdayLang)) {
+        throw new InvalidGridConfigError(`Invalid weekdayLang: "${weekdayLang}". Must be one of [${Object.keys(daysOfWeek).join(', ')}].`);
+      }
     }
   }
 
@@ -57,7 +58,10 @@ export class MonthGrid {
     const labels = daysOfWeek[this.weekdayLang] || daysOfWeek.amharic;
     const monthLabels = monthNames[this.weekdayLang] || monthNames.amharic;
 
-    const monthHolidays = getHolidaysInMonth(y, m);
+    const monthHolidays = getHolidaysInMonth(y, m, {
+      lang: this.weekdayLang,
+      filter: this.holidayFilter
+    });
     const holidayMap = {};
     monthHolidays.forEach(h => {
       const key = `${h.ethiopian.year}-${h.ethiopian.month}-${h.ethiopian.day}`;

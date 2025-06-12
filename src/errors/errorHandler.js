@@ -148,3 +148,20 @@ export class InvalidGridConfigError extends KenatError {
         super(message);
     }
 }
+
+/**
+ * Thrown when an unknown holiday key is used.
+ */
+export class UnknownHolidayError extends KenatError {
+    constructor(holidayKey) {
+        super(`Unknown movable holiday key: "${holidayKey}"`);
+        this.holidayKey = holidayKey;
+    }
+
+    toJSON() {
+        return {
+            ...super.toJSON(),
+            holidayKey: this.holidayKey,
+        };
+    }
+}

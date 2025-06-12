@@ -1,364 +1,190 @@
 import { toEC, toGC, hijriToGregorian, getHijriYear } from "./conversions.js";
-import { holidayNames } from "./constants.js";
+import { holidayInfo, HolidayTags, keyToTewsakMap,movableHolidays } from "./constants.js";
 import { validateNumericInputs } from "./utils.js";
-import { InvalidInputTypeError } from "./errors/errorHandler.js";
+import { InvalidInputTypeError, UnknownHolidayError } from "./errors/errorHandler.js";
+import { getMovableHoliday } from "./bahireHasab.js";
 
-export const HolidayTags = {
-    PUBLIC: "public",
-    RELIGIOUS: "religious",
-    CHRISTIAN: "christian",
-    MUSLIM: "muslim",
-    STATE: "state",
-    CULTURAL: "cultural",
-    OTHER: "other",
+const fixedHolidays = {
+    enkutatash: { month: 1, day: 1, tags: [HolidayTags.PUBLIC, HolidayTags.CULTURAL] },
+    meskel: { month: 1, day: 17, tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
+    beherbehereseb: { month: 3, day: 20, tags: [HolidayTags.PUBLIC, HolidayTags.STATE] },
+    gena: { month: 4, day: 29, tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
+    timket: { month: 5, day: 11, tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
+    martyrsDay: { month: 6, day: 12, tags: [HolidayTags.PUBLIC, HolidayTags.STATE] },
+    adwa: { month: 6, day: 23, tags: [HolidayTags.PUBLIC, HolidayTags.STATE] },
+    labour: { month: 8, day: 23, tags: [HolidayTags.PUBLIC, HolidayTags.STATE] },
+    patriots: { month: 8, day: 27, tags: [HolidayTags.PUBLIC, HolidayTags.STATE] },
 };
 
-export const fixedHolidayName = {
-    enkutatash: {
-        key: "enkutatash",
-        month: 1,
-        day: 1,
-        movable: false,
-        tags: [HolidayTags.PUBLIC, HolidayTags.CULTURAL],
-        name: holidayNames.enkutatash,
-        description:
-            "Marks the start of the Ethiopian year; symbolizes renewal and the end of the rainy season.",
-    },
-    meskel: {
-        key: "meskel",
-        month: 1,
-        day: 17,
-        movable: false,
-        tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
-        name: holidayNames.meskel,
-        description:
-            "Commemorates the discovery of the True Cross by Empress Helena in the 4th century.",
-    },
-    beherbehereseb: {
-        key: "beherbehereseb",
-        month: 3,
-        day: 20,
-        movable: false,
-        tags: [HolidayTags.PUBLIC, HolidayTags.STATE],
-        name: holidayNames.beherbehereseb,
-        description:
-            "This holiday acknowledges and celebrates the diversity of Ethiopias ethnic groups, affirming their equal rights and fostering unity through culture and language ",
-    },
-    gena: {
-        key: "gena",
-        month: 4,
-        day: 29,
-        movable: false,
-        tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
-        name: holidayNames.gena,
-        description:
-            "Ethiopian Orthodox Christmas celebrating the birth of Jesus Christ.",
-    },
-    timket: {
-        key: "timket",
-        month: 5,
-        day: 11,
-        movable: false,
-        tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
-        name: holidayNames.timket,
-        description: "Commemorates the baptism of Jesus in the Jordan River.",
-    },
-    MartyrsDay: {
-        key: "martyrsDay",
-        month: 6,
-        day: 12,
-        movable: false,
-        tags: [HolidayTags.PUBLIC, HolidayTags.STATE],
-        name: holidayNames.martyrsDay,
-        description:
-            "Honors those who sacrificed their lives for Ethiopia’s freedom and independence.",
-    },
-    adwa: {
-        key: "adwa",
-        month: 6,
-        day: 23,
-        movable: false,
-        tags: [HolidayTags.PUBLIC, HolidayTags.STATE],
-        name: holidayNames.adwa,
-        description:
-            "Celebrates Ethiopia’s victory over Italian colonizers in 1896.",
-    },
-    labour: {
-        key: "labour",
-        month: 8,
-        day: 23,
-        movable: false,
-        tags: [HolidayTags.PUBLIC, HolidayTags.STATE],
-        name: holidayNames.labour,
-        description: "A global celebration of workers and labor rights.",
-    },
-    patriots: {
-        key: "patriots",
-        month: 8,
-        day: 27,
-        movable: false,
-        tags: [HolidayTags.PUBLIC, HolidayTags.STATE],
-        name: holidayNames.patriots,
-        description:
-            "Honors Ethiopian resistance fighters who defeated Italian occupation.",
-    },
-};
+function findAllIslamicOccurrences(ethiopianYear, hijriMonth, hijriDay) {
+    const startGregorianYear = toGC(ethiopianYear, 1, 1).year;
+    const endGregorianYear = toGC(ethiopianYear, 13, 5).year;
+    const occurrences = [];
 
-export const movableHolidays = {
-    eidFitr: {
-        key: "eidFitr",
-        movable: true,
-        tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.MUSLIM],
-        name: holidayNames.eidFitr,
-        description: "Marks the end of Ramadan, the month of fasting for Muslims.",
-    },
-    siklet: {
-        key: "siklet",
-        movable: true,
-        tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
-        name: holidayNames.siklet,
-        description: "Marks the crucifixion of Jesus Christ.",
-    },
-    fasika: {
-        key: "fasika",
-        movable: true,
-        tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
-        name: holidayNames.fasika,
-        description:
-            "Celebrates the resurrection of Jesus Christ. One of the most important Christian holidays in Ethiopia.",
-    },
-    eidAdha: {
-        key: "eidAdha",
-        movable: true,
-        tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.MUSLIM],
-        name: holidayNames.eidAdha,
-        description:
-            "Commemorates Abraham’s willingness to sacrifice his son as an act of obedience to God.",
-    },
-    moulid: {
-        key: "moulid",
-        movable: true,
-        tags: [HolidayTags.RELIGIOUS, HolidayTags.MUSLIM],
-        name: holidayNames.moulid,
-        description: "Celebrates the birthday of the Prophet Mohammed.",
-    },
-};
-
-export function getFasikaDate(ethYear) {
-    validateNumericInputs("getFasikaDate", { ethYear });
-    const gYear = ethYear + 8;
-    const a = gYear % 4,
-        b = gYear % 7,
-        c = gYear % 19;
-    const d = (19 * c + 15) % 30;
-    const e = (2 * a + 4 * b - d + 34) % 7;
-    const month = Math.floor((d + e + 114) / 31);
-    const day = ((d + e + 114) % 31) + 1;
-    const easterGregorian = new Date(Date.UTC(gYear, month - 1, day + 13));
-    const gYearFinal = easterGregorian.getUTCFullYear();
-    const gMonth = easterGregorian.getUTCMonth() + 1;
-    const gDay = easterGregorian.getUTCDate();
-    const {
-        year: eYear,
-        month: eMonth,
-        day: eDay,
-    } = toEC(gYearFinal, gMonth, gDay);
-    return {
-        gregorian: { year: gYearFinal, month: gMonth, day: gDay },
-        ethiopian: { year: eYear, month: eMonth, day: eDay },
+    const checkGregorianYear = (gYear) => {
+        const hijriYearAtStart = getHijriYear(new Date(gYear, 0, 1));
+        const hijriYearsToCheck = [hijriYearAtStart, hijriYearAtStart + 1];
+        
+        hijriYearsToCheck.forEach(hYear => {
+            const gregorianDate = hijriToGregorian(hYear, hijriMonth, hijriDay, gYear);
+            if (gregorianDate && gregorianDate.getFullYear() === gYear) {
+                const ecDate = toEC(gregorianDate.getFullYear(), gregorianDate.getMonth() + 1, gregorianDate.getDate());
+                if (ecDate.year === ethiopianYear) {
+                    occurrences.push({ 
+                        gregorian: { year: gregorianDate.getFullYear(), month: gregorianDate.getMonth() + 1, day: gregorianDate.getDate() }, 
+                        ethiopian: ecDate 
+                    });
+                }
+            }
+        });
     };
+
+    checkGregorianYear(startGregorianYear);
+    if (startGregorianYear !== endGregorianYear) {
+        checkGregorianYear(endGregorianYear);
+    }
+    
+    return Array.from(new Map(occurrences.map(item => [JSON.stringify(item.ethiopian), item])).values());
 }
 
-export function getSikletDate(ethYear) {
-    validateNumericInputs("getSikletDate", { ethYear });
-    const fasika = getFasikaDate(ethYear);
-    const { year, month, day } = fasika.gregorian;
-    const fasikaDate = new Date(Date.UTC(year, month - 1, day));
-    fasikaDate.setUTCDate(fasikaDate.getUTCDate() - 2);
-    const gYear = fasikaDate.getUTCFullYear(),
-        gMonth = fasikaDate.getUTCMonth() + 1,
-        gDay = fasikaDate.getUTCDate();
-    const eth = toEC(gYear, gMonth, gDay);
-    return {
-        gregorian: { year: gYear, month: gMonth, day: gDay },
-        ethiopian: { year: eth.year, month: eth.month, day: eth.day },
-    };
-}
+const getAllMoulidDates = (year) => findAllIslamicOccurrences(year, 3, 12);
+const getAllEidFitrDates = (year) => findAllIslamicOccurrences(year, 10, 1);
+const getAllEidAdhaDates = (year) => findAllIslamicOccurrences(year, 12, 10);
 
-export function getEidFitrDate(ethiopianYear, ethiopianMonth = 9) {
-    validateNumericInputs("getEidFitrDate", { ethiopianYear, ethiopianMonth });
-    const gregorianYear = toGC(ethiopianYear, ethiopianMonth, 1).year;
-    const year = Number(gregorianYear);
-    const hijriYearStart = getHijriYear(new Date(year, 0, 1)),
-        hijriYearEnd = getHijriYear(new Date(year, 11, 31));
-    const eidStartYear = hijriToGregorian(hijriYearStart, 10, 1, year);
-    if (eidStartYear)
-        return {
-            gregorian: {
-                year: eidStartYear.getFullYear(),
-                month: eidStartYear.getMonth() + 1,
-                day: eidStartYear.getDate(),
-            },
-            ethiopian: toEC(
-                eidStartYear.getFullYear(),
-                eidStartYear.getMonth() + 1,
-                eidStartYear.getDate()
-            ),
-        };
-    const eidEndYear = hijriToGregorian(hijriYearEnd, 10, 1, year);
-    if (eidEndYear)
-        return {
-            gregorian: {
-                year: eidEndYear.getFullYear(),
-                month: eidEndYear.getMonth() + 1,
-                day: eidEndYear.getDate(),
-            },
-            ethiopian: toEC(
-                eidEndYear.getFullYear(),
-                eidEndYear.getMonth() + 1,
-                eidEndYear.getDate()
-            ),
-        };
-    return null;
-}
+export function getHoliday(holidayKey, ethYear, options = {}) {
+    validateNumericInputs('getHoliday', { ethYear });
+    const { lang = 'amharic' } = options;
 
-export function getEidAdhaDate(ethiopianYear, ethiopianMonth = 12) {
-    validateNumericInputs("getEidAdhaDate", { ethiopianYear, ethiopianMonth });
-    const gregorianYear = toGC(ethiopianYear, ethiopianMonth, 1).year;
-    const year = Number(gregorianYear);
-    const hijriMonth = 12,
-        hijriDay = 10;
-    const hijriYearStart = getHijriYear(new Date(year, 0, 1)),
-        hijriYearEnd = getHijriYear(new Date(year, 11, 31));
-    const eidStart = hijriToGregorian(hijriYearStart, hijriMonth, hijriDay, year);
-    if (eidStart)
-        return {
-            gregorian: {
-                year: eidStart.getFullYear(),
-                month: eidStart.getMonth() + 1,
-                day: eidStart.getDate(),
-            },
-            ethiopian: toEC(
-                eidStart.getFullYear(),
-                eidStart.getMonth() + 1,
-                eidStart.getDate()
-            ),
-        };
-    const eidEnd = hijriToGregorian(hijriYearEnd, hijriMonth, hijriDay, year);
-    if (eidEnd)
-        return {
-            gregorian: {
-                year: eidEnd.getFullYear(),
-                month: eidEnd.getMonth() + 1,
-                day: eidEnd.getDate(),
-            },
-            ethiopian: toEC(
-                eidEnd.getFullYear(),
-                eidEnd.getMonth() + 1,
-                eidEnd.getDate()
-            ),
-        };
-    return null;
-}
+    const info = holidayInfo[holidayKey];
+    if (!info) return null;
 
-export function getMoulidDate(ethiopianYear, ethiopianMonth = 10) {
-    validateNumericInputs("getMoulidDate", { ethiopianYear, ethiopianMonth });
-    const gregorianYear = toGC(ethiopianYear, ethiopianMonth, 1).year;
-    const year = Number(gregorianYear);
-    const hijriYearStart = getHijriYear(new Date(year, 0, 1)),
-        hijriYearEnd = getHijriYear(new Date(year, 11, 31));
-    const mawlidStartYear = hijriToGregorian(hijriYearStart, 3, 12, year);
-    if (mawlidStartYear)
-        return {
-            gregorian: {
-                year: mawlidStartYear.getFullYear(),
-                month: mawlidStartYear.getMonth() + 1,
-                day: mawlidStartYear.getDate(),
-            },
-            ethiopian: toEC(
-                mawlidStartYear.getFullYear(),
-                mawlidStartYear.getMonth() + 1,
-                mawlidStartYear.getDate()
-            ),
-        };
-    const mawlidEndYear = hijriToGregorian(hijriYearEnd, 3, 12, year);
-    if (mawlidEndYear)
-        return {
-            gregorian: {
-                year: mawlidEndYear.getFullYear(),
-                month: mawlidEndYear.getMonth() + 1,
-                day: mawlidEndYear.getDate(),
-            },
-            ethiopian: toEC(
-                mawlidEndYear.getFullYear(),
-                mawlidEndYear.getMonth() + 1,
-                mawlidEndYear.getDate()
-            ),
-        };
-    return null;
-}
+    const name = info?.name?.[lang] || info?.name?.english;
+    const description = info?.description?.[lang] || info?.description?.english;
 
-/**
- * Returns a list of Ethiopian holidays occurring in a specific Ethiopian month and year.
- *
- * This function collects both fixed-date and movable holidays for the given Ethiopian year and month.
- * It validates the inputs, gathers holidays, and sorts them by day.
- *
- * @param {number} ethYear - The Ethiopian year for which to retrieve holidays.
- * @param {number} ethMonth - The Ethiopian month (1-13) for which to retrieve holidays.
- * @returns {Array<Object>} An array of holiday objects occurring in the specified month, each containing:
- *   - {string} name: The name of the holiday.
- *   - {Object} ethiopian: The Ethiopian date of the holiday ({ year, month, day }).
- *   - {Object} [gregorian]: The Gregorian date of the holiday, if available.
- *   - {string} [note]: Additional notes about the holiday, if any.
- * @throws {InvalidInputTypeError} If ethMonth is not between 1 and 13.
- */
-export function getHolidaysInMonth(ethYear, ethMonth) {
-    validateNumericInputs("getHolidaysInMonth", { ethYear, ethMonth });
-    if (ethMonth < 1 || ethMonth > 13) {
-        throw new InvalidInputTypeError(
-            "getHolidaysInMonth",
-            "ethMonth",
-            "number between 1 and 13",
-            ethMonth
-        );
+    if (fixedHolidays[holidayKey]) {
+        const rules = fixedHolidays[holidayKey];
+        return { key: holidayKey, tags: rules.tags, movable: false, name, description, ethiopian: { year: ethYear, month: rules.month, day: rules.day } };
     }
 
-    const holidays = [];
-    Object.values(fixedHolidayName).forEach((holiday) => {
-        if (holiday.month === ethMonth) {
-            holidays.push({
-                ...holiday,
-                ethiopian: { year: ethYear, month: holiday.month, day: holiday.day },
-            });
+    const tewsakKey = keyToTewsakMap[holidayKey];
+    if (tewsakKey) {
+        const date = getMovableHoliday(tewsakKey, ethYear);
+        return { key: holidayKey, tags: movableHolidays[holidayKey].tags, movable: true, name, description, ethiopian: date, gregorian: toGC(date.year, date.month, date.day) };
+    }
+
+    let muslimDateData;
+    if (holidayKey === 'eidFitr') muslimDateData = getAllEidFitrDates(ethYear)[0];
+    else if (holidayKey === 'eidAdha') muslimDateData = getAllEidAdhaDates(ethYear)[0];
+    else if (holidayKey === 'moulid') muslimDateData = getAllMoulidDates(ethYear)[0];
+    
+    if (muslimDateData) {
+        return { key: holidayKey, tags: movableHolidays[holidayKey].tags, movable: true, name, description, ethiopian: muslimDateData.ethiopian, gregorian: muslimDateData.gregorian };
+    }
+
+    return null;
+}
+
+export function getHolidaysInMonth(ethYear, ethMonth, options = {}) {
+    validateNumericInputs("getHolidaysInMonth", { ethYear, ethMonth });
+    if (ethMonth < 1 || ethMonth > 13) {
+        throw new InvalidInputTypeError("getHolidaysInMonth", "ethMonth", "number between 1 and 13", ethMonth);
+    }
+    const { lang = 'amharic', filter = null } = options;
+
+    const allHolidaysForMonth = [];
+    const allHolidayKeys = Object.keys(holidayInfo);
+
+    allHolidayKeys.forEach(key => {
+        const holiday = getHoliday(key, ethYear, { lang });
+        if (holiday && holiday.ethiopian.month === ethMonth) {
+            allHolidaysForMonth.push(holiday);
         }
     });
+    
+    // Handle cases where Islamic holidays occur twice
+    const muslimHolidays = [
+        ...getAllMoulidDates(ethYear).map(d => ({...d, key: 'moulid'})),
+        ...getAllEidFitrDates(ethYear).map(d => ({...d, key: 'eidFitr'})),
+        ...getAllEidAdhaDates(ethYear).map(d => ({...d, key: 'eidAdha'})),
+    ];
 
-    const fasika = getFasikaDate(ethYear),
-        siklet = getSikletDate(ethYear);
-    const eidFitr = getEidFitrDate(ethYear, ethMonth),
-        eidAdha = getEidAdhaDate(ethYear, ethMonth);
-    const moulid = getMoulidDate(ethYear, ethMonth);
-
-    [fasika, siklet, eidFitr, eidAdha, moulid].forEach((movable) => {
-        if (movable && movable.ethiopian.month === ethMonth) {
-            let holidayKey = null;
-            if (movable === fasika) holidayKey = "fasika";
-            else if (movable === siklet) holidayKey = "siklet";
-            else if (movable === eidFitr) holidayKey = "eidFitr";
-            else if (movable === eidAdha) holidayKey = "eidAdha";
-            else if (movable === moulid) holidayKey = "moulid";
-            if (holidayKey && movableHolidays[holidayKey]) {
-                holidays.push({
-                    ...movableHolidays[holidayKey],
-                    ethiopian: movable.ethiopian,
-                    gregorian: movable.gregorian,
-                    note: movable.note || null,
-                });
+    muslimHolidays.forEach(data => {
+        if(data.ethiopian.month === ethMonth) {
+            const info = holidayInfo[data.key];
+            const holidayObj = {
+                key: data.key,
+                tags: movableHolidays[data.key].tags,
+                movable: true,
+                name: info?.name?.[lang] || info?.name?.english,
+                description: info?.description?.[lang] || info?.description?.english,
+                ethiopian: data.ethiopian,
+                gregorian: data.gregorian,
+            };
+            // Avoid duplicates from the getHoliday call
+            if (!allHolidaysForMonth.some(h => JSON.stringify(h.ethiopian) === JSON.stringify(holidayObj.ethiopian))) {
+                allHolidaysForMonth.push(holidayObj);
             }
         }
     });
 
-    holidays.sort((a, b) => a.ethiopian.day - b.ethiopian.day);
-    return holidays;
+    const filterTags = filter ? (Array.isArray(filter) ? filter : [filter]) : null;
+
+    const finalHolidays = filterTags 
+        ? allHolidaysForMonth.filter(holiday => holiday.tags.some(tag => filterTags.includes(tag)))
+        : allHolidaysForMonth;
+    
+    finalHolidays.sort((a, b) => a.ethiopian.day - b.ethiopian.day);
+    return finalHolidays;
+}
+
+
+export function getHolidaysForYear(ethYear, options = {}) {
+    validateNumericInputs('getHolidaysForYear', { ethYear });
+    const { lang = 'amharic', filter = null } = options;
+
+    const allHolidaysForYear = [];
+    
+    // Process all fixed and Christian movable holidays
+    const singleOccurrenceKeys = Object.keys(fixedHolidays).concat(Object.keys(keyToTewsakMap));
+    singleOccurrenceKeys.forEach(key => {
+        const holiday = getHoliday(key, ethYear, { lang });
+        if (holiday) {
+            allHolidaysForYear.push(holiday);
+        }
+    });
+
+    // Process all occurrences of Islamic holidays
+    const addMuslimHolidays = (key, dateArray) => {
+        dateArray.forEach(data => {
+            const info = holidayInfo[key];
+            allHolidaysForYear.push({
+                key,
+                tags: movableHolidays[key].tags,
+                movable: true,
+                name: info?.name?.[lang] || info?.name?.english,
+                description: info?.description?.[lang] || info?.description?.english,
+                ethiopian: data.ethiopian,
+                gregorian: data.gregorian,
+            });
+        });
+    };
+
+    addMuslimHolidays('moulid', getAllMoulidDates(ethYear));
+    addMuslimHolidays('eidFitr', getAllEidFitrDates(ethYear));
+    addMuslimHolidays('eidAdha', getAllEidAdhaDates(ethYear));
+    
+    const filterTags = filter ? (Array.isArray(filter) ? filter : [filter]) : null;
+
+    const finalHolidays = filterTags 
+        ? allHolidaysForYear.filter(holiday => holiday.tags.some(tag => filterTags.includes(tag)))
+        : allHolidaysForYear;
+
+    finalHolidays.sort((a, b) => {
+        if (a.ethiopian.month !== b.ethiopian.month) {
+            return a.ethiopian.month - b.ethiopian.month;
+        }
+        return a.ethiopian.day - b.ethiopian.day;
+    });
+
+    return finalHolidays;
 }
