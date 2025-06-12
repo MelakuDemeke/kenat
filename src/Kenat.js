@@ -5,6 +5,7 @@ import { toEthiopianTime, toGregorianTime } from './ethiopianTime.js';
 import { toGeez } from './geezConverter.js';
 import { getBahireHasab } from './bahireHasab.js';
 import { MonthGrid } from './MonthGrid.js';
+import { getHolidaysInMonth } from './holidays.js';
 import { getEthiopianDaysInMonth, isValidEthiopianDate, isEthiopianLeapYear, getWeekday } from './utils.js';
 import {
     InvalidEthiopianDateError,
@@ -241,6 +242,25 @@ export class Kenat {
      */
     toISOString() {
         return toISODateString(this.ethiopian, this.time);
+    }
+
+    /**
+     * Checks if the current date is a holiday.
+     * @param {Object} [options={}] - Options for language.
+     * @param {string} [options.lang='amharic'] - The language for the holiday names and descriptions.
+     * @returns {Array<Object>} An array of holiday objects for the current date, or an empty array if it's not a holiday.
+     */
+    isHoliday(options = {}) {
+        const { lang = 'amharic' } = options;
+        const { year, month, day } = this.ethiopian;
+
+        // Get all holidays for the current month
+        const holidaysInMonth = getHolidaysInMonth(year, month, lang);
+
+        // Filter to find holidays that fall on the current day
+        const todaysHolidays = holidaysInMonth.filter(holiday => holiday.ethiopian.day === day);
+
+        return todaysHolidays;
     }
 
 
