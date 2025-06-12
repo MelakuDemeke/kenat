@@ -6,6 +6,7 @@ import { getHolidaysInMonth, getHoliday, getHolidaysForYear } from './holidays.j
 import { Time } from './Time.js';
 import { HolidayTags } from './constants.js';
 import { getBahireHasab } from './bahireHasab.js';
+import { monthNames } from './constants.js';
 
 // Default export is the Kenat class directly
 export default Kenat;
@@ -23,4 +24,5 @@ export {
   Time,
   getHoliday,
   HolidayTags,
+  monthNames,
 };
