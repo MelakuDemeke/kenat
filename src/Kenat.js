@@ -312,42 +312,17 @@ export class Kenat {
         printMonthCalendarGrid(year, month, calendar, useGeez);
     }
 
-    /**
-     * Generates a full-featured, display-ready calendar view for a given Ethiopian month and year.
-     *
-     * This method wraps `MonthGrid.create()` to return structured month data,
-     * including weekday headers, holidays, today markers, and optionally localized text or Ge'ez numerals.
-     *
-     * @param {number} year - The Ethiopian year (e.g., 2017).
-     * @param {number} month - The Ethiopian month (1–13).
-     * @param {Object} [options={}] - Optional configuration for localization and layout.
-     * @param {boolean} [options.useGeez=false] - Whether to display numerals in Ge'ez.
-     * @param {string} [options.weekdayLang='amharic'] - Language for weekday labels (e.g., 'amharic', 'english').
-     * @param {number} [options.weekStart=0] - Week start day (0 = Sunday, 1 = Monday, etc.).
-     * @returns {{
-     *   month: number,
-     *   monthName: string,
-     *   year: number,
-     *   headers: string[],
-     *   days: Array<{
-     *     ethiopian: { year: number|string, month: number|string, day: number|string },
-     *     gregorian: { year: number, month: number, day: number },
-     *     weekday: number,
-     *     weekdayName: string,
-     *     isToday: boolean,
-     *     holidays: Array<Object>
-     *   }>
-     * }} A structured calendar object for the given month, suitable for display or rendering.
-     */
+    
     static getMonthCalendar(year, month, options = {}) {
-        const { useGeez = false, weekdayLang = 'amharic', weekStart = 0 } = options;
+        const { useGeez = false, weekdayLang = 'amharic', weekStart = 0, holidayFilter = null } = options;
 
         const monthGrid = MonthGrid.create({
             year,
             month,
             useGeez,
             weekdayLang,
-            weekStart
+            weekStart,
+            holidayFilter // Pass filter to MonthGrid
         });
 
         return {
@@ -359,23 +334,25 @@ export class Kenat {
         };
     }
 
+    
     /**
-     * Generates a calendar for all 13 months of a given year.
+     * Generates a full-year calendar as an array of month objects for the specified year.
      *
      * @param {number} year - The year for which to generate the calendar.
      * @param {Object} [options={}] - Optional configuration for calendar generation.
-     * @param {boolean} [options.useGeez=false] - Whether to use Geez numerals for the calendar.
-     * @param {string} [options.weekdayLang='amharic'] - The language to use for weekday names.
-     * @param {number} [options.weekStart=0] - The day the week starts on (0 for Sunday, 1 for Monday, etc.).
-     * @returns {Array<Object>} An array of month objects, each containing:
+     * @param {boolean} [options.useGeez=false] - Whether to use the Geez calendar system.
+     * @param {string} [options.weekdayLang='amharic'] - Language for weekday names (e.g., 'amharic').
+     * @param {number} [options.weekStart=0] - The starting day of the week (0 = Sunday, 1 = Monday, etc.).
+     * @param {function|null} [options.holidayFilter=null] - Optional filter function for holidays.
+     * @returns {Array<Object>} An array of 13 month objects, each containing:
      *   - {number} month: The month number (1-13).
      *   - {string} monthName: The name of the month.
      *   - {number} year: The year of the month.
      *   - {Array<string>} headers: The headers for the days of the week.
-     *   - {Array<Array<Object>>} days: The grid of days for the month.
+     *   - {Array<Array<Object>>} days: The grid of day objects for the month.
      */
     static getYearCalendar(year, options = {}) {
-        const { useGeez = false, weekdayLang = 'amharic', weekStart = 0 } = options;
+        const { useGeez = false, weekdayLang = 'amharic', weekStart = 0, holidayFilter = null } = options;
         const fullYear = [];
 
         for (let month = 1; month <= 13; month++) {
@@ -384,7 +361,8 @@ export class Kenat {
                 month,
                 useGeez,
                 weekdayLang,
-                weekStart
+                weekStart,
+                holidayFilter // Pass filter to MonthGrid
             });
 
             fullYear.push({
