@@ -6,12 +6,13 @@ import {
     evangelists,
     newYearWeekdayMap,
     tewsakMap,
-    movableHolidayTewsak
+    movableHolidayTewsak,
+    keyToTewsakMap // We need this for the reverse mapping
 } from './constants.js';
 
 
 /**
- * Calculates all Bahire Hasab values for a given Ethiopian year.
+ * Calculates all Bahire Hasab values for a given Ethiopian year, including all movable feasts.
  *
  * @param {number} ethiopianYear - The Ethiopian year to calculate for.
  * @returns {Object} An object containing all the calculated Bahire Hasab values.
@@ -33,7 +34,6 @@ export function getBahireHasab(ethiopianYear) {
     const bealeMetqiMonth = metqi > 14 ? 1 : 2;
     const bealeMetqiDay = metqi;
 
-    // FIX: Instead of creating a new Kenat instance, we use the standalone getWeekday utility.
     const bealeMetqiDate = { year: ethiopianYear, month: bealeMetqiMonth, day: bealeMetqiDay };
     const bealeMetqiWeekday = daysOfWeek.english[getWeekday(bealeMetqiDate)];
     
@@ -46,6 +46,21 @@ export function getBahireHasab(ethiopianYear) {
         ninevehMonth++;
     }
     const ninevehDate = { year: ethiopianYear, month: ninevehMonth, day: mebajaHamer };
+    
+    // --- NEW: Calculate all movable feasts ---
+    const movableFeasts = {};
+    const tewsakToKeyMap = Object.entries(keyToTewsakMap).reduce((acc, [key, val]) => {
+        acc[val] = key;
+        return acc;
+    }, {});
+
+    Object.keys(movableHolidayTewsak).forEach(tewsakKey => {
+        const holidayKey = tewsakToKeyMap[tewsakKey];
+        if (holidayKey) {
+            movableFeasts[holidayKey] = addDays(ninevehDate, movableHolidayTewsak[tewsakKey]);
+        }
+    });
+    // --- End of new logic ---
 
     return {
         ameteAlem,
@@ -58,7 +73,8 @@ export function getBahireHasab(ethiopianYear) {
         metqi,
         bealeMetqi: { date: bealeMetqiDate, weekday: bealeMetqiWeekday },
         mebajaHamer,
-        nineveh: ninevehDate
+        nineveh: ninevehDate, // Keep for backward compatibility/direct access
+        movableFeasts // The new object with all calculated feasts
     };
 }
 
