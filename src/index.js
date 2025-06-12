@@ -5,6 +5,7 @@ import { toArabic, toGeez } from './geezConverter.js';
 import { getHolidaysInMonth, getHoliday, getHolidaysForYear } from './holidays.js';
 import { Time } from './Time.js';
 import { HolidayTags } from './constants.js';
+import { getBahireHasab } from './bahireHasab.js';
 
 // Default export is the Kenat class directly
 export default Kenat;
@@ -17,6 +18,7 @@ export {
   toGeez,
   getHolidaysInMonth,
   getHolidaysForYear,
+  getBahireHasab,
   MonthGrid,
   Time,
   getHoliday,
