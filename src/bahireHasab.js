@@ -1,6 +1,5 @@
-import { validateNumericInputs } from './utils.js';
+import { validateNumericInputs, getWeekday } from './utils.js';
 import { addDays } from './dayArithmetic.js';
-import { Kenat } from './Kenat.js';
 import { UnknownHolidayError } from './errors/errorHandler.js';
 import {
     daysOfWeek,
@@ -20,66 +19,44 @@ import {
 export function getBahireHasab(ethiopianYear) {
     validateNumericInputs('getBahireHasab', { ethiopianYear });
 
-    // 1. Amete Alem
     const ameteAlem = 5500 + ethiopianYear;
-
-    // 2. Evangelist (Wengelawi) & Metene Rabiet
     const meteneRabiet = Math.floor(ameteAlem / 4);
     const evangelistRemainder = ameteAlem % 4;
     const evangelistName = evangelists[evangelistRemainder];
-
-    // 3. New Year Day (Tinte Qemer)
     const tinteQemer = (ameteAlem + meteneRabiet) % 7;
     const newYearWeekday = newYearWeekdayMap[tinteQemer];
-
-    // 4. Medeb & Wenber
     const medeb = ameteAlem % 19;
     const wenber = medeb === 0 ? 18 : medeb - 1;
-
-    // 5. Abektie & Metqi
     const abektie = (wenber * 11) % 30;
     const metqi = (wenber * 19) % 30;
 
-    // 6. Beale Metqi & Mebaja Hamer
-    const bealeMetqiMonth = metqi > 14 ? 1 : 2; // 1 for Meskerem, 2 for Tikimt
+    const bealeMetqiMonth = metqi > 14 ? 1 : 2;
     const bealeMetqiDay = metqi;
-    const bealeMetqi = new Kenat({ year: ethiopianYear, month: bealeMetqiMonth, day: bealeMetqiDay });
-    const bealeMetqiWeekday = daysOfWeek.english[bealeMetqi.weekday()];
 
+    // FIX: Instead of creating a new Kenat instance, we use the standalone getWeekday utility.
+    const bealeMetqiDate = { year: ethiopianYear, month: bealeMetqiMonth, day: bealeMetqiDay };
+    const bealeMetqiWeekday = daysOfWeek.english[getWeekday(bealeMetqiDate)];
+    
     const tewsak = tewsakMap[bealeMetqiWeekday];
     const mebajaHamerSum = bealeMetqiDay + tewsak;
-    // If the sum is > 30, take the remainder, otherwise use the sum itself.
     const mebajaHamer = mebajaHamerSum > 30 ? mebajaHamerSum % 30 : mebajaHamerSum;
 
-    // 7. Nineveh Fast
-    // The month of Nineveh is determined by Metqi.
-    let ninevehMonth = metqi > 14 ? 5 : 6; // Base month: 5 for Tirr, 6 for Yekatit
-    // If the sum of Beale Metqi and Tewsak was > 30, it rolls over to the next month.
+    let ninevehMonth = metqi > 14 ? 5 : 6;
     if (mebajaHamerSum > 30) {
         ninevehMonth++;
     }
-    const ninevehDay = mebajaHamer;
-    const ninevehDate = { year: ethiopianYear, month: ninevehMonth, day: ninevehDay };
+    const ninevehDate = { year: ethiopianYear, month: ninevehMonth, day: mebajaHamer };
 
     return {
         ameteAlem,
         meteneRabiet,
-        evangelist: {
-            name: evangelistName,
-            remainder: evangelistRemainder
-        },
-        newYear: {
-            dayName: newYearWeekday,
-            tinteQemer: tinteQemer
-        },
+        evangelist: { name: evangelistName, remainder: evangelistRemainder },
+        newYear: { dayName: newYearWeekday, tinteQemer: tinteQemer },
         medeb,
         wenber,
         abektie,
         metqi,
-        bealeMetqi: {
-            date: bealeMetqi.getEthiopian(),
-            weekday: bealeMetqiWeekday,
-        },
+        bealeMetqi: { date: bealeMetqiDate, weekday: bealeMetqiWeekday },
         mebajaHamer,
         nineveh: ninevehDate
     };
@@ -101,9 +78,6 @@ export function getMovableHoliday(holidayKey, ethiopianYear) {
         throw new UnknownHolidayError(holidayKey);
     }
 
-    // Get the base date of Nineveh for the given year
     const { nineveh } = getBahireHasab(ethiopianYear);
-
-    // Add the tewsak days to the date of Nineveh
     return addDays(nineveh, tewsak);
 }
