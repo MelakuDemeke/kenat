@@ -171,3 +171,57 @@ export function getHolidaysInMonth(ethYear, ethMonth, lang = 'amharic') {
     holidays.sort((a, b) => a.ethiopian.day - b.ethiopian.day);
     return holidays;
 }
+
+/**
+ * Retrieves a list of all holidays for a given Ethiopian year.
+ *
+ * @param {number} ethYear - The Ethiopian year.
+ * @param {Object} [options={}] - Options for language.
+ * @param {string} [options.lang='amharic'] - The language for names and descriptions.
+ * @returns {Array<Object>} A sorted array of all holiday objects for the year.
+ */
+export function getHolidaysForYear(ethYear, options = {}) {
+    validateNumericInputs('getHolidaysForYear', { ethYear });
+    const { lang = 'amharic' } = options;
+
+    const holidays = [];
+    
+    // Process all fixed and Christian movable holidays
+    const singleOccurrenceKeys = Object.keys(fixedHolidays).concat(Object.keys(keyToTewsakMap));
+    singleOccurrenceKeys.forEach(key => {
+        const holiday = getHoliday(key, ethYear, { lang });
+        if (holiday) {
+            holidays.push(holiday);
+        }
+    });
+
+    // Process all occurrences of Islamic holidays, which can appear more than once
+    const addMuslimHolidays = (key, dateArray) => {
+        dateArray.forEach(data => {
+            const info = holidayInfo[key];
+            holidays.push({
+                key,
+                tags: movableHolidays[key].tags,
+                movable: true,
+                name: info?.name?.[lang] || info?.name?.english,
+                description: info?.description?.[lang] || info?.description?.english,
+                ethiopian: data.ethiopian,
+                gregorian: data.gregorian,
+            });
+        });
+    };
+
+    addMuslimHolidays('moulid', getAllMoulidDates(ethYear));
+    addMuslimHolidays('eidFitr', getAllEidFitrDates(ethYear));
+    addMuslimHolidays('eidAdha', getAllEidAdhaDates(ethYear));
+
+    // Sort the final combined list by month and then by day
+    holidays.sort((a, b) => {
+        if (a.ethiopian.month !== b.ethiopian.month) {
+            return a.ethiopian.month - b.ethiopian.month;
+        }
+        return a.ethiopian.day - b.ethiopian.day;
+    });
+
+    return holidays;
+}
