@@ -35,7 +35,7 @@ export const keyToTewsakMap = {
 };
 
 export const PERIOD_LABELS = {
-  day: 'ከሰዓት',
+  day: 'ጠዋት',
   night: 'ማታ',
 };
 
@@ -136,17 +136,34 @@ export const holidayInfo = {
 };
 
 // Bahire Hasab related constants
-export const evangelists = {
-  1: 'Matthew', 2: 'Mark', 3: 'Luke', 0: 'John'
+export const evangelistNames = {
+  english: { 1: 'Matthew', 2: 'Mark', 3: 'Luke', 0: 'John' },
+  amharic: { 1: 'ማቴዎስ', 2: 'ማርቆስ', 3: 'ሉቃስ', 0: 'ዮሐንስ' }
 };
-export const newYearWeekdayMap = {
-  0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday', 4: 'Friday', 5: 'Saturday', 6: 'Sunday'
-};
+
 export const tewsakMap = {
   'Sunday': 7, 'Monday': 6, 'Tuesday': 5, 'Wednesday': 4, 'Thursday': 3, 'Friday': 2, 'Saturday': 8
 };
+
 export const movableHolidayTewsak = {
   NINEVEH: 0, ABIY_TSOME: 14, DEBRE_ZEIT: 41, HOSANNA: 62, SIKLET: 67, TINSAYE: 69,
   RIKBE_KAHNAT: 93, ERGET: 108, PARACLETE: 118, TSOME_HAWARYAT: 119, TSOME_DIHENET: 121,
+};
+
+export const movableHolidays = {
+    nineveh: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
+    abiyTsome: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
+    debreZeit: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
+    hosanna: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
+    siklet: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
+    fasika: { tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
+    rikbeKahnat: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
+    erget: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
+    paraclete: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
+    tsomeHawaryat: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
+    tsomeDihnet: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
+    eidFitr: { tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.MUSLIM] },
+    eidAdha: { tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.MUSLIM] },
+    moulid: { tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.MUSLIM] },
 };
 

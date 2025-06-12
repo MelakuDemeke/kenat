@@ -1,5 +1,5 @@
 import { toEC, toGC, hijriToGregorian, getHijriYear } from "./conversions.js";
-import { holidayInfo, HolidayTags, keyToTewsakMap } from "./constants.js";
+import { holidayInfo, HolidayTags, keyToTewsakMap,movableHolidays } from "./constants.js";
 import { validateNumericInputs } from "./utils.js";
 import { InvalidInputTypeError, UnknownHolidayError } from "./errors/errorHandler.js";
 import { getMovableHoliday } from "./bahireHasab.js";
@@ -14,23 +14,6 @@ const fixedHolidays = {
     adwa: { month: 6, day: 23, tags: [HolidayTags.PUBLIC, HolidayTags.STATE] },
     labour: { month: 8, day: 23, tags: [HolidayTags.PUBLIC, HolidayTags.STATE] },
     patriots: { month: 8, day: 27, tags: [HolidayTags.PUBLIC, HolidayTags.STATE] },
-};
-
-const movableHolidays = {
-    nineveh: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
-    abiyTsome: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
-    debreZeit: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
-    hosanna: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
-    siklet: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
-    fasika: { tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
-    rikbeKahnat: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
-    erget: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
-    paraclete: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
-    tsomeHawaryat: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
-    tsomeDihnet: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
-    eidFitr: { tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.MUSLIM] },
-    eidAdha: { tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.MUSLIM] },
-    moulid: { tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.MUSLIM] },
 };
 
 function findAllIslamicOccurrences(ethiopianYear, hijriMonth, hijriDay) {

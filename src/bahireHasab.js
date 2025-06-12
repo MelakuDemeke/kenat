@@ -3,29 +3,29 @@ import { addDays } from './dayArithmetic.js';
 import { UnknownHolidayError } from './errors/errorHandler.js';
 import {
     daysOfWeek,
-    evangelists,
-    newYearWeekdayMap,
+    evangelistNames,
     tewsakMap,
     movableHolidayTewsak,
-    keyToTewsakMap // We need this for the reverse mapping
+    keyToTewsakMap,
+    holidayInfo,
+    movableHolidays
 } from './constants.js';
 
 
-/**
- * Calculates all Bahire Hasab values for a given Ethiopian year, including all movable feasts.
- *
- * @param {number} ethiopianYear - The Ethiopian year to calculate for.
- * @returns {Object} An object containing all the calculated Bahire Hasab values.
- */
-export function getBahireHasab(ethiopianYear) {
+export function getBahireHasab(ethiopianYear, options = {}) {
     validateNumericInputs('getBahireHasab', { ethiopianYear });
+    const { lang = 'amharic' } = options;
 
     const ameteAlem = 5500 + ethiopianYear;
     const meteneRabiet = Math.floor(ameteAlem / 4);
+    
     const evangelistRemainder = ameteAlem % 4;
-    const evangelistName = evangelists[evangelistRemainder];
+    const evangelistName = evangelistNames[lang]?.[evangelistRemainder] || evangelistNames.english[evangelistRemainder];
+
     const tinteQemer = (ameteAlem + meteneRabiet) % 7;
-    const newYearWeekday = newYearWeekdayMap[tinteQemer];
+    const weekdayIndex = (tinteQemer + 6) % 7;
+    const newYearWeekday = daysOfWeek[lang]?.[weekdayIndex] || daysOfWeek.english[weekdayIndex];
+
     const medeb = ameteAlem % 19;
     const wenber = medeb === 0 ? 18 : medeb - 1;
     const abektie = (wenber * 11) % 30;
@@ -33,7 +33,6 @@ export function getBahireHasab(ethiopianYear) {
 
     const bealeMetqiMonth = metqi > 14 ? 1 : 2;
     const bealeMetqiDay = metqi;
-
     const bealeMetqiDate = { year: ethiopianYear, month: bealeMetqiMonth, day: bealeMetqiDay };
     const bealeMetqiWeekday = daysOfWeek.english[getWeekday(bealeMetqiDate)];
     
@@ -42,58 +41,54 @@ export function getBahireHasab(ethiopianYear) {
     const mebajaHamer = mebajaHamerSum > 30 ? mebajaHamerSum % 30 : mebajaHamerSum;
 
     let ninevehMonth = metqi > 14 ? 5 : 6;
-    if (mebajaHamerSum > 30) {
-        ninevehMonth++;
-    }
+    if (mebajaHamerSum > 30) ninevehMonth++;
     const ninevehDate = { year: ethiopianYear, month: ninevehMonth, day: mebajaHamer };
     
-    // --- NEW: Calculate all movable feasts ---
+    // UPDATED: Calculate and build full holiday objects
     const movableFeasts = {};
     const tewsakToKeyMap = Object.entries(keyToTewsakMap).reduce((acc, [key, val]) => {
-        acc[val] = key;
-        return acc;
+        acc[val] = key; return acc;
     }, {});
 
     Object.keys(movableHolidayTewsak).forEach(tewsakKey => {
         const holidayKey = tewsakToKeyMap[tewsakKey];
         if (holidayKey) {
-            movableFeasts[holidayKey] = addDays(ninevehDate, movableHolidayTewsak[tewsakKey]);
+            const date = addDays(ninevehDate, movableHolidayTewsak[tewsakKey]);
+            const info = holidayInfo[holidayKey];
+            const rules = movableHolidays[holidayKey];
+
+            movableFeasts[holidayKey] = {
+                key: holidayKey,
+                tags: rules.tags,
+                movable: true,
+                name: info?.name?.[lang] || info?.name?.english,
+                description: info?.description?.[lang] || info?.description?.english,
+                ethiopian: date,
+            };
         }
     });
-    // --- End of new logic ---
 
     return {
         ameteAlem,
         meteneRabiet,
         evangelist: { name: evangelistName, remainder: evangelistRemainder },
         newYear: { dayName: newYearWeekday, tinteQemer: tinteQemer },
-        medeb,
-        wenber,
-        abektie,
-        metqi,
+        medeb, wenber, abektie, metqi,
         bealeMetqi: { date: bealeMetqiDate, weekday: bealeMetqiWeekday },
         mebajaHamer,
-        nineveh: ninevehDate, // Keep for backward compatibility/direct access
-        movableFeasts // The new object with all calculated feasts
+        nineveh: ninevehDate,
+        movableFeasts
     };
 }
 
-
-/**
- * Calculates the date of a movable holiday for a given year.
- *
- * @param {'ABIY_TSOME'|'TINSAYE'|'ERGET'|...} holidayKey - The key of the holiday from movableHolidayTewsak.
- * @param {number} ethiopianYear - The Ethiopian year.
- * @returns {Object} An Ethiopian date object { year, month, day }.
- */
-export function getMovableHoliday(holidayKey, ethiopianYear) {
+// This function now simply pulls the pre-built object from getBahireHasab
+export function getMovableHoliday(holidayKey, ethiopianYear, options = {}) {
     validateNumericInputs('getMovableHoliday', { ethiopianYear });
-
-    const tewsak = movableHolidayTewsak[holidayKey];
-    if (tewsak === undefined) {
-        throw new UnknownHolidayError(holidayKey);
-    }
-
-    const { nineveh } = getBahireHasab(ethiopianYear);
-    return addDays(nineveh, tewsak);
+    const { lang = 'amharic' } = options;
+    const { movableFeasts } = getBahireHasab(ethiopianYear, { lang });
+    
+    const tewsakEnumKey = Object.keys(keyToTewsakMap).find(key => key === holidayKey);
+    if (!tewsakEnumKey) return null;
+    
+    return movableFeasts[holidayKey];
 }
