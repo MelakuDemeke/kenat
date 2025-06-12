@@ -1,5 +1,6 @@
 import { validateNumericInputs, getWeekday } from './utils.js';
 import { addDays } from './dayArithmetic.js';
+import { toGC } from './conversions.js';
 import { UnknownHolidayError } from './errors/errorHandler.js';
 import {
     daysOfWeek,
@@ -29,6 +30,7 @@ export function getBahireHasab(ethiopianYear, options = {}) {
     
     const evangelistRemainder = ameteAlem % 4;
     const evangelistName = evangelistNames[lang]?.[evangelistRemainder] || evangelistNames.english[evangelistRemainder];
+
     const tinteQemer = (ameteAlem + meteneRabiet) % 7;
     const weekdayIndex = (tinteQemer + 1) % 7; 
     const newYearWeekday = daysOfWeek[lang]?.[weekdayIndex] || daysOfWeek.english[weekdayIndex];
@@ -70,6 +72,7 @@ export function getBahireHasab(ethiopianYear, options = {}) {
                 name: info?.name?.[lang] || info?.name?.english,
                 description: info?.description?.[lang] || info?.description?.english,
                 ethiopian: date,
+                gregorian: toGC(date.year, date.month, date.day) // <-- ADDED: Include Gregorian date
             };
         }
     });
@@ -112,8 +115,24 @@ export function getMovableHoliday(holidayKey, ethiopianYear) {
 
 
 /**
- * INTERNAL: The single engine for all core Bahire Hasab calculations.
- * This function is not exported and only returns raw, un-translated numbers and dates.
+ * Calculates base values for the Bahire Hasab system for a given Ethiopian year,
+ * primarily determining the date of the Fast of Nineveh (ጾመ ነነዌ - Tsome Nenewē).
+ *
+ * The Bahire Hasab is the traditional Ethiopian Orthodox Tewahedo Church system
+ * for calculating movable feasts and fasts. This function computes key intermediate
+ * values like 'Metqi' (the date on which the year's cycle is proclaimed) and uses
+ * them to find the start date of the Fast of Nineveh.
+ *
+ * Note: This function relies on external `tewsakMap`, `daysOfWeek.english`, and `getWeekday`
+ * which are not defined within its scope but are expected to be available.
+ *
+ * @param {number} ethiopianYear - The Ethiopian year for which to perform the calculations.
+ * @returns {{ ninevehDate: { year: number, month: number, day: number } }} An object containing the calculated date of the Fast of Nineveh.
+ *   - ninevehDate: An object representing the date of the Fast of Nineveh.
+ *     - year: The Ethiopian year (this will be the same as the input `ethiopianYear`).
+ *     - month: The Ethiopian month (typically ranging from 5 to 7, e.g., Ter, Yekatit, or Megabit)
+ *              in which the Fast of Nineveh begins. Ethiopian months are 1-indexed (1 for Meskerem, ..., 13 for Pagume).
+ *     - day: The Ethiopian day of the month (1-30) on which the Fast of Nineveh begins.
  */
 function _calculateBahireHasabBase(ethiopianYear) {
     const ameteAlem = 5500 + ethiopianYear;
