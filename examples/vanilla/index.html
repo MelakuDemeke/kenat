@@ -13,10 +13,13 @@
         .holiday { background-color: #e3f2fd; cursor: pointer; transition: background-color 0.2s; }
         .holiday:hover { background-color: #bbdefb; }
         .holiday-labels { font-size: 0.75rem; color: #1e88e5; margin-top: 5px; line-height: 1.2; }
-        .controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 1rem 0; }
-        .filter-controls { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin-bottom: 1.5rem; background-color: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        
+        /* Navigation and Controls Styling */
+        .header-controls, .controls, .filter-controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 1rem 0; align-items: center; }
+        .nav-controls { display: flex; align-items: center; gap: 0.5rem; }
+        .filter-controls { margin-bottom: 1.5rem; background-color: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .filter-controls label { font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 4px; }
-        button {
+        button, select {
             padding: 0.6rem 1.2rem;
             font-size: 0.9rem;
             cursor: pointer;
@@ -25,6 +28,7 @@
             background-color: #fff;
             transition: background-color 0.2s, box-shadow 0.2s;
         }
+        select { padding: 0.5rem; }
         button:hover { background-color: #f0f0f0; }
         button:active { box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
         
@@ -50,7 +54,8 @@
     </div>
 
     <script type="module">
-        import { MonthGrid, HolidayTags } from '../../src/index.js';
+        import Kenat, { MonthGrid, HolidayTags, toArabic } from '../../src/index.js';
+        import { monthNames } from '../../src/constants.js';
         
         let monthGridInstance;
         
@@ -58,7 +63,11 @@
         let useGeez = false;
         let weekdayLang = 'amharic';
         let weekStart = 1;
-        let holidayFilter = null; // Start with no filter
+        let holidayFilter = null;
+        
+        const initialDate = new Kenat().getEthiopian();
+        let currentYear = initialDate.year;
+        let currentMonth = initialDate.month;
 
         // --- MODAL LOGIC ---
         const modal = document.getElementById('holidayModal');
@@ -69,9 +78,7 @@
             let content = '';
             holidays.forEach((h, index) => {
                 content += `<h3>${h.name}</h3><p>${h.description}</p>`;
-                if (index < holidays.length - 1) {
-                    content += '<hr>';
-                }
+                if (index < holidays.length - 1) content += '<hr>';
             });
             modalBody.innerHTML = content;
             modal.style.display = 'flex';
@@ -82,19 +89,29 @@
         
         // --- CALENDAR RENDERING ---
         function renderCalendar(gridData) {
-            let { headers, days, year, monthName } = gridData;
+            let { headers, days, year, month, monthName } = gridData;
             const holidaysForDay = (item) => item.holidays.map(h => h.name).join(', ');
 
+            const yearForComparison = typeof year === 'string' ? toArabic(year) : year;
+            const yearOptions = Array.from({length: 201}, (_, i) => 1900 + i)
+                .map(y => `<option value="${y}" ${y === yearForComparison ? 'selected' : ''}>${y}</option>`).join('');
+            
+            const monthOptions = monthNames.amharic
+                .map((name, i) => `<option value="${i + 1}" ${i + 1 === month ? 'selected' : ''}>${name}</option>`).join('');
+
             let html = `
-                <div style="display: flex; justify-content: space-between; align-items: center; max-width: 600px; margin: 0 auto;">
+                <div class="header-controls">
                     <button id="prevMonth">⬅️</button>
-                    <h2>📅 ${monthName} ${year}</h2>
+                    <div class="nav-controls">
+                         <select id="monthSelector">${monthOptions}</select>
+                         <select id="yearSelector">${yearOptions}</select>
+                    </div>
                     <button id="nextMonth">➡️</button>
                 </div>
                 <div class="controls">
-                    <button id="toggleGeez">Toggle Geez (${useGeez ? 'ON' : 'OFF'})</button>
-                    <button id="toggleLang">Toggle Lang (${weekdayLang})</button>
-                    <button id="toggleWeekStart">Week Start (${weekStart === 1 ? 'Mon' : 'Sun'})</button>
+                    <button id="toggleGeez">Geez (${useGeez ? 'ON' : 'OFF'})</button>
+                    <button id="toggleLang">Lang (${weekdayLang})</button>
+                    <button id="toggleWeekStart">Start (${weekStart === 1 ? 'Mon' : 'Sun'})</button>
                 </div>
                 <div class="filter-controls" id="filterControls"></div>
                 <table><thead><tr>`;
@@ -141,8 +158,21 @@
         }
 
         function attachEventListeners() {
-            document.getElementById('prevMonth').onclick = () => renderCalendar(monthGridInstance.down().generate());
-            document.getElementById('nextMonth').onclick = () => renderCalendar(monthGridInstance.up().generate());
+            document.getElementById('prevMonth').onclick = () => {
+                const newGrid = monthGridInstance.down().generate();
+                currentYear = toArabic(newGrid.year);
+                currentMonth = newGrid.month;
+                renderCalendar(newGrid);
+            };
+            document.getElementById('nextMonth').onclick = () => {
+                const newGrid = monthGridInstance.up().generate();
+                currentYear = toArabic(newGrid.year);
+                currentMonth = newGrid.month;
+                renderCalendar(newGrid);
+            };
+
+            document.getElementById('monthSelector').onchange = (e) => { currentMonth = parseInt(e.target.value); rerender(); };
+            document.getElementById('yearSelector').onchange = (e) => { currentYear = parseInt(e.target.value); rerender(); };
             document.getElementById('toggleGeez').onclick = () => { useGeez = !useGeez; rerender(); };
             document.getElementById('toggleLang').onclick = () => { weekdayLang = weekdayLang === 'amharic' ? 'english' : 'amharic'; rerender(); };
             document.getElementById('toggleWeekStart').onclick = () => { weekStart = weekStart === 1 ? 0 : 1; rerender(); };
@@ -150,7 +180,6 @@
             document.querySelectorAll('.holiday').forEach(cell => {
                 cell.onclick = () => {
                     const dayIndex = parseInt(cell.getAttribute('data-day-index'));
-                    // We need to get the days array from the *current* grid instance
                     const dayData = monthGridInstance.generate().days[dayIndex];
                     if (dayData && dayData.holidays.length > 0) {
                         showHolidayModal(dayData.holidays);
@@ -162,10 +191,7 @@
             const otherCheckboxes = document.querySelectorAll('input[name="holidayTag"]:not([value="all"])');
 
             const updateFilter = () => {
-                const checkedValues = Array.from(otherCheckboxes)
-                    .filter(i => i.checked)
-                    .map(i => i.value);
-
+                const checkedValues = Array.from(otherCheckboxes).filter(i => i.checked).map(i => i.value);
                 if (checkedValues.length === 0) {
                     allCheckbox.checked = true;
                     holidayFilter = null;
@@ -182,29 +208,21 @@
                     holidayFilter = null;
                     rerender();
                 } else {
-                    // If user unchecks "All", do nothing until they select another option
                     allCheckbox.checked = true; 
                 }
             };
-
-            otherCheckboxes.forEach(checkbox => {
-                checkbox.onchange = updateFilter;
-            });
+            otherCheckboxes.forEach(checkbox => { checkbox.onchange = updateFilter; });
         }
 
         function rerender() {
-            const config = monthGridInstance 
-                ? { year: monthGridInstance.year, month: monthGridInstance.month } 
-                : {};
-
             monthGridInstance = new MonthGrid({
-                ...config,
+                year: currentYear,
+                month: currentMonth,
                 useGeez,
                 weekdayLang,
                 weekStart,
-                holidayFilter, // Pass the filter to the constructor
+                holidayFilter,
             });
-            
             renderCalendar(monthGridInstance.generate());
         }
 
