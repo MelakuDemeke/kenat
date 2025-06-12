@@ -44,7 +44,6 @@ export function getBahireHasab(ethiopianYear, options = {}) {
     if (mebajaHamerSum > 30) ninevehMonth++;
     const ninevehDate = { year: ethiopianYear, month: ninevehMonth, day: mebajaHamer };
     
-    // UPDATED: Calculate and build full holiday objects
     const movableFeasts = {};
     const tewsakToKeyMap = Object.entries(keyToTewsakMap).reduce((acc, [key, val]) => {
         acc[val] = key; return acc;
@@ -81,14 +80,40 @@ export function getBahireHasab(ethiopianYear, options = {}) {
     };
 }
 
-// This function now simply pulls the pre-built object from getBahireHasab
-export function getMovableHoliday(holidayKey, ethiopianYear, options = {}) {
+/**
+ * Calculates the date of a movable holiday for a given year.
+ * This is now a pure date calculator that returns a simple date object,
+ * ensuring backward compatibility with existing tests.
+ *
+ * @param {'ABIY_TSOME'|'TINSAYE'|'ERGET'|...} holidayKey - The key of the holiday from movableHolidayTewsak.
+ * @param {number} ethiopianYear - The Ethiopian year.
+ * @returns {Object} An Ethiopian date object { year, month, day }.
+ */
+export function getMovableHoliday(holidayKey, ethiopianYear) {
     validateNumericInputs('getMovableHoliday', { ethiopianYear });
-    const { lang = 'amharic' } = options;
-    const { movableFeasts } = getBahireHasab(ethiopianYear, { lang });
-    
-    const tewsakEnumKey = Object.keys(keyToTewsakMap).find(key => key === holidayKey);
-    if (!tewsakEnumKey) return null;
-    
-    return movableFeasts[holidayKey];
+
+    const tewsak = movableHolidayTewsak[holidayKey];
+    if (tewsak === undefined) {
+        throw new UnknownHolidayError(holidayKey);
+    }
+
+    // This calculation is now independent of the full movableFeasts object,
+    // ensuring it only returns the date.
+    const ameteAlem = 5500 + ethiopianYear;
+    const meteneRabiet = Math.floor(ameteAlem / 4);
+    const medeb = ameteAlem % 19;
+    const wenber = medeb === 0 ? 18 : medeb - 1;
+    const metqi = (wenber * 19) % 30;
+    const bealeMetqiMonth = metqi > 14 ? 1 : 2;
+    const bealeMetqiDay = metqi;
+    const bealeMetqiDate = { year: ethiopianYear, month: bealeMetqiMonth, day: bealeMetqiDay };
+    const bealeMetqiWeekday = daysOfWeek.english[getWeekday(bealeMetqiDate)];
+    const tewsakForMebaja = tewsakMap[bealeMetqiWeekday];
+    const mebajaHamerSum = bealeMetqiDay + tewsakForMebaja;
+    const mebajaHamer = mebajaHamerSum > 30 ? mebajaHamerSum % 30 : mebajaHamerSum;
+    let ninevehMonth = metqi > 14 ? 5 : 6;
+    if (mebajaHamerSum > 30) ninevehMonth++;
+    const ninevehDate = { year: ethiopianYear, month: ninevehMonth, day: mebajaHamer };
+
+    return addDays(ninevehDate, tewsak);
 }
