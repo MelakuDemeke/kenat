@@ -160,13 +160,13 @@
         function attachEventListeners() {
             document.getElementById('prevMonth').onclick = () => {
                 const newGrid = monthGridInstance.down().generate();
-                currentYear = toArabic(newGrid.year);
+                currentYear = (typeof newGrid.year === 'string') ? toArabic(newGrid.year) : newGrid.year;
                 currentMonth = newGrid.month;
                 renderCalendar(newGrid);
             };
             document.getElementById('nextMonth').onclick = () => {
                 const newGrid = monthGridInstance.up().generate();
-                currentYear = toArabic(newGrid.year);
+                currentYear = (typeof newGrid.year === 'string') ? toArabic(newGrid.year) : newGrid.year;
                 currentMonth = newGrid.month;
                 renderCalendar(newGrid);
             };
