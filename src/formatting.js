@@ -31,18 +31,21 @@ export function formatInGeezAmharic(etDate) {
  * Formats an Ethiopian date and time as a string.
  *
  * @param {{year: number, month: number, day: number}} etDate - Ethiopian date
- * @param {{hour: number, minute: number, period: 'day'|'night'}} time - Ethiopian time
+ * @param {import('../Time.js').Time} time - An instance of the Time class
  * @param {'amharic'|'english'} [lang='amharic'] - Language for suffix
  * @returns {string} Example: "መስከረም 10 2016 08:30 ጠዋት"
  */
 export function formatWithTime(etDate, time, lang = 'amharic') {
   const base = formatStandard(etDate, lang);
-  const hour = time?.hour?.toString().padStart(2, '0') ?? '??';
-  const minute = time?.minute?.toString().padStart(2, '0') ?? '??';
-  const suffix = lang === 'amharic'
-    ? (time?.period === 'day' ? 'ጠዋት' : 'ማታ')
-    : (time?.period === 'day' ? 'day' : 'night');
-  return `${base} ${hour}:${minute} ${suffix}`;
+
+  // THIS IS THE FIX: Ensure zeroAsDash is false for this specific format.
+  const timeString = time.format({
+    lang,
+    useGeez: false,
+    zeroAsDash: false
+  });
+
+  return `${base} ${timeString}`;
 }
 
 /**

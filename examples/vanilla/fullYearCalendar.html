@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kenat Full Year Calendar</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            text-align: center;
+            background-color: #f9f9f9;
+            padding: 1rem;
+            color: #333;
+        }
+
+        h1,
+        h2 {
+            color: #111;
+        }
+
+        .year-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 1rem auto;
+        }
+
+        .month-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1rem;
+            background-color: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .month-card h3 {
+            margin-top: 0;
+            font-size: 1rem;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid #f0f0f0;
+            padding: 0.3rem;
+            height: 35px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        th {
+            background-color: #f7f7f7;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .today {
+            background-color: #fffde7;
+            border: 1px solid #ffc107;
+            font-weight: bold;
+        }
+
+        .holiday {
+            background-color: #e3f2fd;
+            cursor: pointer;
+        }
+
+        .holiday:hover {
+            background-color: #bbdefb;
+        }
+
+        .main-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1.5rem 0;
+            align-items: center;
+        }
+
+        .filter-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            background-color: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-controls label {
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        button {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 25px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            text-align: left;
+            position: relative;
+        }
+
+        .modal-close {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="calendar-container"></div>
+    <div id="holidayModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        // FIX: Correctly import Kenat as the default export
+        import Kenat, { HolidayTags } from '../../src/index.js';
+        import { toGeez, toArabic } from '../../src/geezConverter.js';
+
+        let useGeez = false;
+        let weekdayLang = 'amharic';
+        let weekStart = 1;
+        let currentYear = new Kenat().getEthiopian().year;
+        let holidayFilter = null; // Start with no filter
+
+        const container = document.getElementById('calendar-container');
+        const modal = document.getElementById('holidayModal');
+        const modalBody = document.getElementById('modalBody');
+        const closeModal = document.querySelector('.modal-close');
+
+        function showHolidayModal(holidays) {
+            let content = '';
+            holidays.forEach((h, index) => {
+                content += `<h3>${h.name}</h3><p>${h.description}</p>`;
+                if (index < holidays.length - 1) content += '<hr>';
+            });
+            modalBody.innerHTML = content;
+            modal.style.display = 'flex';
+        }
+
+        closeModal.onclick = () => { modal.style.display = 'none'; };
+        window.onclick = (event) => { if (event.target == modal) modal.style.display = 'none'; };
+
+        function renderFullYearCalendar(year) {
+            currentYear = year;
+            // Pass the holidayFilter to getYearCalendar
+            const yearCalendar = Kenat.getYearCalendar(year, { useGeez, weekdayLang, weekStart, holidayFilter });
+            const displayYear = useGeez ? toGeez(year) : year;
+
+            let html = `<div style="text-align: center;">
+                <h2>📅 Ethiopian Calendar ${displayYear}</h2>
+                <div class="main-controls">
+                    <button id="prevYear">⬅️ Prev Year</button>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="toggleGeez">Geez (${useGeez ? 'ON' : 'OFF'})</button>
+                        <button id="toggleLang">Lang (${weekdayLang})</button>
+                        <button id="toggleWeekStart">Start (${weekStart === 1 ? 'Mon' : 'Sun'})</button>
+                    </div>
+                    <button id="nextYear">Next Year ➡️</button>
+                </div>
+                <div class="filter-controls" id="filterControls"></div>
+            </div>`;
+
+            html += `<div class="year-grid">`;
+            yearCalendar.forEach(month => {
+                const headers = (weekdayLang === 'english') ? month.headers.map(h => h.substring(0, 3)) : month.headers;
+                html += `
+                    <div class="month-card">
+                        <h3>${month.monthName}</h3>
+                        <table>
+                            <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+                            <tbody>
+                `;
+                for (let i = 0; i < month.days.length; i += 7) {
+                    html += '<tr>';
+                    for (let j = 0; j < 7; j++) {
+                        const item = month.days[i + j];
+                        if (!item) {
+                            html += '<td></td>';
+                        } else {
+                            const isToday = item.isToday ? 'today' : '';
+                            const isHoliday = item.holidays.length > 0 ? 'holiday' : '';
+                            const holidayAttr = isHoliday ? `data-holidays='${JSON.stringify(item.holidays)}'` : '';
+                            html += `<td class="${isToday} ${isHoliday}" ${holidayAttr}><strong>${item.ethiopian.day}</strong></td>`;
+                        }
+                    }
+                    html += '</tr>';
+                }
+                html += `</tbody></table></div>`;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+
+            renderFilterControls();
+            attachEventListeners();
+        }
+
+        function renderFilterControls() {
+            const controlsContainer = document.getElementById('filterControls');
+            let controlsHtml = `<label><input type="checkbox" name="holidayTag" value="all" ${!holidayFilter ? 'checked' : ''}> All</label>`;
+            for (const key in HolidayTags) {
+                const value = HolidayTags[key];
+                const isChecked = holidayFilter && holidayFilter.includes(value);
+                controlsHtml += `<label><input type="checkbox" name="holidayTag" value="${value}" ${isChecked ? 'checked' : ''}> ${value}</label>`;
+            }
+            controlsContainer.innerHTML = controlsHtml;
+        }
+
+        function attachEventListeners() {
+            document.getElementById('prevYear').onclick = () => rerender(currentYear - 1);
+            document.getElementById('nextYear').onclick = () => rerender(currentYear + 1);
+            document.getElementById('toggleGeez').onclick = () => { useGeez = !useGeez; rerender(); };
+            document.getElementById('toggleLang').onclick = () => { weekdayLang = weekdayLang === 'amharic' ? 'english' : 'amharic'; rerender(); };
+            document.getElementById('toggleWeekStart').onclick = () => { weekStart = weekStart === 1 ? 0 : 1; rerender(); };
+
+            document.querySelectorAll('.holiday').forEach(cell => {
+                cell.onclick = () => {
+                    const holidays = JSON.parse(cell.getAttribute('data-holidays'));
+                    showHolidayModal(holidays);
+                };
+            });
+
+            // Improved checkbox logic
+            const allCheckbox = document.querySelector('input[name="holidayTag"][value="all"]');
+            const otherCheckboxes = document.querySelectorAll('input[name="holidayTag"]:not([value="all"])');
+
+            const updateFilter = () => {
+                const checkedValues = Array.from(otherCheckboxes)
+                    .filter(i => i.checked)
+                    .map(i => i.value);
+
+                if (checkedValues.length === 0) {
+                    allCheckbox.checked = true;
+                    holidayFilter = null;
+                } else {
+                    allCheckbox.checked = false;
+                    holidayFilter = checkedValues;
+                }
+                rerender();
+            };
+
+            allCheckbox.onchange = () => {
+                if (allCheckbox.checked) {
+                    otherCheckboxes.forEach(cb => cb.checked = false);
+                    holidayFilter = null;
+                    rerender();
+                } else {
+                    allCheckbox.checked = true;
+                }
+            };
+
+            otherCheckboxes.forEach(checkbox => {
+                checkbox.onchange = updateFilter;
+            });
+        }
+
+        function rerender(year = currentYear) {
+            renderFullYearCalendar(year);
+        }
+
+        rerender();
+    </script>
+</body>
+
+</html>

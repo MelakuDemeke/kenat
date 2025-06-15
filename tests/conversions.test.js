@@ -1,4 +1,5 @@
 import { toEC, toGC } from "../src/conversions";
+import { InvalidGregorianDateError } from "../src/errors/errorHandler.js";
 
 describe('Ethiopian to Gregorian conversion', () => {
 
@@ -105,8 +106,8 @@ describe('Gregorian to Ethiopian conversion', () => {
     });
 
     test('Gregorian to Ethiopian: Out of range year throws error', () => {
-        expect(() => toEC(1800, 1, 1)).toThrow('Out of range input year: 1800');
-        expect(() => toEC(2200, 1, 1)).toThrow('Out of range input year: 2200');
+        expect(() => toEC(1800, 1, 1)).toThrow(InvalidGregorianDateError);
+        expect(() => toEC(2200, 1, 1)).toThrow(InvalidGregorianDateError);
     });
 
     test('Gregorian to Ethiopian: September 12, 1971 (base date) -> 1964-1-1', () => {

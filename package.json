@@ -1,12 +1,15 @@
 {
   "name": "kenat",
-  "version": "1.3.0",
+  "version": "2.0.3",
   "description": "A JavaScript library for the Ethiopian calendar with date and time support.",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "docs": "jsdoc -c jsdoc.json"
+    "docs": "jsdoc -c jsdoc.json",
+    "release:patch": "npm version patch && git push && git push --tags && npm publish",
+    "release:minor": "npm version minor && git push && git push --tags && npm publish",
+    "release:major": "npm version major && git push && git push --tags && npm publish"
   },
   "keywords": [
     "ethiopian",
@@ -18,23 +21,18 @@
     "habesha",
     "zemen",
     "ethiopian date",
-    "kenat",
     "geez calendar",
-    "ethiopic calendar",
-    "calendar",
-    "date",
     "ethiopian calendar library",
     "amharic calendar",
-    "ethiopian",
-    "ethiopia",
     "date converter",
     "calendar converter",
     "ethiopian holidays",
-    "time",
     "react calendar",
     "js calendar",
     "javascript calendar",
-    "calendar component"
+    "calendar component",
+    "Bahire Hasab",
+    "Abushakir"
   ],
   "author": "Melaku Demeke",
   "license": "MIT",
@@ -45,7 +43,7 @@
   "bugs": {
     "url": "https://github.com/MelakuDemeke/kenat/issues"
   },
-  "homepage": "https://kenat-doc.vercel.app/",
+  "homepage": "https://www.kenat.systems/",
   "devDependencies": {
     "jest": "^29.7.0",
     "jsdoc": "^4.0.4"

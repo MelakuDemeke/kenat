@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ethiopian Time Clock</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 2rem;
+            background: #f9f9f9;
+        }
+        #digitalClock {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        #geezToggle {
+            margin-bottom: 2rem;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        #analogClock {
+            margin: 0 auto;
+            background: #fff;
+            border: 5px solid #333;
+            border-radius: 50%;
+            width: 250px;
+            height: 250px;
+            position: relative;
+        }
+        #analogClock canvas {
+            display: block;
+            margin: 0 auto;
+            background: transparent;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ethiopian Time Clock</h1>
+    <button id="geezToggle">Use Geez Numerals: ON</button>
+    <div id="digitalClock">--:-- --</div>
+    <div id="analogClock">
+        <canvas id="clockCanvas" width="250" height="250"></canvas>
+    </div>
+
+    <script type="module">
+    // --- Start of Embedded Library Code ---
+
+    // Note: GeezConverterError is simplified for this standalone file.
+    class GeezConverterError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = 'GeezConverterError';
+      }
+    }
+
+    const geezSymbols = {
+        ones: ['', '፩', '፪', '፫', '፬', '፭', '፮', '፯', '፰', '፱'],
+        tens: ['', '፲', '፳', '፴', '፵', '፶', '፷', '፸', '፹', '፺'],
+        hundred: '፻',
+        tenThousand: '፼'
+    };
+
+    /**
+     * Converts a natural number to Ethiopic numeral string.
+     */
+    function toGeez(input) {
+        if (typeof input !== 'number' && typeof input !== 'string') {
+            throw new GeezConverterError("Input must be a number or a string.");
+        }
+        const num = Number(input);
+        if (isNaN(num) || !Number.isInteger(num) || num < 0) {
+            throw new GeezConverterError("Input must be a non-negative integer.");
+        }
+        if (num === 0) return '0';
+        function convertBelow100(n) {
+            if (n <= 0) return '';
+            const tensDigit = Math.floor(n / 10);
+            const onesDigit = n % 10;
+            return geezSymbols.tens[tensDigit] + geezSymbols.ones[onesDigit];
+        }
+        if (num < 100) {
+            return convertBelow100(num);
+        }
+        if (num === 100) return geezSymbols.hundred;
+        if (num < 10000) {
+            const hundreds = Math.floor(num / 100);
+            const remainder = num % 100;
+            const hundredPart = (hundreds > 1 ? convertBelow100(hundreds) : '') + geezSymbols.hundred;
+            return hundredPart + convertBelow100(remainder);
+        }
+        const tenThousandPart = Math.floor(num / 10000);
+        const remainder = num % 10000;
+        const tenThousandGeez = (tenThousandPart > 1 ? toGeez(tenThousandPart) : '') + geezSymbols.tenThousand;
+        return tenThousandGeez + (remainder > 0 ? toGeez(remainder) : '');
+    }
+    
+    // Note: InvalidTimeError is simplified for this standalone file.
+    class InvalidTimeError extends Error {
+        constructor(message) {
+            super(message);
+            this.name = 'InvalidTimeError';
+        }
+    }
+
+    class Time {
+        constructor(hour, minute = 0, period = 'day') {
+            if (hour < 1 || hour > 12) {
+                throw new InvalidTimeError(`Invalid Ethiopian hour: ${hour}. Must be between 1 and 12.`);
+            }
+            if (minute < 0 || minute > 59) {
+                throw new InvalidTimeError(`Invalid minute: ${minute}. Must be between 0 and 59.`);
+            }
+            if (period !== 'day' && period !== 'night') {
+                throw new InvalidTimeError(`Invalid period: "${period}". Must be 'day' or 'night'.`);
+            }
+            this.hour = hour;
+            this.minute = minute;
+            this.period = period;
+        }
+
+        static fromGregorian(hour, minute = 0) {
+            if (hour < 0 || hour > 23) {
+                throw new InvalidTimeError(`Invalid Gregorian hour: ${hour}. Must be between 0 and 23.`);
+            }
+            if (minute < 0 || minute > 59) {
+                throw new InvalidTimeError(`Invalid minute: ${minute}. Must be between 0 and 59.`);
+            }
+            let tempHour = hour - 6;
+            if (tempHour < 0) {
+                tempHour += 24;
+            }
+            const period = (tempHour < 12) ? 'day' : 'night';
+            let ethHour = tempHour % 12;
+            ethHour = (ethHour === 0) ? 12 : ethHour;
+            return new Time(ethHour, minute, period);
+        }
+
+        format(options = {}) {
+            const defaultLang = options.useGeez === false ? 'english' : 'amharic';
+            const { lang = defaultLang, useGeez = true, showPeriodLabel = true, zeroAsDash = true } = options;
+            const formatNum = (num) => {
+                if (useGeez) return toGeez(num);
+                return num.toString().padStart(2, '0');
+            };
+            const hourStr = formatNum(this.hour);
+            let minuteStr;
+            if (zeroAsDash && this.minute === 0) {
+                minuteStr = '_';
+            } else {
+                minuteStr = useGeez ? toGeez(this.minute) : this.minute.toString().padStart(2, '0');
+            }
+            let periodLabel = '';
+            if (showPeriodLabel) {
+                if (lang === 'english') {
+                    periodLabel = this.period;
+                } else {
+                    const amharicLabels = { day: 'ጠዋት', night: 'ማታ' };
+                    periodLabel = amharicLabels[this.period];
+                }
+            }
+            const label = periodLabel ? ` ${periodLabel}` : '';
+            return `${hourStr}:${minuteStr}${label}`;
+        }
+    }
+
+    // --- End of Embedded Library Code ---
+
+
+    // --- Start of Clock Application Code ---
+
+    const digitalClock = document.getElementById('digitalClock');
+    const geezToggleBtn = document.getElementById('geezToggle');
+    const canvas = document.getElementById('clockCanvas');
+    const ctx = canvas.getContext('2d');
+    const radius = canvas.height / 2;
+    ctx.translate(radius, radius);
+
+    let useGeez = true;
+
+    geezToggleBtn.addEventListener('click', () => {
+        useGeez = !useGeez;
+        geezToggleBtn.textContent = `Use Geez Numerals: ${useGeez ? 'ON' : 'OFF'}`;
+        // No need to call drawClock immediately, the update loop will handle it.
+    });
+
+    function drawClock() {
+        drawFace(ctx, radius);
+        drawNumbers(ctx, radius);
+        drawTime(ctx, radius);
+    }
+
+    function drawFace(ctx, radius) {
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+        ctx.fillStyle = 'white';
+        ctx.fill();
+
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = radius * 0.05;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(0, 0, radius * 0.05, 0, 2 * Math.PI);
+        ctx.fillStyle = '#333';
+        ctx.fill();
+    }
+
+    function drawNumbers(ctx, radius) {
+        const angIncrement = (2 * Math.PI) / 12;
+        ctx.font = `${radius * 0.15}px Arial`;
+        ctx.textBaseline = 'middle';
+        ctx.textAlign = 'center';
+
+        for (let num = 1; num <= 12; num++) {
+            let numeral = useGeez ? toGeez(num) : num.toString();
+            // Position numbers on the clock face
+            let ang = num * angIncrement - (Math.PI / 2); // Adjust to start 1 at the top-right
+            let x = radius * 0.85 * Math.cos(ang);
+            let y = radius * 0.85 * Math.sin(ang);
+            ctx.fillStyle = '#000';
+            ctx.fillText(numeral, x, y);
+        }
+    }
+
+    function drawTime(ctx, radius) {
+        const now = new Date();
+        const time = Time.fromGregorian(now.getHours(), now.getMinutes());
+
+        const hour = time.hour;
+        const minute = time.minute;
+        const second = now.getSeconds();
+
+        // Hour hand angle calculation
+        const hourForAngle = hour % 12 + minute / 60; // Get a fractional hour (e.g., 1.5 for 1:30)
+        const hourAngle = (hourForAngle * Math.PI) / 6 - Math.PI / 2;
+        drawHand(ctx, hourAngle, radius * 0.5, radius * 0.07);
+
+        // Minute hand angle
+        const minuteAngle = (minute * Math.PI) / 30 - Math.PI / 2;
+        drawHand(ctx, minuteAngle, radius * 0.75, radius * 0.05);
+
+        // Second hand angle
+        const secondAngle = (second * Math.PI) / 30 - Math.PI / 2;
+        drawHand(ctx, secondAngle, radius * 0.85, radius * 0.02, 'red');
+
+  
+        digitalClock.textContent = time.format({ useGeez, showPeriodLabel: true, zeroAsDash: false });
+    }
+
+    function drawHand(ctx, pos, length, width, color = '#333') {
+        ctx.beginPath();
+        ctx.lineWidth = width;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = color;
+        ctx.moveTo(0, 0);
+        ctx.lineTo(length * Math.cos(pos), length * Math.sin(pos));
+        ctx.stroke();
+    }
+
+    function update() {
+        ctx.clearRect(-radius, -radius, canvas.width, canvas.height);
+        drawClock();
+        requestAnimationFrame(update);
+    }
+
+    // Start the clock
+    update();
+
+    </script>
+</body>
+</html>
