@@ -68,7 +68,7 @@ export function getBahireHasab(ethiopianYear, options = {}) {
         wenber: base.wenber,
         abektie: base.abektie,
         metqi: base.metqi,
-        bealeMetqi: { date: base.bealeMetqiDate, weekday: bealeMetqiWeekday },
+        bealeMetqi: { date: base.bealeMetqiDate, weekday: base.bealeMetqiWeekday },
         mebajaHamer: base.mebajaHamer,
         nineveh: base.ninevehDate,
         movableFeasts
@@ -100,10 +100,20 @@ export function getMovableHoliday(holidayKey, ethiopianYear) {
 
 /**
  * Calculates and returns all base values for the Bahire Hasab system for a given Ethiopian year.
- * This helper is now the single source of truth for the core computational logic.
+ * This helper is the single source of truth for the core computational logic.
  *
  * @param {number} ethiopianYear - The Ethiopian year for which to perform the calculations.
- * @returns {Object} An object containing all core calculated values.
+ * @returns {{
+ * ameteAlem: number,
+ * meteneRabiet: number,
+ * medeb: number,
+ * wenber: number,
+ * abektie: number,
+ * metqi: number,
+ * bealeMetqiDate: { year: number, month: number, day: number },
+ * mebajaHamer: number,
+ * ninevehDate: { year: number, month: number, day: number }
+ * }} An object containing all core calculated values.
  */
 function _calculateBahireHasabBase(ethiopianYear) {
     const ameteAlem = 5500 + ethiopianYear;
@@ -117,7 +127,8 @@ function _calculateBahireHasabBase(ethiopianYear) {
     const bealeMetqiDay = metqi;
     const bealeMetqiDate = { year: ethiopianYear, month: bealeMetqiMonth, day: bealeMetqiDay };
     
-    const tewsak = tewsakMap[daysOfWeek.english[getWeekday(bealeMetqiDate)]];
+    const bealeMetqiWeekday = daysOfWeek.english[getWeekday(bealeMetqiDate)];
+    const tewsak = tewsakMap[bealeMetqiWeekday];
     const mebajaHamerSum = bealeMetqiDay + tewsak;
     const mebajaHamer = mebajaHamerSum > 30 ? mebajaHamerSum % 30 : mebajaHamerSum;
 
@@ -132,6 +143,7 @@ function _calculateBahireHasabBase(ethiopianYear) {
         abektie,
         metqi,
         bealeMetqiDate,
+        bealeMetqiWeekday,
         mebajaHamer,
         ninevehDate,
     };
