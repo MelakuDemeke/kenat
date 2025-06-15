@@ -1,6 +1,6 @@
 import { toGeez, toArabic } from './geezConverter.js';
 import { PERIOD_LABELS } from './constants.js';
-import { InvalidTimeError } from './errors/errorHandler.js';
+import { InvalidTimeError ,InvalidTimeFormatError} from './errors/errorHandler.js';
 import { validateNumericInputs } from './utils.js';
 
 export class Time {
@@ -98,7 +98,7 @@ export class Time {
      */
     static fromString(timeString) {
         if (typeof timeString !== 'string' || timeString.trim() === '') {
-            throw new InvalidTimeError('Input must be a non-empty string.');
+            throw new InvalidTimeFormatError(timeString);
         }
 
         const parseNumber = (str) => {

@@ -165,3 +165,20 @@ export class UnknownHolidayError extends KenatError {
         };
     }
 }
+
+/**
+ * Thrown when a time string provided to Time.fromString() has an invalid format.
+ */
+export class InvalidTimeFormatError extends InvalidTimeError {
+    constructor(inputString) {
+        super(`Invalid time string format: "${inputString}". Expected 'H:M PERIOD' or 'H:M'.`);
+        this.inputString = inputString;
+    }
+
+    toJSON() {
+        return {
+            ...super.toJSON(),
+            inputString: this.inputString,
+        };
+    }
+}
