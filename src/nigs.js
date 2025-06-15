@@ -623,7 +623,7 @@ const orthodoxMonthlydays = {
     negs: 2,
   },
   Gabra_Krestos_the_hermit: {
-    key: "abuna_aragwi",
+    key: "gabra_krestos_the_hermit",
     name: {
       english: "Gabra Krestos the hermit",
       amharic: "ገብረ ክርስቶስ/ገብረ መርአዊ",
