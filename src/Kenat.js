@@ -1,7 +1,7 @@
 import { toGC, toEC } from './conversions.js';
 import { printMonthCalendarGrid } from './render/printMonthCalendarGrid.js';
 import { monthNames, daysOfWeek } from './constants.js';
-import { toEthiopianTime, toGregorianTime } from './ethiopianTime.js';
+import { Time } from './Time.js';
 import { toGeez } from './geezConverter.js';
 import { getBahireHasab } from './bahireHasab.js';
 import { MonthGrid } from './MonthGrid.js';
@@ -66,7 +66,9 @@ export class Kenat {
             year = ethiopianToday.year;
             month = ethiopianToday.month;
             day = ethiopianToday.day;
-            this.time = toEthiopianTime(today.getHours(), today.getMinutes());
+            // MODIFICATION: Use the Time class
+            this.time = Time.fromGregorian(today.getHours(), today.getMinutes());
+
         } else if (input instanceof Date) {
             // Input is a JS Date object
             const ethiopianDate = toEC(
@@ -77,29 +79,31 @@ export class Kenat {
             year = ethiopianDate.year;
             month = ethiopianDate.month;
             day = ethiopianDate.day;
-            this.time = toEthiopianTime(input.getHours(), input.getMinutes());
+            // MODIFICATION: Use the Time class
+            this.time = Time.fromGregorian(input.getHours(), input.getMinutes());
+
         } else if (typeof input === 'object' && input !== null && 'year' in input && 'month' in input && 'day' in input) {
             // Input is an object { year, month, day }
             year = input.year;
             month = input.month;
             day = input.day;
-            this.time = timeObj || { hour: 12, minute: 0, period: 'day' };
+            // MODIFICATION: Create a Time instance
+            const t = timeObj || { hour: 12, minute: 0, period: 'day' };
+            this.time = new Time(t.hour, t.minute, t.period);
         } else if (typeof input === 'string') {
-            // Input is a string, try to parse it
             const parts = input.split(/[-/]/).map(Number);
             if (parts.length === 3 && !parts.some(isNaN)) {
                 [year, month, day] = parts;
             } else {
-                // Throw the new custom error for bad string formats
                 throw new InvalidDateFormatError(input);
             }
-            this.time = timeObj || { hour: 12, minute: 0, period: 'day' };
+            // MODIFICATION: Create a Time instance
+            const t = timeObj || { hour: 12, minute: 0, period: 'day' };
+            this.time = new Time(t.hour, t.minute, t.period);
         } else {
-            // Throw the new custom error for any other unrecognized type
             throw new UnrecognizedInputError(input);
         }
 
-        // Centralized validation
         if (!isValidEthiopianDate(year, month, day)) {
             throw new InvalidEthiopianDateError(year, month, day);
         }
@@ -143,7 +147,7 @@ export class Kenat {
      * @param {string} period - The period of the day (e.g., 'AM' or 'PM').
      */
     setTime(hour, minute, period) {
-        this.time = { hour, minute, period };
+        this.time = new Time(hour, minute, period);
     }
 
     /**
@@ -190,7 +194,7 @@ export class Kenat {
         } = options;
 
         if (showWeekday && includeTime) {
-            return `${formatWithWeekday(this.ethiopian, lang, useGeez)} ${Kenat.formatEthiopianTime(this.time, lang)}`;
+            return `${formatWithWeekday(this.ethiopian, lang, useGeez)} ${this.time.format({ lang, useGeez })}`;
         }
 
         if (showWeekday) {
@@ -312,7 +316,7 @@ export class Kenat {
         printMonthCalendarGrid(year, month, calendar, useGeez);
     }
 
-    
+
     static getMonthCalendar(year, month, options = {}) {
         const { useGeez = false, weekdayLang = 'amharic', weekStart = 0, holidayFilter = null } = options;
 
@@ -334,7 +338,7 @@ export class Kenat {
         };
     }
 
-    
+
     /**
      * Generates a full-year calendar as an array of month objects for the specified year.
      *
@@ -450,23 +454,9 @@ export class Kenat {
         const now = new Date();
         const hour = now.getHours();
         const minute = now.getMinutes();
-        return toEthiopianTime(hour, minute);
+        return Time.fromGregorian(hour, minute);
     }
 
-    /**
-     * Formats an Ethiopian time object.
-     *
-     * @param {{ hour: number, minute: number, period: 'day' | 'night' }} timeObj - Ethiopian time.
-     * @param {'amharic' | 'english'} [lang='amharic'] - Output language.
-     * @returns {string} Formatted Ethiopian time.
-     */
-    static formatEthiopianTime(timeObj, lang = 'amharic') {
-        const { hour, minute, period } = timeObj;
-        const suffix = lang === 'amharic'
-            ? (period === 'day' ? 'ጠዋት' : 'ማታ')
-            : (period === 'day' ? 'day' : 'night');
-        return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} ${suffix}`;
-    }
 
     /**
      * Checks if the current Kenat instance's date is before another Kenat instance's date.
