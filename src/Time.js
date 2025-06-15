@@ -1,6 +1,6 @@
 import { toGeez, toArabic } from './geezConverter.js';
 import { PERIOD_LABELS } from './constants.js';
-import { InvalidTimeError ,InvalidTimeFormatError} from './errors/errorHandler.js';
+import { InvalidTimeError } from './errors/errorHandler.js';
 import { validateNumericInputs } from './utils.js';
 
 export class Time {
@@ -79,26 +79,45 @@ export class Time {
         return { hour: gregHour, minute: this.minute };
     }
 
+
     /**
      * Creates a `Time` object from a string representation.
      *
-     * The method expects a time string in the format "HH:MM PERIOD",
-     * where HH represents hours, MM represents minutes, and PERIOD
-     * indicates 'day' or 'night' (or its Geez equivalent 'ማታ').
+     * This static method parses a time string, which can include hours, minutes, and an optional period (day/night).
+     * It supports both Arabic numerals (e.g., "1", "30") and Ethiopic numerals (e.g., "፩", "፴") for hours and minutes,
+     * assuming a `toArabic` utility function is available to convert Ethiopic numerals to Arabic numbers.
      *
-     * Note: This implementation currently parses hours and minutes as Arabic numerals.
-     * Handling for Geez numerals would need to be implemented separately (e.g., using a `toArabic()` conversion).
+     * The time string must contain a colon (`:`) separating the hour and minute.
      *
      * @static
-     * @param {string} timeString - The time string to parse.
-     *   Examples: "11:00 night", "5:30 ማታ".
+     * @param {string} timeString - The string representation of the time.
+     *   Expected formats:
+     *   - "HH:MM" (e.g., "6:30", "፮:፴")
+     *   - "HH:MM period" (e.g., "6:30 night", "፮:፴ ማታ")
+     *   Where:
+     *     - HH: Hour (Arabic or Ethiopic numeral).
+     *     - MM: Minute (Arabic or Ethiopic numeral).
+     *     - period: Optional. Case-insensitive. Recognized values are "night" or "ማታ".
+     *       If the period is omitted, or if a third part is present but not recognized as "night" or "ማታ",
+     *       the time is assumed to be in the 'day' period.
+     *
      * @returns {Time} A new `Time` object representing the parsed time.
-     * @throws {InvalidTimeError} If the `timeString` is not a string,
-     *   or if it does not conform to the expected "HH:MM PERIOD" format.
+     *
+     * @throws {InvalidTimeError} If the `timeString` is:
+     *   - Not a string or an empty string.
+     *   - Missing the colon (`:`) separator.
+     *   - Formatted incorrectly (e.g., not enough parts after splitting).
+     *   - Contains non-numeric values for hour or minute that cannot be parsed into numbers
+     *     (neither as Arabic nor as Ethiopic numerals via `toArabic`).
+     *
      */
     static fromString(timeString) {
         if (typeof timeString !== 'string' || timeString.trim() === '') {
-            throw new InvalidTimeFormatError(timeString);
+            throw new InvalidTimeError(`Input must be a non-empty string, but received "${timeString}".`);
+        }
+
+        if (!timeString.includes(':')) {
+            throw new InvalidTimeError(`Invalid time string format: "${timeString}". Time must include a colon ':' separator.`);
         }
 
         const parseNumber = (str) => {
@@ -113,15 +132,18 @@ export class Time {
             }
         };
 
-        // Improved split to handle multiple spaces or colons
         const parts = timeString.split(/[:\s]+/).filter(p => p);
 
         if (parts.length < 2) {
-            throw new InvalidTimeError(`Invalid time string format: "${timeString}"`);
+            throw new InvalidTimeError(`Invalid time string format: "${timeString}".`);
         }
 
         const hour = parseNumber(parts[0]);
         const minute = parseNumber(parts[1]);
+
+        if (isNaN(hour) || isNaN(minute)) {
+            throw new InvalidTimeError(`Invalid number in time string: "${timeString}"`);
+        }
 
         let period = 'day';
         if (parts.length > 2) {
@@ -130,7 +152,6 @@ export class Time {
                 period = 'night';
             }
         }
-
         return new Time(hour, minute, period);
     }
 
