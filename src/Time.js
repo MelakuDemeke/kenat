@@ -1,4 +1,4 @@
-import { toGeez } from './geezConverter.js';
+import { toGeez, toArabic } from './geezConverter.js';
 import { PERIOD_LABELS } from './constants.js';
 import { InvalidTimeError } from './errors/errorHandler.js';
 import { validateNumericInputs } from './utils.js';
@@ -80,6 +80,62 @@ export class Time {
     }
 
     /**
+     * Creates a `Time` object from a string representation.
+     *
+     * The method expects a time string in the format "HH:MM PERIOD",
+     * where HH represents hours, MM represents minutes, and PERIOD
+     * indicates 'day' or 'night' (or its Geez equivalent 'ማታ').
+     *
+     * Note: This implementation currently parses hours and minutes as Arabic numerals.
+     * Handling for Geez numerals would need to be implemented separately (e.g., using a `toArabic()` conversion).
+     *
+     * @static
+     * @param {string} timeString - The time string to parse.
+     *   Examples: "11:00 night", "5:30 ማታ".
+     * @returns {Time} A new `Time` object representing the parsed time.
+     * @throws {InvalidTimeError} If the `timeString` is not a string,
+     *   or if it does not conform to the expected "HH:MM PERIOD" format.
+     */
+    static fromString(timeString) {
+        if (typeof timeString !== 'string' || timeString.trim() === '') {
+            throw new InvalidTimeError('Input must be a non-empty string.');
+        }
+
+        const parseNumber = (str) => {
+            const arabicNum = parseInt(str, 10);
+            if (!isNaN(arabicNum)) {
+                return arabicNum;
+            }
+            try {
+                return toArabic(str);
+            } catch (e) {
+                return NaN;
+            }
+        };
+
+        // Improved split to handle multiple spaces or colons
+        const parts = timeString.split(/[:\s]+/).filter(p => p);
+
+        if (parts.length < 2) {
+            throw new InvalidTimeError(`Invalid time string format: "${timeString}"`);
+        }
+
+        const hour = parseNumber(parts[0]);
+        const minute = parseNumber(parts[1]);
+
+        let period = 'day';
+        if (parts.length > 2) {
+            const periodStr = parts[2].toLowerCase();
+            if (periodStr === 'night' || periodStr === 'ማታ') {
+                period = 'night';
+            }
+        }
+
+        return new Time(hour, minute, period);
+    }
+
+    // Time Artimatic
+    /**
      * Adds a duration to the current time.
      * @param {{hours?: number, minutes?: number}} duration - Object with hours and/or minutes to add.
      * @returns {Time} A new Time instance with the added duration.
@@ -94,13 +150,13 @@ export class Time {
         const greg = this.toGregorian();
         let totalMinutes = greg.hour * 60 + greg.minute + hours * 60 + minutes;
         totalMinutes = ((totalMinutes % 1440) + 1440) % 1440; // Normalize to a 24-hour cycle
-        
+
         const newHour = Math.floor(totalMinutes / 60);
         const newMinute = totalMinutes % 60;
-        
+
         return Time.fromGregorian(newHour, newMinute);
     }
-    
+
     /**
      * Subtracts a duration from the current time.
      * @param {{hours?: number, minutes?: number}} duration - Object with hours and/or minutes to subtract.
@@ -133,7 +189,7 @@ export class Time {
 
         // Time wraps in a 24h cycle, so find the shortest path
         if (diff > 720) diff = 1440 - diff;
-        
+
         return {
             hours: Math.floor(diff / 60),
             minutes: diff % 60,
@@ -167,19 +223,19 @@ export class Time {
         } else {
             minuteStr = useGeez ? toGeez(this.minute) : this.minute.toString().padStart(2, '0');
         }
-        
+
         let periodLabel = '';
         if (showPeriodLabel) {
             if (lang === 'english') {
-                 // Use English labels for the period
-                 periodLabel = this.period; // 'day' or 'night'
+                // Use English labels for the period
+                periodLabel = this.period; // 'day' or 'night'
             } else {
-                 // Default to Amharic labels from constants
-                 const amharicLabels = { day: 'ጠዋት', night: 'ማታ' };
-                 periodLabel = amharicLabels[this.period];
+                // Default to Amharic labels from constants
+                const amharicLabels = { day: 'ጠዋት', night: 'ማታ' };
+                periodLabel = amharicLabels[this.period];
             }
         }
-        
+
         const label = periodLabel ? ` ${periodLabel}` : '';
         return `${hourStr}:${minuteStr}${label}`;
     }
