@@ -663,7 +663,7 @@ const orthodoxMonthlydays = {
       amharic: "የቅዱስ እስጢፋኖስ ሰማዕት (ቀዳሚ ሰማዕትና ሊቀ ዲያቆናት) አካል ሽግግራቸው መታሰቢያ",
     },
     recuringDate: 15,
-    major: fasle,
+    major: false,
     negs: "",
   },
 
