@@ -33,8 +33,6 @@ export function getBahireHasab(ethiopianYear, options = {}) {
     const weekdayIndex = (tinteQemer + 1) % 7; 
     const newYearWeekday = daysOfWeek[lang]?.[weekdayIndex] || daysOfWeek.english[weekdayIndex];
     
-    const bealeMetqiWeekday = daysOfWeek.english[getWeekday(base.bealeMetqiDate)];
-
     const movableFeasts = {};
     const tewsakToKeyMap = Object.entries(keyToTewsakMap).reduce((acc, [key, val]) => {
         acc[val] = key; return acc;
@@ -92,6 +90,7 @@ export function getMovableHoliday(holidayKey, ethiopianYear) {
     if (tewsak === undefined) {
         throw new UnknownHolidayError(holidayKey);
     }
+    
     const { ninevehDate } = _calculateBahireHasabBase(ethiopianYear);
 
     return addDays(ninevehDate, tewsak);
@@ -111,6 +110,7 @@ export function getMovableHoliday(holidayKey, ethiopianYear) {
  * abektie: number,
  * metqi: number,
  * bealeMetqiDate: { year: number, month: number, day: number },
+ * bealeMetqiWeekday: string,
  * mebajaHamer: number,
  * ninevehDate: { year: number, month: number, day: number }
  * }} An object containing all core calculated values.
@@ -135,6 +135,7 @@ function _calculateBahireHasabBase(ethiopianYear) {
     let ninevehMonth = metqi > 14 ? 5 : 6;
     if (mebajaHamerSum > 30) ninevehMonth++;
     const ninevehDate = { year: ethiopianYear, month: ninevehMonth, day: mebajaHamer };
+
     return {
         ameteAlem,
         meteneRabiet,
