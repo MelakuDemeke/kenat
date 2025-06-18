@@ -1,5 +1,4 @@
-const orthodoxMonthlydays = {
-  // 1. Ledeta Mariam (and associated commemorations)
+export const orthodoxMonthlydays = {
   ledeta_mariam: {
     key: "ledeta_mariam",
     name: {
@@ -26,10 +25,10 @@ const orthodoxMonthlydays = {
     },
     recuringDate: 1,
     major: true,
-    negs: "",
+    negs: null,
   },
-  Bartholomew_the_Apostle: {
-    key: "Bartholomew_the_Apostle",
+  bartholomew_the_apostle: {
+    key: "bartholomew_the_apostle",
     name: {
       english: "Bartholomew the Apostle",
       amharic: "ሐዋርያው በርተሎሜዎስ",
@@ -40,10 +39,10 @@ const orthodoxMonthlydays = {
     },
     recuringDate: 1,
     major: true,
-    negs: "",
+    negs: null,
   },
-  prophet_elijah_ginbot_1: {
-    key: "prophet_elijah_ginbot_1",
+  prophet_elijah_ginbot: {
+    key: "prophet_elijah_ginbot",
     name: {
       english: "Prophet Elijah",
       amharic: "ነብዩ ኤልያስ",
@@ -71,8 +70,8 @@ const orthodoxMonthlydays = {
     negs: 1,
   },
 
-  Thaddeus_the_Apostle: {
-    key: "Thaddeus_the_Apostle",
+  thaddeus_the_apostle: {
+    key: "thaddeus_the_apostle",
     name: {
       english: "Thaddeus the Apostle",
       amharic: "ሐዋርያው ታድዮስ",
@@ -97,7 +96,7 @@ const orthodoxMonthlydays = {
     },
     recuringDate: 2,
     major: true,
-    negs: "",
+    negs: null,
   },
   thaddeus_apostle: {
     key: "thaddeus_apostle",
@@ -156,7 +155,7 @@ const orthodoxMonthlydays = {
     },
     recuringDate: 3,
     major: true,
-    negs: "",
+    negs: null,
   },
   archangel_phanuel: {
     key: "archangel_phanuel",
@@ -184,7 +183,7 @@ const orthodoxMonthlydays = {
     },
     recuringDate: 3,
     major: true,
-    negs: "",
+    negs: null,
   },
 
   johannis_welde_negedguad: {
@@ -202,8 +201,8 @@ const orthodoxMonthlydays = {
     negs: 5,
   },
 
-  andrew_apostle: {
-    key: "andrew_apostle",
+  andrew_the_apostle: {
+    key: "andrew_the_apostle",
     name: {
       english: "Andrew the Apostle",
       amharic: "ሐዋርያው እንድርያስ",
@@ -257,7 +256,7 @@ const orthodoxMonthlydays = {
     },
     recuringDate: 5,
     major: true,
-    negs: "",
+    negs: null,
   },
 
   iyyasu: {
@@ -371,8 +370,8 @@ const orthodoxMonthlydays = {
       amharic: "የአባ ባኑዳ መታሰቢያ።",
     },
     recuringDate: 8,
-    major: "",
-    negs: "",
+    major: false,
+    negs: null,
   },
 
   saint_thomas_apostle: {
@@ -401,7 +400,7 @@ const orthodoxMonthlydays = {
     },
     recuringDate: 9,
     major: true,
-    negs: "",
+    negs: null,
   },
   three_eighteen_holy_fathers_nice: {
     key: "three_eighteen_holy_fathers_nice",
@@ -416,7 +415,7 @@ const orthodoxMonthlydays = {
     },
     recuringDate: 9,
     major: true,
-    negs: "",
+    negs: null,
   },
 
   holy_cross: {
@@ -488,8 +487,8 @@ const orthodoxMonthlydays = {
       amharic: "የቅዱስ ኢያቄም (የእመቤታችን አባት) መታሰቢያ።",
     },
     recuringDate: 11,
-    major: "",
-    negs: "",
+    major: false,
+    negs: null,
   },
   saint_yared: {
     key: "saint_yared",
@@ -516,8 +515,8 @@ const orthodoxMonthlydays = {
       amharic: "የአቡነ ሐራ መታሰቢያ።",
     },
     recuringDate: 11,
-    major: "",
-    negs: "",
+    major: false,
+    negs: null,
   },
 
   archangel_michael: {
@@ -532,7 +531,7 @@ const orthodoxMonthlydays = {
     },
     recuringDate: 12,
     major: true,
-    negs: 3 && 12,
+    negs: [3, 12],
   },
   matthew_apostle: {
     key: "matthew_apostle",
@@ -546,7 +545,7 @@ const orthodoxMonthlydays = {
     },
     recuringDate: 12,
     major: true,
-    negs: "",
+    negs: null,
   },
   abba_samuel_waldeba: {
     key: "abba_samuel_waldeba",
@@ -622,7 +621,7 @@ const orthodoxMonthlydays = {
     major: true,
     negs: 2,
   },
-  Gabra_Krestos_the_hermit: {
+  gabra_krestos_the_hermit: {
     key: "gabra_krestos_the_hermit",
     name: {
       english: "Gabra Krestos the hermit",
@@ -649,10 +648,10 @@ const orthodoxMonthlydays = {
     },
     recuringDate: 15,
     major: true,
-    negs: 11 && 5,
+    negs: [11, 5],
   },
-  saint_stefanos: {
-    key: "saint_stefanos",
+  saint_stefanos_migration_of_his_body: {
+    key: "saint_stefanos_migration_of_his_body",
     name: {
       english: "Saint Stefanos",
       amharic: "ቅዱስ እስጢፋኖስ ",
@@ -664,7 +663,7 @@ const orthodoxMonthlydays = {
     },
     recuringDate: 15,
     major: false,
-    negs: "",
+    negs: null,
   },
 
   kidane_meheret: {
@@ -679,10 +678,10 @@ const orthodoxMonthlydays = {
     },
     recuringDate: 16,
     major: true,
-    negs: 12 && 6,
+    negs: [12, 6],
   },
-  johannis_welde_negedguad: {
-    key: "johannis_welde_negedguad",
+  johannis_welde_negedguad_erget: {
+    key: "johannis_welde_negedguad_16",
     name: {
       english: "John the son of the Thunder (Yohannis Welde Negedguad)",
       amharic: "ዮሐንስ ወልደ ነጎድጓድ",
@@ -713,8 +712,8 @@ const orthodoxMonthlydays = {
     major: true,
     negs: 2,
   },
-  James_the_apostle: {
-    key: "James_the_apostle",
+  james_the_apostle_17: {
+    key: "james_the_apostle_17",
     name: {
       english: " James the apostle",
       amharic: " ሐዋርያው ያዕቆብ ወልደ ዘብዲዮስ",
@@ -727,8 +726,8 @@ const orthodoxMonthlydays = {
     major: true,
     negs: 8,
   },
-  Abba_Gerima: {
-    key: "Abba_Gerima",
+  abba_gerima: {
+    key: "abba_gerima",
     name: {
       english: "Abba Gerima (one of the Nine saints)",
       amharic: "አባ ገሪማ",
@@ -739,11 +738,11 @@ const orthodoxMonthlydays = {
     },
     recuringDate: 17,
     major: true,
-    negs: "",
+    negs: null,
   },
 
-  Philip_the_Apostle: {
-    key: "Philip_the_Apostle",
+  philip_the_apostle: {
+    key: "philip_the_apostle",
     name: {
       english: "Philip the Apostle /Abune Ewostatewos",
       amharic: "ሐዋርያው ፊሊጶስ ",
@@ -756,8 +755,8 @@ const orthodoxMonthlydays = {
     major: true,
     negs: 3,
   },
-  Abune_Ewostatewos: {
-    key: "Abune_Ewostatewos",
+  abune_ewostatewos: {
+    key: "abune_ewostatewos",
     name: {
       english: "Abune_Ewostatewos",
       amharic: "አቡነ ኢዩስጣቲዮስ",
@@ -770,23 +769,23 @@ const orthodoxMonthlydays = {
     major: true,
     negs: 1,
   },
-  saint_georgis: {
-    key: "saint_georgis",
+  saint_georgis_scattering_of_his_bone: {
+    key: "saint_georgis_scattering_of_his_bone",
     name: {
       english: "Saint Georgis",
       amharic: "ቅዱስ ጊዮርጊስ",
     },
-    discription: {
+    description: {
       english:
         " Feast of the Great Martyr Saint George, the scattering of his bone",
       amharic: "ቅዱስ ጊዮርጊስ የአጥንቱ ፍልሰት መታሰቢያ",
     },
-    recuring: 24,
+    recuringDate: 24,
     major: false,
     negs: 5,
   },
-  James_the_apostle: {
-    key: "James_the_apostle",
+  james_the_apostle_18: {
+    key: "james_the_apostle_18",
     name: {
       english: " James the apostle",
       amharic: " ሐዋርያው ያዕቆብ ወልደ ዘብዲዮስ",
@@ -801,8 +800,8 @@ const orthodoxMonthlydays = {
   },
 
   // 19. Gabriel the Archangel
-  gabriel_archangel: {
-    key: "gabriel_archangel",
+  gabriel_archangel_rescue_of_the_three_youths: {
+    key: "gabriel_archangel_rescue_of_the_three_youths",
     name: {
       english: "Gabriel the Archangel",
       amharic: "ቅዱስ ገብርኤል",
@@ -816,15 +815,15 @@ const orthodoxMonthlydays = {
     major: true,
     negs: 4,
   },
-  gabriel_archangel: {
-    key: "gabriel_archangel",
+  gabriel_archangel_rescue_of_rescue_of_quirqos_and_his_mother: {
+    key: "gabriel_archangel_rescue_of_rescue_of_quirqos_and_his_mother",
     name: {
       english: "Gabriel the Archangel",
       amharic: "ቅዱስ ገብርኤል",
     },
     description: {
       english:
-        "Commemoration of Archangel Gabriel is dedicated to the rescue of the three youths (Sidraq, Misaq, and Abdenago).",
+        "Commemoration of Archangel Gabriel is dedicated to the rescue of rescue of Quirqos and his mother, Saint Iyeluta (Julitta). .",
       amharic: "የእግዚአብሔር መልአክ ቅዱስ ገብርኤል ቂርቆስን እና እናቱን ቅድስት ኢየሉጣን ማዳን መታሰቢያ",
     },
     recuringDate: 19,
@@ -849,133 +848,91 @@ const orthodoxMonthlydays = {
     negs: 10,
   },
 
-  egzeet_na_maryam: {
-    key: "egzeet_na_maryam",
+  egzeet_na_maryam_departure: {
+    key: "egzeet_na_maryam_departure",
     name: {
       english: "Egze'et-na Maryam",
       amharic: "ቅድስት ድንግል ማርያም",
     },
-    discription: {
-      english:
-        " The lodging of a piece of the 'True Cross' in Gishen Debre Kerbe monasteries in Ethiopia",
-      amharic: "የእውነተኛው መስቀል ክፍል በግሸን ደብረ ከርቤ ገዳማት፣ ኢትዮጵያ ውስጥ መቀመጥ",
-    },
-    recuring: 21,
-    major: "",
-    negs: "",
-  },
-  egzeet_na_maryam: {
-    key: "egzeet_na_maryam",
-    name: {
-      english: "Egze'et-na Maryam",
-      amharic: "ቅድስት ድንግል ማርያም",
-    },
-    discription: {
-      english: " Our Holy Mother Maryam, Mother of God",
-      amharic: "የእውነተኛው መስቀል ክፍል በግሸን ደብረ ከርቤ ገዳማት፣ ኢትዮጵያ ውስጥ መቀመጥ",
-    },
-    recuring: 21,
-    major: "",
-    negs: "",
-  },
-  egzeet_na_maryam: {
-    key: "egzeet_na_maryam",
-    name: {
-      english: "Egze'et-na Maryam",
-      amharic: "ቅድስት ድንግል ማርያም",
-    },
-    discription: {
+    description: {
       english: "The departure of Our Holy Mother.",
       amharic: "የቅድስት ድንግል ማርያም ዕርገት",
     },
-    recuring: 21,
+    recuringDate: 21,
     major: false,
     negs: 5,
   },
-  egzeet_na_maryam: {
-    key: "egzeet_na_maryam",
+  egzeet_na_maryam_debre_mitmak: {
+    key: "egzeet_na_maryam_debre_mitmak",
     name: {
       english: "Egze'et-na Maryam",
       amharic: "ቅድስት ድንግል ማርያም",
     },
-    discription: {
+    description: {
       english:
         "The appearance of Our Holy Mother Virgin Mariam in the church of Debre Mitmak",
       amharic: "የቅድስት ድንግል ማርያም በደብረ ምጥማቅ ቤተ ክርስቲያን መገለጥ።",
     },
-    recuring: 21,
+    recuringDate: 21,
     major: false,
     negs: 9,
   },
-  egzeet_na_maryam: {
-    key: "egzeet_na_maryam",
+  egzeet_na_maryam_prayed_at_golgota: {
+    key: "egzeet_na_maryam_prayed_at_golgota",
     name: {
       english: "Egze'et-na Maryam",
       amharic: "ቅድስት ድንግል ማርያም",
     },
-    discription: {
+    description: {
       english: "Sene Golgota - Our Holy Mother Virgin Mariam prayed at Golgota",
       amharic: "ሰኔ ጎልጎታ - ቅድስት ድንግል ማርያም በጎልጎታ ጸለየች",
     },
-    recuring: 21,
+    recuringDate: 21,
     major: false,
     negs: 10,
   },
 
   // 22. Archangel Uriel
+
   archangel_uriel: {
     key: "archangel_uriel",
     name: {
       english: "Archangel Uriel",
       amharic: "ቅዱስ ኡራኤል",
     },
-    discription: {
-      english: "Archangel uriel",
-      amharic: "ቅዱስ ኡራኤል",
-    },
-    recuring: 22,
-    major: true,
-    negs: 11,
-  },
-  archangel_uriel: {
-    key: "archangel_uriel",
-    name: {
-      english: "Archangel Uriel",
-      amharic: "ቅዱስ ኡራኤል",
-    },
-    discription: {
+    description: {
       english: "Archangel Uriel received covenant and ordained as an Archangel",
       amharic: "ሊቀ መላእክት ዑራኤል ቃል ኪዳን ተቀብሎ ሊቀ መልአክ ሆኖ ተሾመ።",
     },
-    recuring: 22,
+    recuringDate: 22,
     major: false,
     negs: 11,
   },
-  Saint_Lukas: {
-    key: "Saint_Lukas",
+  saint_lukas: {
+    key: "saint_lukas",
     name: {
       english: "Saint Lukas",
       amharic: "ቅዱስ ሉቃስ",
     },
-    discription: {
-      english: "Saint Lukas",
-      amharic: "ቅዱስ ሉቃስ",
+    description: {
+      english: "Saint Mark departed from this world",
+      amharic: "ቅዱስ ማርቆስ ከዚህ ዓለም በሞት ተለየ",
     },
-    recuring: 24,
+    recuringDate: 22,
     major: true,
     negs: 2,
   },
-  Saint_Daqsyos: {
-    key: "Saint_Daqsyos",
+  saint_daqsyos: {
+    key: "saint_daqsyos",
     name: {
       english: "Saint Daqsyos",
       amharic: "ቅዱስ ደቅስዮስ",
     },
-    discription: {
+    description: {
       english: "Saint_Daqsyos",
       amharic: "ቅዱስ ደቅስዮስ",
     },
-    recuring: 24,
+    recuringDate: 22,
     major: true,
     negs: 4,
   },
@@ -985,111 +942,110 @@ const orthodoxMonthlydays = {
       english: "bisrate gebriel ",
       amharic: "ብስራተ ገብርኤል",
     },
-    discription: {
+    description: {
       english: "Commemoration of the Annunciation",
       amharic: "ብስራተ ገብርኤል",
     },
-    recuring: 22,
+    recuringDate: 22,
     major: true,
     negs: 4,
   },
 
-  saint_georgis: {
-    key: "saint_georgis",
+  saint_georgis_of_Lydda: {
+    key: "saint_georgis_of_Lydda",
     name: {
       english: "Saint Georgis - George of Lydda",
       amharic: "ቅዱስ ጊዮርጊስ",
     },
-    discription: {
+    description: {
       english: " Saint Georgis - George of Lydda",
       amharic: "ቅዱስ ጊዮርጊስ ",
     },
-    recuring: 23,
+    recuringDate: 23,
     major: false,
     negs: 8,
   },
-  saint_georgis: {
-    key: "saint_georgis",
+  saint_georgis_the_battle_of_adwa: {
+    key: "saint_georgis_the_battle_of_adwa",
     name: {
       english: "Saint Giorgis (George)-The Battle of Adwa",
       amharic: "ቅዱስ ጊዮርጊስ - የአድዋ ጦርነት",
     },
-    discription: {
+    description: {
       english: "Saint Giorgis (George)-The Battle of Adwa",
       amharic: "ቅዱስ ጊዮርጊስ - የአድዋ ጦርነት",
     },
-    recuring: 23,
+    recuringDate: 23,
     major: true,
     negs: 6,
   },
 
-  takla_haymanot: {
-    key: "takla_haymanot",
+  takla_haymanot_diparted_from_this_world: {
+    key: "takla_haymanot_diparted_from_this_world",
     name: {
       english: "Abuna Takla Haymanot",
       amharic: "አቡነ ተክለ ሐይማኖት",
     },
-    discription: {
+    description: {
       english: "Abuna Takla Haymanot departed from this world",
       amharic: "አቡነ ተክለ ሃይማኖት ከዚህ ዓለም በሞት ተለዩ",
     },
-    recuring: 24,
+    recuringDate: 24,
     major: true,
     negs: 12,
   },
-  takla_haymanot: {
-    key: "takla_haymanot",
+  takla_haymanot_legs_broke: {
+    key: "takla_haymanot_legs_broke",
     name: {
       english: "Abuna Takla Haymanot",
       amharic: "አቡነ ተክለ ሐይማኖት",
     },
-    discription: {
+    description: {
       english: "Takla Haymanot - having stood 7 years one of his legs broke",
       amharic: "አቡነ ተክለ ሃይማኖት - ለሰባት ዓመታት ከቆሙ በኋላ አንደኛው እግራቸው ተሰበረ። ",
     },
-    recuring: 24,
-    major: false,
+    recuringDate: 24,
     negs: 5,
   },
-  takla_haymanot: {
-    key: "takla_haymanot",
+  takla_haymanot_birth_date: {
+    key: "takla_haymanot_birth_date",
     name: {
       english: "Abuna Takla Haymanot",
       amharic: "አቡነ ተክለ ሐይማኖት",
     },
-    discription: {
+    description: {
       english: "Abuna Takla Haymanot's birth date",
       amharic: "የአቡነ ተክለ ሃይማኖት የልደት ቀን ",
     },
-    recuring: 24,
+    recuringDate: 24,
     major: false,
     negs: 4,
   },
-  Saint_Kirstos_Semera: {
-    key: "Saint_Kirstos_Semera",
+  saint_kirstos_semera: {
+    key: "saint_kirstos_semera",
     name: {
       english: "Saint Kirstos Semera",
       amharic: "ቅድስት ክርስረቶስ ሰምራ ",
     },
-    discription: {
+    description: {
       english: "Saint Kirstos Semera",
       amharic: "ቅድስት ክርስረቶስ ሰምራ ",
     },
-    recuring: 24,
+    recuringDate: 24,
     major: true,
     negs: 12,
   },
-  Heavenly_Priests: {
-    key: "24_Heavenly_Priests",
+  heavenly_priests: {
+    key: "24_heavenly_priests",
     name: {
       english: "24 Heavenly Priests",
       amharic: "24ቱ ካህናተ ሰማይ",
     },
-    discription: {
+    description: {
       english: "24 Heavenly Priests",
       amharic: "24ቱ ካህናተ ሰማይ",
     },
-    recuring: 24,
+    recuringDate: 24,
     major: true,
     negs: 3,
   },
@@ -1100,25 +1056,25 @@ const orthodoxMonthlydays = {
       english: "Saint Marqorewos (Merkorios)/ Abune Habibe",
       amharic: "ቅዱስ መርቆሬዎስ ፣አቡነ ሀቢብ (አባ ቡላ)",
     },
-    discription: {
+    description: {
       english: "Saint Joseph",
       amharic: "አረጋዊው ዮሴፍ ",
     },
-    recuring: 27,
+    recuringDate: 27,
     major: true,
     negs: 3,
   },
-  Abune_Habibe: {
-    key: "Abune_Habibe",
+  abune_habibe: {
+    key: "abune_habibe",
     name: {
       english: "Abune Habibe",
       amharic: "አቡነ ሀቢብ (አባ ቡላ)",
     },
-    discription: {
+    description: {
       english: "Abune_Habibe",
       amharic: "አረጋዊው ዮሴፍ ",
     },
-    recuring: 25,
+    recuringDate: 25,
     major: true,
     negs: 2,
   },
@@ -1128,11 +1084,11 @@ const orthodoxMonthlydays = {
       english: "Saint Jude, son of Alpheus, the Apostle",
       amharic: "ቅዱስ ይሁዳ ዘአልፍዮስ ሐዋርያው",
     },
-    discription: {
+    description: {
       english: "Saint Jude, son of Alpheus, the Apostle his martyrdom",
       amharic: "ቅዱስ ይሁዳ ዘአልፍዮስ ሐዋርያውሰማዕትነቱ",
     },
-    recuring: 25,
+    recuringDate: 25,
     major: false,
     negs: 10,
   },
@@ -1140,102 +1096,99 @@ const orthodoxMonthlydays = {
   saint_joseph: {
     key: "saint_joseph",
     name: {
-      english:
-        "Saint Joseph / Abba Salama- Frumentius, the Enlightener of Ethiopia/Thomas the apostle/ Abune Habte Mariam / Aba Eyesus Moe`a",
-      amharic:
-        "አረጋዊው ዮሴፍ ፣ አባ ሰላማ ከሳቴ ብርሀን ፣ ቶማስ ዘህንደኬ ፣ አቡነ ሀብተ ማርያም ፣ አባ ኢየሱስ ሞአ",
+      english: "Saint Joseph ",
+      amharic: "አረጋዊው ዮሴፍ",
     },
-    discription: {
+    description: {
       english: "Saint Joseph",
       amharic: "አረጋዊው ዮሴፍ ",
     },
-    recuring: 26,
+    recuringDate: 26,
     major: true,
     negs: 11,
   },
-  Abba_Salama_Frumentius: {
-    key: "Abba_Salama_Frumentius",
+  abba_salama_frumentius: {
+    key: "abba_salama_frumentius",
     name: {
       english: " Abba_Salama_Frumentius, the Enlightener of Ethiopia",
       amharic: "አባ ሰላማ ከሳቴ ብርሀን",
     },
-    discription: {
+    description: {
       english: "Abba_Salama_Frumentius, the Enlightener of Ethiopia",
       amharic: "አባ ሰላማ ከሳቴ ብርሀን ",
     },
-    recuring: 26,
+    recuringDate: 26,
     major: true,
     negs: 11,
   },
-  Thomas_the_apostle: {
-    key: "Thomas_the_apostle",
+  thomas_the_apostle: {
+    key: "thomas_the_apostle",
     name: {
       english: "Thomas the apostle",
       amharic: " ቶማስ ዘህንደኬ",
     },
-    discription: {
+    description: {
       english: "Thomas the apostle",
       amharic: "ቶማስ ዘህንደኬ ",
     },
-    recuring: 26,
+    recuringDate: 26,
     major: true,
     negs: 9,
   },
-  Abune_Habte_Mariam: {
-    key: "Abune_Habte_Mariam",
+  abune_habte_mariam: {
+    key: "abune_habte_mariam",
     name: {
       english: "Abune Habte Mariam",
       amharic: "አቡነ ሀብተ ማርያም",
     },
-    discription: {
+    description: {
       english: "Abune Habte Mariam",
       amharic: "አቡነ ሀብተ ማርያም",
     },
-    recuring: 26,
+    recuringDate: 26,
     major: true,
     negs: 3,
   },
-  Aba_Eyesus_Moea: {
-    key: "Aba_Eyesus_Moe`a",
+  aba_eyesus_moea: {
+    key: "aba_eyesus_moea",
     name: {
       english: "Aba Eyesus Moe`a",
       amharic: "አባ ኢየሱስ ሞአ",
     },
-    discription: {
-      english: "Saint Joseph",
+    description: {
+      english: "Saint Eyesus Moe`a",
       amharic: "አባ ኢየሱስ ሞአ ",
     },
-    recuring: 26,
+    recuringDate: 26,
     major: true,
-    negs: "",
+    negs: null,
   },
 
   medhane_alem: {
     key: "medhane_alem",
     name: {
       english: "Medhane Alem -The Saviour of the world/ Abune Mebea Zion",
-      amharic: "መድሐኔአለም ፣ አቡነ መባዓ ፅዮን",
+      amharic: "መድሐኔአለም ",
     },
-    discription: {
+    description: {
       english: "Medhane Alem -The Saviour of the world",
-      amharic: "አማኑኤል",
+      amharic: "የዓለም መድኃኒት",
     },
-    recuring: 27,
+    recuringDate: 27,
     major: true,
     negs: 7,
   },
-  Abune_Mebea_Zion: {
-    key: "Abune_Mebea_Zion",
+  abune_mebea_zion: {
+    key: "abune_mebea_zion",
     name: {
       english: " Abune Mebea Zion",
       amharic: "አቡነ መባዓ ፅዮን",
     },
-    discription: {
+    description: {
       english: "Abune Mebea Zion",
       amharic: "አቡነ መባዓ ፅዮን",
     },
-    recuring: 27,
-    major: true,
+    recuringDate: 27,
     negs: 2,
   },
 
@@ -1245,13 +1198,13 @@ const orthodoxMonthlydays = {
       english: "ammanuel",
       amharic: "አማኑኤል",
     },
-    discription: {
+    description: {
       english: "ammanuel",
       amharic: "አማኑኤል",
     },
-    recuring: 28,
+    recuringDate: 28,
     major: true,
-    negs: 2 && 5 && 9,
+    negs: [2, 5, 9],
   },
 
   baale_wold: {
@@ -1260,30 +1213,30 @@ const orthodoxMonthlydays = {
       english: "Ba`ale Wold",
       amharic: "በዓለወልድ",
     },
-    discription: {
+    description: {
       english: "Ba`ale Wold (Feast of God The Son)",
       amharic: "ዮሐንስ መጥምቅ",
     },
-    recuring: 29,
+    recuringDate: 29,
     major: true,
-    negs: 4 && 5,
+    negs: [4, 5],
   },
-  Saint_Lalibela: {
-    key: "Saint_Lalibela",
+  saint_lalibela: {
+    key: "saint_lalibela",
     name: {
       english: "Saint Lalibela",
       amharic: "ቅዱስ ላሊበላ",
     },
-    discription: {
-      english: "Ba`ale Wold (Feast of God The Son)",
+    description: {
+      english: "Saint Lalibela",
       amharic: "ቅዱስ ላሊበላ",
     },
-    recuring: 29,
+    recuringDate: 29,
     major: true,
     negs: 4,
   },
-  saint_arsema: {
-    key: "saint_arsema",
+  saint_arsema_Beheading: {
+    key: "saint_arsema_29",
     name: {
       english: "Saint Arsema",
       amharic: "አርሴማ",
@@ -1303,26 +1256,26 @@ const orthodoxMonthlydays = {
       english: "John the baptist",
       amharic: "ዮሐንስ መጥምቅ ",
     },
-    discription: {
+    description: {
       english: "John the baptist",
       amharic: "ዮሐንስ መጥምቅ",
     },
-    recuring: 30,
+    recuringDate: 30,
     major: true,
     negs: 10,
   },
-  Saint_Markos: {
-    key: "Saint_Markos",
+  saint_markos: {
+    key: "saint_markos",
     name: {
       english: "Saint_Markos",
       amharic: "ቅዱስ ማርቆስ",
     },
-    discription: {
+    description: {
       english: "Saint Markos /St. Mark the Evangelist/",
       amharic: "የቅዱስ ማርቆስ የልደት",
     },
-    recuring: 30,
+    recuringDate: 30,
     major: true,
-    negs: 2 && 8,
+    negs: [2, 8],
   },
 };
