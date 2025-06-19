@@ -11,7 +11,7 @@ export const orthodoxMonthlydays = {
     },
     recuringDate: 1,
     major: true,
-    negsMonth: 9,
+    negs: 9,
   },
   archangel_raguel: {
     key: "archangel_raguel",
