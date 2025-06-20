@@ -70,20 +70,7 @@ export const orthodoxMonthlydays = {
     negs: 1,
   },
 
-  thaddeus_the_apostle: {
-    key: "thaddeus_the_apostle",
-    name: {
-      english: "Thaddeus the Apostle",
-      amharic: "ሐዋርያው ታድዮስ",
-    },
-    description: {
-      english: "Commemoration of Thaddeus the Apostle.",
-      amharic: "የሐዋርያው ታድዮስ መታሰቢያ።",
-    },
-    recuringDate: 2,
-    major: true,
-    negs: 11,
-  },
+
   abba_guba: {
     key: "abba_guba",
     name: {
@@ -98,20 +85,33 @@ export const orthodoxMonthlydays = {
     major: true,
     negs: null,
   },
-  thaddeus_apostle: {
-    key: "thaddeus_apostle",
+
+  thaddeus_the_apostle: {
     name: {
       english: "Thaddeus the Apostle",
       amharic: "ሐዋርያው ታድዮስ",
     },
-    description: {
-      english: "Commemoration of Thaddeus the Apostle.",
-      amharic: "የሐዋርያው ታድዮስ መታሰቢያ።",
-    },
     recuringDate: 2,
-    major: false,
-    negs: 13,
+    defaultDescription: {
+        english: "Commemoration of Thaddeus the Apostle.",
+        amharic: "ሐዋርያው ታድዮስ መታሰቢያ",
+    },
+    events: [
+      {
+        key: "thaddeus_the_apostle_major",
+        description: { english: "Commemoration of Thaddeus the Apostle.", amharic: "የሐዋርያው ታድዮስ መታሰቢያ።" },
+        major: true,
+        negs: 11,
+      },
+      {
+        key: "thaddeus_apostle_minor",
+        description: { english: "Commemoration of Thaddeus the Apostle.", amharic: "የሐዋርያው ታድዮስ መታሰቢያ።" },
+        major: false,
+        negs: 13,
+      }
+    ]
   },
+
   st_john_the_baptist_martyrdom: {
     key: "st_john_the_baptist_martyrdom",
     name: {
@@ -980,46 +980,46 @@ export const orthodoxMonthlydays = {
     negs: 6,
   },
 
-  takla_haymanot_diparted_from_this_world: {
-    key: "takla_haymanot_diparted_from_this_world",
+  takla_haymanot: {
+    // Information about the saint is defined ONCE
     name: {
       english: "Abuna Takla Haymanot",
       amharic: "አቡነ ተክለ ሐይማኖት",
     },
-    description: {
-      english: "Abuna Takla Haymanot departed from this world",
-      amharic: "አቡነ ተክለ ሃይማኖት ከዚህ ዓለም በሞት ተለዩ",
-    },
     recuringDate: 24,
-    major: true,
-    negs: 12,
-  },
-  takla_haymanot_legs_broke: {
-    key: "takla_haymanot_legs_broke",
-    name: {
-      english: "Abuna Takla Haymanot",
-      amharic: "አቡነ ተክለ ሐይማኖት",
+    defaultDescription: {
+        english: "Commemoration of Abuna Takla Haymanot.",
+        amharic: "የአቡነ ተክለ ሐይማኖት መታሰቢያ።",
     },
-    description: {
-      english: "Takla Haymanot - having stood 7 years one of his legs broke",
-      amharic: "አቡነ ተክለ ሃይማኖት - ለሰባት ዓመታት ከቆሙ በኋላ አንደኛው እግራቸው ተሰበረ። ",
-    },
-    recuringDate: 24,
-    negs: 5,
-  },
-  takla_haymanot_birth_date: {
-    key: "takla_haymanot_birth_date",
-    name: {
-      english: "Abuna Takla Haymanot",
-      amharic: "አቡነ ተክለ ሐይማኖት",
-    },
-    description: {
-      english: "Abuna Takla Haymanot's birth date",
-      amharic: "የአቡነ ተክለ ሃይማኖት የልደት ቀን ",
-    },
-    recuringDate: 24,
-    major: false,
-    negs: 4,
+    events: [
+      {
+        key: "takla_haymanot_diparted_from_this_world",
+        description: {
+          english: "Abuna Takla Haymanot departed from this world",
+          amharic: "አቡነ ተክለ ሃይማኖት ከዚህ ዓለም በሞት ተለዩ",
+        },
+        major: true,
+        negs: 12, // The major annual feast for his passing is in the 12th month
+      },
+      {
+        key: "takla_haymanot_legs_broke",
+        description: {
+          english: "Having stood for 7 years, one of his legs broke",
+          amharic: "ለሰባት ዓመታት ከቆሙ በኋላ አንደኛው እግራቸው ተሰበረ።",
+        },
+        major: true, // `major` is now tied to the specific event
+        negs: 5,   // The major feast for this event is in the 5th month
+      },
+      {
+        key: "takla_haymanot_birth_date",
+        description: {
+          english: "Abuna Takla Haymanot's birth date",
+          amharic: "የአቡነ ተክለ ሃይማኖት የልደት ቀን",
+        },
+        major: false,
+        negs: 4,   // The major feast for his birth is in the 4th month
+      },
+    ],
   },
   saint_kirstos_semera: {
     key: "saint_kirstos_semera",

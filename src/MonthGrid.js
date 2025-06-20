@@ -9,7 +9,6 @@ import { InvalidGridConfigError } from './errors/errorHandler.js';
 export class MonthGrid {
   constructor(config = {}) {
     this._validateConfig(config);
-
     const current = Kenat.now().getEthiopian();
     this.year = config.year ?? current.year;
     this.month = config.month ?? current.month;
@@ -23,21 +22,17 @@ export class MonthGrid {
 
   _validateConfig(config) {
     const { year, month, weekStart, weekdayLang } = config;
-
     if ((year !== undefined && month === undefined) || (year === undefined && month !== undefined)) {
       throw new InvalidGridConfigError('If providing year or month, both must be provided.');
     }
     if (year !== undefined) validateNumericInputs('MonthGrid.constructor', { year });
     if (month !== undefined) validateNumericInputs('MonthGrid.constructor', { month });
-
-
     if (weekStart !== undefined) {
       validateNumericInputs('MonthGrid.constructor', { weekStart });
       if (weekStart < 0 || weekStart > 6) {
         throw new InvalidGridConfigError(`Invalid weekStart value: ${weekStart}. Must be between 0 and 6.`);
       }
     }
-
     if (weekdayLang !== undefined) {
       if (typeof weekdayLang !== 'string' || !Object.keys(daysOfWeek).includes(weekdayLang)) {
         throw new InvalidGridConfigError(`Invalid weekdayLang: "${weekdayLang}". Must be one of [${Object.keys(daysOfWeek).join(', ')}].`);
@@ -70,7 +65,6 @@ export class MonthGrid {
     };
   }
 
-
   _getRawDays() {
     const base = new Kenat(`${this.year}/${this.month}/1`);
     return base.getMonthCalendar(this.year, this.month, this.useGeez);
@@ -81,7 +75,6 @@ export class MonthGrid {
     if (this.mode === 'christian') filter = [HolidayTags.CHRISTIAN];
     if (this.mode === 'muslim') filter = [HolidayTags.MUSLIM];
     if (this.mode === 'public') filter = [HolidayTags.PUBLIC];
-
     return getHolidaysInMonth(this.year, this.month, {
       lang: this.weekdayLang,
       filter
@@ -90,26 +83,54 @@ export class MonthGrid {
 
   _getSaintsMap() {
     if (this.mode !== 'christian') return {};
-
     const map = {};
-    Object.values(orthodoxMonthlydays).forEach(saint => {
-      const isNigs = Array.isArray(saint.negs)
-        ? saint.negs.includes(this.month)
-        : saint.negs === this.month;
 
-      if (isNigs || this.showAllSaints) {
-        const day = saint.recuringDate;
-        if (!map[day]) map[day] = [];
-        map[day].push({
-          key: saint.key,
-          name: saint.name[this.weekdayLang] || saint.name.english,
-          description: saint.description[this.weekdayLang] || saint.description.english,
-          isNigs,
-          tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN, isNigs ? 'NIGS' : 'SAINT_DAY']
-        });
+    Object.entries(orthodoxMonthlydays).forEach(([saintKey, saint]) => {
+      if (saint.events) {
+        // This is a nested saint object with multiple events
+        const nigsEvent = saint.events.find(event =>
+          Array.isArray(event.negs) ? event.negs.includes(this.month) : event.negs === this.month
+        );
+
+        if (nigsEvent) {
+          // It's a major feast ("Nigs") month, so show the specific event
+          const day = saint.recuringDate;
+          if (!map[day]) map[day] = [];
+          map[day].push({
+            key: nigsEvent.key,
+            name: saint.name[this.weekdayLang] || saint.name.english,
+            description: nigsEvent.description[this.weekdayLang] || nigsEvent.description.english,
+            isNigs: true,
+            tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN, 'NIGS']
+          });
+        } else if (this.showAllSaints && saint.defaultDescription) {
+          // It's NOT a major feast month, but the user wants to see all saints. Show the generic commemoration.
+          const day = saint.recuringDate;
+          if (!map[day]) map[day] = [];
+          map[day].push({
+            key: saintKey, // Use the parent key for the generic event
+            name: saint.name[this.weekdayLang] || saint.name.english,
+            description: saint.defaultDescription[this.weekdayLang] || saint.defaultDescription.english,
+            isNigs: false,
+            tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN, 'SAINT_DAY']
+          });
+        }
+      } else {
+        // This is a flat (single-event) saint object
+        const isNigs = Array.isArray(saint.negs) ? saint.negs.includes(this.month) : saint.negs === this.month;
+        if (isNigs || this.showAllSaints) {
+          const day = saint.recuringDate;
+          if (!map[day]) map[day] = [];
+          map[day].push({
+            key: saint.key,
+            name: saint.name[this.weekdayLang] || saint.name.english,
+            description: saint.description[this.weekdayLang] || saint.description.english,
+            isNigs,
+            tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN, isNigs ? 'NIGS' : 'SAINT_DAY']
+          });
+        }
       }
     });
-
     return map;
   }
 
@@ -117,7 +138,6 @@ export class MonthGrid {
     const today = Kenat.now().getEthiopian();
     const labels = daysOfWeek[this.weekdayLang] || daysOfWeek.amharic;
     const monthLabels = monthNames[this.weekdayLang] || monthNames.amharic;
-
     const holidayMap = {};
     holidaysList.forEach(h => {
       const key = `${h.ethiopian.year}-${h.ethiopian.month}-${h.ethiopian.day}`;
@@ -155,15 +175,12 @@ export class MonthGrid {
         gregorian: greg,
         weekday,
         weekdayName: labels[weekday],
-        isToday:
-          eth.year === today.year &&
-          eth.month === today.month &&
-          eth.day === today.day,
+        isToday: eth.year === today.year && eth.month === today.month && eth.day === today.day,
         holidays
       };
     });
 
-    const offset = ((mapped[0].weekday - this.weekStart + 7) % 7);
+    const offset = ((mapped.length > 0 ? mapped[0].weekday : (new Date(this.year, this.month - 1, 1).getDay())) - this.weekStart + 7) % 7;
     return Array(offset).fill(null).concat(mapped);
   }
 
@@ -200,4 +217,3 @@ export class MonthGrid {
     return this;
   }
 }
-
