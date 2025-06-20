@@ -62,14 +62,16 @@ export class MonthGrid {
     let effectiveFilter = this.holidayFilter;
     if (this.mode === 'christian') {
       effectiveFilter = [HolidayTags.CHRISTIAN];
+    } else if (this.mode === 'muslim') {
+      effectiveFilter = [HolidayTags.MUSLIM];
     }
 
-    
+
     const monthHolidays = getHolidaysInMonth(y, m, {
       lang: this.weekdayLang,
-      filter: effectiveFilter 
+      filter: effectiveFilter
     });
-    
+
     const holidayMap = {};
     monthHolidays.forEach(h => {
       const key = `${h.ethiopian.year}-${h.ethiopian.month}-${h.ethiopian.day}`;
@@ -103,12 +105,20 @@ export class MonthGrid {
       const weekday = getWeekday(eth);
 
       const key = `${eth.year}-${eth.month}-${eth.day}`;
-
       let holidays = holidayMap[key] || [];
 
       if (this.mode === 'christian') {
         const saintsToday = saintsDayMap[eth.day] || [];
         holidays = holidays.concat(saintsToday);
+      }
+
+      if (this.mode === 'muslim' && weekday === 5) { // 5 corresponds to Friday
+        holidays.push({
+          key: 'jummah',
+          name: 'Jummah',
+          description: 'Weekly congregational prayer.',
+          tags: [HolidayTags.RELIGIOUS, HolidayTags.MUSLIM]
+        });
       }
 
       return {
