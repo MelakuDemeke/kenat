@@ -268,6 +268,14 @@ export const holidayInfo = {
       english: "Celebrates the birthday of the Prophet Mohammed.",
     },
   },
+
+  jummah: {
+    name: { amharic: "ጁምዓ", english: "Jummah" },
+    description: {
+      amharic: "ሳምንታዊ የሙስሊሞች የጋራ ስግደት።",
+      english: "The weekly Muslim congregational prayer."
+    }
+  }
 };
 
 // Bahire Hasab related constants
@@ -305,7 +313,7 @@ export const movableHolidays = {
   abiyTsome: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
   debreZeit: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
   hosanna: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
-  siklet: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
+  siklet: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN, HolidayTags.PUBLIC] },
   fasika: {
     tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
   },

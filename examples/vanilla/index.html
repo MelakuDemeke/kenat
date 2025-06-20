@@ -1,54 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kenat Calendar Example</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; text-align: center; background-color: #f9f9f9; padding: 1rem;}
-        table { border-collapse: collapse; margin: 1rem auto; box-shadow: 0 4px 12px rgba(0,0,0,0.1); background-color: #fff; }
-        th, td { border: 1px solid #e0e0e0; padding: 0.5rem; width: 85px; height: 85px; vertical-align: top; }
-        th { background-color: #f5f5f5; font-weight: 600; }
-        .today { background-color: #fffde7; border: 2px solid #ffc107; font-weight: bold; }
-        .holiday { background-color: #e3f2fd; cursor: pointer; transition: background-color 0.2s; }
-        .holiday:hover { background-color: #bbdefb; }
-        .holiday-labels { font-size: 0.75rem; color: #1e88e5; margin-top: 5px; line-height: 1.2; }
-        
-        /* Navigation and Controls Styling */
-        .header-controls, .controls, .filter-controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 1rem 0; align-items: center; }
-        .nav-controls { display: flex; align-items: center; gap: 0.5rem; }
-        .filter-controls { margin-bottom: 1.5rem; background-color: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .filter-controls label { font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 4px; }
-        button, select {
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            text-align: center;
+            background-color: #f9f9f9;
+            padding: 1rem;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: 1rem auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        th,
+        td {
+            border: 1px solid #e0e0e0;
+            padding: 0.5rem;
+            width: 85px;
+            height: 85px;
+            vertical-align: top;
+            position: relative;
+        }
+
+        th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+        }
+
+        .today {
+            background-color: #fffde7;
+            border: 2px solid #ffc107;
+            font-weight: bold;
+        }
+
+        td.event-day {
+            cursor: pointer;
+        }
+
+        .official-holiday {
+            background-color: #e3f2fd;
+        }
+
+        .christian-holiday {
+            background-color: #ebf5ff;
+        }
+
+        .jummah-day {
+            background-color: #e8f5e9;
+        }
+
+        .holiday-labels {
+            font-size: 0.75rem;
+            color: #333;
+            margin-top: 5px;
+            line-height: 1.2;
+            text-align: left;
+            max-height: 3.6em;
+            overflow: hidden;
+        }
+
+        .holiday-labels .is-nigs {
+            font-weight: bold;
+            color: #b58c00;
+        }
+
+        .holiday-labels .jummah-label {
+            font-weight: bold;
+            color: #388e3c;
+        }
+
+        .header-controls,
+        .controls,
+        .filter-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 1rem 0;
+            align-items: center;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .controls {
+            gap: 20px;
+        }
+
+        .filter-controls {
+            margin-bottom: 1.5rem;
+            background-color: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-controls label,
+        .controls label {
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .filter-controls label.disabled {
+            color: #aaa;
+            cursor: not-allowed;
+        }
+
+        button,
+        select {
             padding: 0.6rem 1.2rem;
             font-size: 0.9rem;
             cursor: pointer;
             border-radius: 6px;
             border: 1px solid #ccc;
             background-color: #fff;
-            transition: background-color 0.2s, box-shadow 0.2s;
         }
-        select { padding: 0.5rem; }
-        button:hover { background-color: #f0f0f0; }
-        button:active { box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
-        
-        /* Modal Styles */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
-        .modal-content { background-color: #fefefe; margin: auto; padding: 25px; border: 1px solid #888; width: 90%; max-width: 500px; border-radius: 10px; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: left; }
-        .modal-close { color: #aaa; position: absolute; top: 10px; right: 20px; font-size: 28px; font-weight: bold; cursor: pointer; }
-        .modal-close:hover { color: #000; }
-        .modal-content h3 { margin-top: 0; }
-        .modal-content hr { border: 0; border-top: 1px solid #eee; margin: 15px 0; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 25px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: left;
+        }
+
+        .modal-close {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+        }
+
+        .modal-content .is-nigs-title {
+            color: #b58c00;
+        }
+
+        .modal-content hr {
+            border: 0;
+            border-top: 1px solid #eee;
+            margin: 15px 0;
+        }
     </style>
 </head>
+
 <body>
     <h1>Kenat Calendar</h1>
     <div id="calendar">Loading...</div>
 
-    <!-- Modal HTML -->
     <div id="holidayModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close">&times;</span>
+        <div class="modal-content"><span class="modal-close">&times;</span>
             <div id="modalBody"></div>
         </div>
     </div>
@@ -56,20 +196,19 @@
     <script type="module">
         import Kenat, { MonthGrid, HolidayTags, toArabic } from '../../src/index.js';
         import { monthNames } from '../../src/constants.js';
-        
+
         let monthGridInstance;
-        
-        // Settings
         let useGeez = false;
         let weekdayLang = 'amharic';
         let weekStart = 1;
         let holidayFilter = null;
-        
+        let activeMode = 'public';
+        let showAllSaints = false;
+
         const initialDate = new Kenat().getEthiopian();
         let currentYear = initialDate.year;
         let currentMonth = initialDate.month;
 
-        // --- MODAL LOGIC ---
         const modal = document.getElementById('holidayModal');
         const modalBody = document.getElementById('modalBody');
         const closeModal = document.querySelector('.modal-close');
@@ -77,7 +216,9 @@
         function showHolidayModal(holidays) {
             let content = '';
             holidays.forEach((h, index) => {
-                content += `<h3>${h.name}</h3><p>${h.description}</p>`;
+                const nigsClass = h.isNigs ? 'is-nigs-title' : '';
+                const description = h.description ? `<p>${h.description}</p>` : '';
+                content += `<h3 class="${nigsClass}">${h.name}</h3>${description}`;
                 if (index < holidays.length - 1) content += '<hr>';
             });
             modalBody.innerHTML = content;
@@ -86,38 +227,23 @@
 
         closeModal.onclick = () => { modal.style.display = 'none'; }
         window.onclick = (event) => { if (event.target == modal) modal.style.display = 'none'; }
-        
-        // --- CALENDAR RENDERING ---
+
         function renderCalendar(gridData) {
-            let { headers, days, year, month, monthName } = gridData;
-            const holidaysForDay = (item) => item.holidays.map(h => h.name).join(', ');
+            let { headers, days, year, month } = gridData;
+
+            const holidaysForDay = (item) => {
+                return item.holidays.map(h => {
+                    let specialClass = '';
+                    if (h.isNigs) specialClass = 'is-nigs';
+                    if (h.key === 'jummah') specialClass = 'jummah-label';
+                    return `<div class="${specialClass}">${h.name}</div>`;
+                }).join('');
+            };
 
             const yearForComparison = typeof year === 'string' ? toArabic(year) : year;
-            const yearOptions = Array.from({length: 201}, (_, i) => 1900 + i)
-                .map(y => `<option value="${y}" ${y === yearForComparison ? 'selected' : ''}>${y}</option>`).join('');
-            
-            const monthOptions = monthNames.amharic
-                .map((name, i) => `<option value="${i + 1}" ${i + 1 === month ? 'selected' : ''}>${name}</option>`).join('');
-
-            let html = `
-                <div class="header-controls">
-                    <button id="prevMonth">⬅️</button>
-                    <div class="nav-controls">
-                         <select id="monthSelector">${monthOptions}</select>
-                         <select id="yearSelector">${yearOptions}</select>
-                    </div>
-                    <button id="nextMonth">➡️</button>
-                </div>
-                <div class="controls">
-                    <button id="toggleGeez">Geez (${useGeez ? 'ON' : 'OFF'})</button>
-                    <button id="toggleLang">Lang (${weekdayLang})</button>
-                    <button id="toggleWeekStart">Start (${weekStart === 1 ? 'Mon' : 'Sun'})</button>
-                </div>
-                <div class="filter-controls" id="filterControls"></div>
-                <table><thead><tr>`;
-
-            html += headers.map(day => `<th>${day}</th>`).join('');
-            html += '</tr></thead><tbody>';
+            const yearOptions = Array.from({ length: 201 }, (_, i) => 1900 + i).map(y => `<option value="${y}" ${y === yearForComparison ? 'selected' : ''}>${y}</option>`).join('');
+            const monthOptions = monthNames.amharic.map((name, i) => `<option value="${i + 1}" ${i + 1 === month ? 'selected' : ''}>${name}</option>`).join('');
+            let html = `<div class="header-controls"><button id="prevMonth">⬅️</button><div class="nav-controls"><select id="monthSelector">${monthOptions}</select><select id="yearSelector">${yearOptions}</select></div><button id="nextMonth">➡️</button></div><div class="controls" id="topControls"></div><div class="filter-controls" id="filterControls"></div><table><thead><tr>${headers.map(day => `<th>${day}</th>`).join('')}</tr></thead><tbody>`;
 
             for (let i = 0; i < days.length; i += 7) {
                 html += '<tr>';
@@ -126,35 +252,53 @@
                     if (!item) {
                         html += '<td></td>';
                     } else {
-                        const todayClass = item.isToday ? 'today' : '';
-                        const isHoliday = item.holidays && item.holidays.length > 0;
-                        const holidaysText = isHoliday ? holidaysForDay(item) : '';
-                        const holidayAttr = isHoliday ? `data-day-index="${i + j}"` : '';
-                        html += `<td class="${todayClass} ${isHoliday ? 'holiday' : ''}" ${holidayAttr}>
-                            <strong>${item.ethiopian.day}</strong><br/>
-                            <small>${item.gregorian.month}/${item.gregorian.day}</small>
-                            ${holidaysText ? `<div class="holiday-labels">${holidaysText}</div>` : ''}
-                        </td>`;
+                        const hasEvents = item.holidays && item.holidays.length > 0;
+                        let dayClasses = [item.isToday ? 'today' : ''];
+
+                        if (hasEvents) {
+                            dayClasses.push('event-day');
+                            const isOfficial = item.holidays.some(h => h.tags.includes(HolidayTags.PUBLIC) || h.tags.includes(HolidayTags.STATE));
+                            const isChristian = item.holidays.some(h => h.tags.includes(HolidayTags.CHRISTIAN));
+                            const isJummah = item.holidays.some(h => h.key === 'jummah');
+
+                            if (isOfficial) dayClasses.push('official-holiday');
+                            if (isChristian && !isOfficial) dayClasses.push('christian-holiday');
+                            if (isJummah) dayClasses.push('jummah-day');
+                        }
+
+                        const holidaysText = hasEvents ? holidaysForDay(item) : '';
+                        const eventAttr = hasEvents ? `data-day-index="${i + j}"` : '';
+                        html += `<td class="${dayClasses.join(' ')}" ${eventAttr}><strong>${item.ethiopian.day}</strong><br/><small>${item.gregorian.month}/${item.gregorian.day}</small>${holidaysText ? `<div class="holiday-labels">${holidaysText}</div>` : ''}</td>`;
                     }
                 }
                 html += '</tr>';
             }
             html += '</tbody></table>';
             document.getElementById('calendar').innerHTML = html;
-            
-            renderFilterControls();
+            renderControls();
             attachEventListeners();
         }
 
-        function renderFilterControls() {
-            const controlsContainer = document.getElementById('filterControls');
-            let controlsHtml = `<label><input type="checkbox" name="holidayTag" value="all" ${!holidayFilter ? 'checked' : ''}> All</label>`;
+        function renderControls() {
+            const topControlsContainer = document.getElementById('topControls');
+            const filterControlsContainer = document.getElementById('filterControls');
+
+            topControlsContainer.innerHTML = `<label for="modeSelector">Mode:</label><select id="modeSelector"><option value="none" ${activeMode === 'none' ? 'selected' : ''}>All</option><option value="christian" ${activeMode === 'christian' ? 'selected' : ''}>Christian</option><option value="muslim" ${activeMode === 'muslim' ? 'selected' : ''}>Muslim</option></select><button id="toggleGeez">Geez (${useGeez ? 'ON' : 'OFF'})</button><button id="toggleLang">Lang (${weekdayLang})</button><button id="toggleWeekStart">Start (${weekStart === 1 ? 'Mon' : 'Sun'})</button>`;
+
+            let filterHtml = '';
+            if (activeMode === 'christian') {
+                filterHtml += `<label><input type="checkbox" id="showAllSaintsToggle" ${showAllSaints ? 'checked' : ''}> Show All Saints</label>`;
+            }
+
+            const isDisabled = activeMode !== 'none';
+            const disabledAttr = isDisabled ? 'disabled' : '';
+            filterHtml += `<label class="${isDisabled ? 'disabled' : ''}"><input type="checkbox" name="holidayTag" value="all" ${!holidayFilter || isDisabled ? 'checked' : ''} ${disabledAttr}> All Holidays</label>`;
             for (const key in HolidayTags) {
                 const value = HolidayTags[key];
-                const isChecked = holidayFilter && holidayFilter.includes(value);
-                controlsHtml += `<label><input type="checkbox" name="holidayTag" value="${value}" ${isChecked ? 'checked' : ''}> ${value}</label>`;
+                const isChecked = !isDisabled && holidayFilter && holidayFilter.includes(value);
+                filterHtml += `<label class="${isDisabled ? 'disabled' : ''}"><input type="checkbox" name="holidayTag" value="${value}" ${isChecked ? 'checked' : ''} ${disabledAttr}> ${value}</label>`;
             }
-            controlsContainer.innerHTML = controlsHtml;
+            filterControlsContainer.innerHTML = filterHtml;
         }
 
         function attachEventListeners() {
@@ -176,8 +320,25 @@
             document.getElementById('toggleGeez').onclick = () => { useGeez = !useGeez; rerender(); };
             document.getElementById('toggleLang').onclick = () => { weekdayLang = weekdayLang === 'amharic' ? 'english' : 'amharic'; rerender(); };
             document.getElementById('toggleWeekStart').onclick = () => { weekStart = weekStart === 1 ? 0 : 1; rerender(); };
-            
-            document.querySelectorAll('.holiday').forEach(cell => {
+
+            document.getElementById('modeSelector').onchange = (e) => {
+                activeMode = e.target.value;
+                if (activeMode !== 'none') {
+                    holidayFilter = null;
+                }
+                showAllSaints = false;
+                rerender();
+            };
+
+            const saintsToggle = document.getElementById('showAllSaintsToggle');
+            if (saintsToggle) {
+                saintsToggle.onchange = (e) => {
+                    showAllSaints = e.target.checked;
+                    rerender();
+                };
+            }
+
+            document.querySelectorAll('.event-day').forEach(cell => {
                 cell.onclick = () => {
                     const dayIndex = parseInt(cell.getAttribute('data-day-index'));
                     const dayData = monthGridInstance.generate().days[dayIndex];
@@ -186,7 +347,7 @@
                     }
                 };
             });
-            
+
             const allCheckbox = document.querySelector('input[name="holidayTag"][value="all"]');
             const otherCheckboxes = document.querySelectorAll('input[name="holidayTag"]:not([value="all"])');
 
@@ -201,33 +362,36 @@
                 }
                 rerender();
             };
-            
-            allCheckbox.onchange = () => {
-                if (allCheckbox.checked) {
-                    otherCheckboxes.forEach(cb => cb.checked = false);
-                    holidayFilter = null;
-                    rerender();
-                } else {
-                    allCheckbox.checked = true; 
-                }
-            };
-            otherCheckboxes.forEach(checkbox => { checkbox.onchange = updateFilter; });
+
+            if (allCheckbox) {
+                allCheckbox.onchange = () => {
+                    if (allCheckbox.checked) {
+                        otherCheckboxes.forEach(cb => cb.checked = false);
+                        holidayFilter = null;
+                        rerender();
+                    } else {
+                        allCheckbox.checked = true;
+                    }
+                };
+            }
+            otherCheckboxes.forEach(checkbox => {
+                if (checkbox) checkbox.onchange = updateFilter;
+            });
         }
 
         function rerender() {
             monthGridInstance = new MonthGrid({
                 year: currentYear,
                 month: currentMonth,
-                useGeez,
-                weekdayLang,
-                weekStart,
+                useGeez, weekdayLang, weekStart,
                 holidayFilter,
+                mode: activeMode,
+                showAllSaints: showAllSaints,
             });
             renderCalendar(monthGridInstance.generate());
         }
-
-        // Initial render
         rerender();
     </script>
 </body>
+
 </html>
