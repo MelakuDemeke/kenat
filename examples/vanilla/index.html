@@ -202,7 +202,7 @@
         let weekdayLang = 'amharic';
         let weekStart = 1;
         let holidayFilter = null;
-        let activeMode = 'none';
+        let activeMode = 'public';
         let showAllSaints = false;
 
         const initialDate = new Kenat().getEthiopian();
@@ -302,7 +302,6 @@
         }
 
         function attachEventListeners() {
-            // --- FULLY RESTORED AND WORKING EVENT LISTENERS ---
             document.getElementById('prevMonth').onclick = () => {
                 const newGrid = monthGridInstance.down().generate();
                 currentYear = (typeof newGrid.year === 'string') ? toArabic(newGrid.year) : newGrid.year;
