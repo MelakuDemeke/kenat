@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kenat Calendar Example</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 font-sans text-center p-4">
+    <h1 class="text-3xl font-bold mb-6">Kenat Calendar</h1>
+
+    <div class="flex flex-wrap gap-4 items-center justify-center mb-4">
+        <label class="flex items-center space-x-2">
+            <span>Mode:</span>
+            <select id="modeSelector" class="px-2 py-1 border rounded">
+                <option value="none">All</option>
+                <option value="christian">Christian</option>
+                <option value="muslim">Muslim</option>
+                <option value="public" selected>Public</option>
+            </select>
+        </label>
+        <label class="flex items-center space-x-2" id="saintToggleWrapper" style="display: none">
+            <input type="checkbox" id="showAllSaintsToggle" class="accent-blue-500">
+            <span>Show All Saints</span>
+        </label>
+    </div>
+
+    <div id="calendar" class="mb-4">Loading...</div>
+
+    <div id="filterControls"
+        class="flex flex-wrap gap-4 items-center justify-center p-4 bg-white rounded-lg shadow mt-4">
+        <label class="flex items-center space-x-2">
+            <input type="checkbox" name="holidayTag" value="all" checked class="accent-blue-500">
+            <span>All Holidays</span>
+        </label>
+        <label class="flex items-center space-x-2">
+            <input type="checkbox" name="holidayTag" value="public" class="accent-blue-500">
+            <span>Public</span>
+        </label>
+        <label class="flex items-center space-x-2">
+            <input type="checkbox" name="holidayTag" value="christian" class="accent-blue-500">
+            <span>Christian</span>
+        </label>
+        <label class="flex items-center space-x-2">
+            <input type="checkbox" name="holidayTag" value="muslim" class="accent-blue-500">
+            <span>Muslim</span>
+        </label>
+    </div>
+
+    <div id="holidayModal" class="fixed hidden inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg max-w-lg w-full relative shadow-lg">
+            <button class="absolute top-2 right-4 text-gray-600 text-xl font-bold" id="closeModal">&times;</button>
+            <div id="modalBody" class="text-left"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import Kenat, { MonthGrid, HolidayTags, toArabic } from '../../../src/index.js';
+        import { monthNames } from '../../../src/constants.js';
+
+        let monthGridInstance;
+        let useGeez = false;
+        let weekdayLang = 'amharic';
+        let weekStart = 1;
+        let holidayFilter = null;
+        let activeMode = 'public';
+        let showAllSaints = false;
+
+        const initialDate = new Kenat().getEthiopian();
+        let currentYear = initialDate.year;
+        let currentMonth = initialDate.month;
+
+        const modal = document.getElementById('holidayModal');
+        const modalBody = document.getElementById('modalBody');
+        const closeModal = document.getElementById('closeModal');
+        const saintToggleWrapper = document.getElementById('saintToggleWrapper');
+        const saintToggle = document.getElementById('showAllSaintsToggle');
+
+        function showHolidayModal(holidays) {
+            modalBody.innerHTML = holidays.map((h, i) => {
+                return `<h3 class="text-lg font-bold mb-1 ${h.isNigs ? 'text-yellow-700' : ''}">${h.name}</h3><p class="text-sm text-gray-600 mb-2">${h.description || ''}</p>${i < holidays.length - 1 ? '<hr class="my-2">' : ''}`;
+            }).join('');
+            modal.classList.remove('hidden');
+        }
+
+        closeModal.onclick = () => modal.classList.add('hidden');
+        window.onclick = e => { if (e.target === modal) modal.classList.add('hidden'); };
+
+        function renderCalendar(gridData) {
+            const { headers, days, year, month } = gridData;
+            const yearOptions = Array.from({ length: 201 }, (_, i) => 1900 + i).map(y => `<option value="${y}" ${y === +year ? 'selected' : ''}>${y}</option>`).join('');
+            const monthOptions = monthNames.amharic.map((name, i) => `<option value="${i + 1}" ${i + 1 === month ? 'selected' : ''}>${name}</option>`).join('');
+
+            let html = `
+        <div class="flex justify-center items-center gap-4 mb-4">
+          <button id="prevMonth" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">⬅️</button>
+          <select id="monthSelector" class="px-2 py-1 border rounded">${monthOptions}</select>
+          <select id="yearSelector" class="px-2 py-1 border rounded">${yearOptions}</select>
+          <button id="nextMonth" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">➡️</button>
+        </div>
+        <div class="overflow-x-auto">
+        <table class="min-w-full bg-white rounded shadow">
+          <thead class="bg-gray-100 text-gray-700">
+            <tr>${headers.map(d => `<th class="py-2">${d}</th>`).join('')}</tr>
+          </thead>
+          <tbody>
+      `;
+
+            for (let i = 0; i < days.length; i += 7) {
+                html += '<tr>';
+                for (let j = 0; j < 7; j++) {
+                    const item = days[i + j];
+                    if (!item) {
+                        html += '<td class="border h-20 w-20"></td>';
+                    } else {
+                        const holidayNames = item.holidays.map(h => `<div class="text-xs ${h.isNigs ? 'text-yellow-800 font-bold' : ''}">${h.name}</div>`).join('');
+                        const classes = [
+                            'border p-1 align-top h-20 w-20 text-xs',
+                            item.isToday ? 'bg-yellow-100 border-yellow-500' : '',
+                            item.holidays.length ? 'cursor-pointer bg-blue-50 hover:bg-blue-100' : ''
+                        ].join(' ');
+                        html += `<td class="${classes}" data-day-index="${i + j}"><div class="font-semibold">${item.ethiopian.day}</div><div class="text-gray-500">${item.gregorian.month}/${item.gregorian.day}</div>${holidayNames}</td>`;
+                    }
+                }
+                html += '</tr>';
+            }
+
+            html += '</tbody></table></div>';
+            document.getElementById('calendar').innerHTML = html;
+            attachListeners();
+        }
+
+        function attachListeners() {
+            document.getElementById('prevMonth').onclick = () => {
+                const newGrid = monthGridInstance.down().generate();
+                currentYear = +newGrid.year;
+                currentMonth = newGrid.month;
+                renderCalendar(newGrid);
+            };
+            document.getElementById('nextMonth').onclick = () => {
+                const newGrid = monthGridInstance.up().generate();
+                currentYear = +newGrid.year;
+                currentMonth = newGrid.month;
+                renderCalendar(newGrid);
+            };
+            document.getElementById('monthSelector').onchange = (e) => {
+                currentMonth = +e.target.value;
+                rerender();
+            };
+            document.getElementById('yearSelector').onchange = (e) => {
+                currentYear = +e.target.value;
+                rerender();
+            };
+            document.getElementById('modeSelector').onchange = (e) => {
+                activeMode = e.target.value;
+                showAllSaints = false;
+                saintToggle.checked = false;
+                saintToggleWrapper.style.display = activeMode === 'christian' ? 'flex' : 'none';
+                rerender();
+            };
+            saintToggle.onchange = (e) => {
+                showAllSaints = e.target.checked;
+                rerender();
+            };
+            document.querySelectorAll('[data-day-index]').forEach(td => {
+                td.onclick = () => {
+                    const index = +td.dataset.dayIndex;
+                    const dayData = monthGridInstance.generate().days[index];
+                    if (dayData.holidays.length) showHolidayModal(dayData.holidays);
+                };
+            });
+
+            const allCheckbox = document.querySelector('input[name="holidayTag"][value="all"]');
+            const otherCheckboxes = document.querySelectorAll('input[name="holidayTag"]:not([value="all"])');
+
+            function updateFilter() {
+                const checked = Array.from(otherCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+                holidayFilter = checked.length ? checked : null;
+                allCheckbox.checked = !holidayFilter;
+                rerender();
+            }
+
+            allCheckbox.onchange = () => {
+                if (allCheckbox.checked) {
+                    otherCheckboxes.forEach(cb => cb.checked = false);
+                    holidayFilter = null;
+                    rerender();
+                }
+            };
+
+            otherCheckboxes.forEach(cb => cb.onchange = updateFilter);
+        }
+
+        function rerender() {
+            monthGridInstance = new MonthGrid({
+                year: currentYear,
+                month: currentMonth,
+                useGeez, weekdayLang, weekStart,
+                holidayFilter,
+                mode: activeMode,
+                showAllSaints
+            });
+            renderCalendar(monthGridInstance.generate());
+        }
+
+        rerender();
+    </script>
+</body>
+
+</html>
