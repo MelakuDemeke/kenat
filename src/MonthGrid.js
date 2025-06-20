@@ -2,7 +2,7 @@ import { Kenat } from './Kenat.js';
 import { getHolidaysInMonth } from './holidays.js';
 import { toGeez } from './geezConverter.js';
 import { orthodoxMonthlydays } from './nigs.js';
-import { daysOfWeek, monthNames, HolidayTags } from './constants.js';
+import { daysOfWeek, monthNames, HolidayTags, holidayInfo  } from './constants.js';
 import { getWeekday, validateNumericInputs } from './utils.js';
 import { InvalidGridConfigError } from './errors/errorHandler.js';
 
@@ -113,12 +113,13 @@ export class MonthGrid {
       }
 
       if (this.mode === 'muslim' && weekday === 5) { // 5 corresponds to Friday
-        holidays.push({
-          key: 'jummah',
-          name: 'Jummah',
-          description: 'Weekly congregational prayer.',
-          tags: [HolidayTags.RELIGIOUS, HolidayTags.MUSLIM]
-        });
+          const jummahInfo = holidayInfo.jummah;
+          holidays.push({
+              key: 'jummah',
+              name: jummahInfo.name[this.weekdayLang] || jummahInfo.name.english,
+              description: jummahInfo.description[this.weekdayLang] || jummahInfo.description.english,
+              tags: [HolidayTags.RELIGIOUS, HolidayTags.MUSLIM]
+          });
       }
 
       return {
