@@ -65,8 +65,9 @@ export class MonthGrid {
       effectiveFilter = [HolidayTags.CHRISTIAN];
     } else if (this.mode === 'muslim') {
       effectiveFilter = [HolidayTags.MUSLIM];
+    } else if (this.mode === 'public') {
+      effectiveFilter = [HolidayTags.PUBLIC];
     }
-
 
     const monthHolidays = getHolidaysInMonth(y, m, {
       lang: this.weekdayLang,

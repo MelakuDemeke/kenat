@@ -313,7 +313,7 @@ export const movableHolidays = {
   abiyTsome: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
   debreZeit: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
   hosanna: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
-  siklet: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
+  siklet: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN, HolidayTags.PUBLIC] },
   fasika: {
     tags: [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
   },
