@@ -1,7 +1,8 @@
 import { Kenat } from './Kenat.js';
 import { getHolidaysInMonth } from './holidays.js';
 import { toGeez } from './geezConverter.js';
-import { daysOfWeek, monthNames } from './constants.js';
+import { orthodoxMonthlydays } from './nigs.js';
+import { daysOfWeek, monthNames, HolidayTags } from './constants.js';
 import { getWeekday, validateNumericInputs } from './utils.js';
 import { InvalidGridConfigError } from './errors/errorHandler.js';
 
@@ -16,12 +17,12 @@ export class MonthGrid {
     this.useGeez = config.useGeez ?? false;
     this.weekdayLang = config.weekdayLang ?? 'amharic';
     this.holidayFilter = config.holidayFilter ?? null;
+    this.mode = config.mode ?? null;
   }
 
   _validateConfig(config) {
     const { year, month, weekStart, weekdayLang } = config;
 
-    // If one is provided, both must be.
     if ((year !== undefined && month === undefined) || (year === undefined && month !== undefined)) {
       throw new InvalidGridConfigError('If providing year or month, both must be provided.');
     }
@@ -62,6 +63,7 @@ export class MonthGrid {
       lang: this.weekdayLang,
       filter: this.holidayFilter
     });
+    
     const holidayMap = {};
     monthHolidays.forEach(h => {
       const key = `${h.ethiopian.year}-${h.ethiopian.month}-${h.ethiopian.day}`;
@@ -69,13 +71,39 @@ export class MonthGrid {
       holidayMap[key].push(h);
     });
 
+    const saintsDayMap = {};
+    if (this.mode === 'christian') {
+      Object.values(orthodoxMonthlydays).forEach(saint => {
+        const day = saint.recuringDate;
+        if (!saintsDayMap[day]) {
+          saintsDayMap[day] = [];
+        }
+        const isNigs = Array.isArray(saint.negs) ? saint.negs.includes(m) : saint.negs === m;
+        const saintEvent = {
+          key: saint.key,
+          name: saint.name[this.weekdayLang] || saint.name.english,
+          description: saint.description[this.weekdayLang] || saint.description.english,
+          isNigs: isNigs,
+          tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN, isNigs ? 'NIGS' : 'SAINT_DAY']
+        };
+        saintsDayMap[day].push(saintEvent);
+      });
+    }
+
     const daysWithWeekday = rawDays.map(day => {
       const eth = day.ethiopian;
       const greg = day.gregorian;
       const isToday = eth.year === todayEth.year && eth.month === todayEth.month && eth.day === todayEth.day;
       const weekday = getWeekday(eth);
+
       const key = `${eth.year}-${eth.month}-${eth.day}`;
-      const holidays = holidayMap[key] || [];
+
+      let holidays = holidayMap[key] || [];
+
+      if (this.mode === 'christian') {
+        const saintsToday = saintsDayMap[eth.day] || [];
+        holidays = holidays.concat(saintsToday);
+      }
 
       return {
         ethiopian: {
@@ -128,3 +156,4 @@ export class MonthGrid {
     return this;
   }
 }
+

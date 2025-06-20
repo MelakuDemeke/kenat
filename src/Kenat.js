@@ -318,7 +318,7 @@ export class Kenat {
 
 
     static getMonthCalendar(year, month, options = {}) {
-        const { useGeez = false, weekdayLang = 'amharic', weekStart = 0, holidayFilter = null } = options;
+        const { useGeez = false, weekdayLang = 'amharic', weekStart = 0, holidayFilter = null, mode = null } = options;
 
         const monthGrid = MonthGrid.create({
             year,
@@ -326,7 +326,8 @@ export class Kenat {
             useGeez,
             weekdayLang,
             weekStart,
-            holidayFilter // Pass filter to MonthGrid
+            holidayFilter,
+            mode
         });
 
         return {
