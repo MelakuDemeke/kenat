@@ -59,9 +59,15 @@ export class MonthGrid {
     const labels = daysOfWeek[this.weekdayLang] || daysOfWeek.amharic;
     const monthLabels = monthNames[this.weekdayLang] || monthNames.amharic;
 
+    let effectiveFilter = this.holidayFilter;
+    if (this.mode === 'christian') {
+      effectiveFilter = [HolidayTags.CHRISTIAN];
+    }
+
+    
     const monthHolidays = getHolidaysInMonth(y, m, {
       lang: this.weekdayLang,
-      filter: this.holidayFilter
+      filter: effectiveFilter 
     });
     
     const holidayMap = {};
