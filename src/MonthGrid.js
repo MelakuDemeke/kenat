@@ -2,7 +2,7 @@ import { Kenat } from './Kenat.js';
 import { getHolidaysInMonth } from './holidays.js';
 import { toGeez } from './geezConverter.js';
 import { orthodoxMonthlydays } from './nigs.js';
-import { daysOfWeek, monthNames, HolidayTags, holidayInfo  } from './constants.js';
+import { daysOfWeek, monthNames, HolidayTags, holidayInfo } from './constants.js';
 import { getWeekday, validateNumericInputs } from './utils.js';
 import { InvalidGridConfigError } from './errors/errorHandler.js';
 
@@ -18,6 +18,7 @@ export class MonthGrid {
     this.weekdayLang = config.weekdayLang ?? 'amharic';
     this.holidayFilter = config.holidayFilter ?? null;
     this.mode = config.mode ?? null;
+    this.showAllSaints = config.showAllSaints ?? false;
   }
 
   _validateConfig(config) {
@@ -82,19 +83,22 @@ export class MonthGrid {
     const saintsDayMap = {};
     if (this.mode === 'christian') {
       Object.values(orthodoxMonthlydays).forEach(saint => {
-        const day = saint.recuringDate;
-        if (!saintsDayMap[day]) {
-          saintsDayMap[day] = [];
-        }
         const isNigs = Array.isArray(saint.negs) ? saint.negs.includes(m) : saint.negs === m;
-        const saintEvent = {
-          key: saint.key,
-          name: saint.name[this.weekdayLang] || saint.name.english,
-          description: saint.description[this.weekdayLang] || saint.description.english,
-          isNigs: isNigs,
-          tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN, isNigs ? 'NIGS' : 'SAINT_DAY']
-        };
-        saintsDayMap[day].push(saintEvent);
+
+        // --- THIS IS THE NEW LOGIC ---
+        // Only add the saint if it's a major feast (Nigs) OR if the user wants to see all saints
+        if (isNigs || this.showAllSaints) {
+          const day = saint.recuringDate;
+          if (!saintsDayMap[day]) saintsDayMap[day] = [];
+          const saintEvent = {
+            key: saint.key,
+            name: saint.name[this.weekdayLang] || saint.name.english,
+            description: saint.description[this.weekdayLang] || saint.description.english,
+            isNigs: isNigs,
+            tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN, isNigs ? 'NIGS' : 'SAINT_DAY']
+          };
+          saintsDayMap[day].push(saintEvent);
+        }
       });
     }
 
@@ -112,14 +116,14 @@ export class MonthGrid {
         holidays = holidays.concat(saintsToday);
       }
 
-      if (this.mode === 'muslim' && weekday === 5) { // 5 corresponds to Friday
-          const jummahInfo = holidayInfo.jummah;
-          holidays.push({
-              key: 'jummah',
-              name: jummahInfo.name[this.weekdayLang] || jummahInfo.name.english,
-              description: jummahInfo.description[this.weekdayLang] || jummahInfo.description.english,
-              tags: [HolidayTags.RELIGIOUS, HolidayTags.MUSLIM]
-          });
+      if (this.mode === 'muslim' && weekday === 5) {
+        const jummahInfo = holidayInfo.jummah;
+        holidays.push({
+          key: 'jummah',
+          name: jummahInfo.name[this.weekdayLang] || jummahInfo.name.english,
+          description: jummahInfo.description[this.weekdayLang] || jummahInfo.description.english,
+          tags: [HolidayTags.RELIGIOUS, HolidayTags.MUSLIM]
+        });
       }
 
       return {
