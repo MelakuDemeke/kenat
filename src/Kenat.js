@@ -10,7 +10,8 @@ import { getEthiopianDaysInMonth, isValidEthiopianDate, isEthiopianLeapYear, get
 import {
     InvalidEthiopianDateError,
     InvalidDateFormatError,
-    UnrecognizedInputError
+    UnrecognizedInputError,
+    InvalidInputTypeError
 } from './errors/errorHandler.js';
 import {
     formatStandard,
@@ -380,6 +381,37 @@ export class Kenat {
         }
 
         return fullYear;
+    }
+
+    /**
+    * Generates an array of Kenat instances for a given date range.
+    * @param {Kenat} startDate - The start of the range.
+    * @param {Kenat} endDate - The end of the range.
+    * @returns {Kenat[]} An array of Kenat objects.
+    * @throws {InvalidInputTypeError} If start or end dates are not Kenat instances.
+    */
+    static generateDateRange(startDate, endDate) {
+        if (!(startDate instanceof Kenat)) {
+            throw new InvalidInputTypeError('generateDateRange', 'startDate', 'Kenat instance', startDate);
+        }
+
+        if (!(endDate instanceof Kenat)) {
+            throw new InvalidInputTypeError('generateDateRange', 'endDate', 'Kenat instance', endDate);
+        }
+
+        const range = [];
+        let currentDate = startDate;
+
+        if (startDate.isAfter(endDate)) {
+            return [];
+        }
+
+        while (currentDate.isBefore(endDate) || currentDate.isSameDay(endDate)) {
+            range.push(currentDate);
+            currentDate = currentDate.addDays(1);
+        }
+
+        return range;
     }
 
     // Arithmetic methods start here
