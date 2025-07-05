@@ -1,4 +1,3 @@
-import { Kenat } from './Kenat.js';
 import { getBahireHasab } from './bahireHasab.js';
 import { findHijriMonthRanges } from './holidays.js';
 import { addDays } from './dayArithmetic.js';
@@ -14,21 +13,30 @@ export function getFastingPeriod(fastKey, ethiopianYear) {
 
     switch (fastKey) {
         case 'ABIY_TSOME': {
-            const start = bh.movableFeasts.abiyTsome.ethiopian;
-            const end = bh.movableFeasts.siklet.ethiopian;
-            return { start, end };
+            const start = bh.movableFeasts.abiyTsome?.ethiopian;
+            const end = bh.movableFeasts.siklet?.ethiopian;
+            if (start && end) {
+                return { start, end };
+            }
+            return null;
         }
 
         case 'TSOME_HAWARYAT': {
-            const start = bh.movableFeasts.tsomeHawaryat.ethiopian;
+            const start = bh.movableFeasts.tsomeHawaryat?.ethiopian;
             const end = { year: ethiopianYear, month: 11, day: 4 };
-            return { start, end };
+            if (start) {
+                return { start, end };
+            }
+            return null;
         }
 
         case 'NINEVEH': {
-            const start = bh.movableFeasts.nineveh.ethiopian;
-            const end = addDays(start, 2);
-            return { start, end };
+            const start = bh.movableFeasts.nineveh?.ethiopian;
+            if (start) {
+                const end = addDays(start, 2);
+                return { start, end };
+            }
+            return null;
         }
 
         case 'TSOME_NEBIYAT': {
