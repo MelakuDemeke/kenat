@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kenat Calendar Example</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 1rem;
+        }
+
+        .app-container {
+            display: flex;
+            gap: 0;
+            align-items: stretch;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        #calendar-container {
+            flex: 1 1 0%;
+            padding: 2.5rem 2rem 2rem 2rem;
+            min-width: 0;
+        }
+
+        #calendar-container h1 {
+            font-size: 2.1rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            letter-spacing: 0.02em;
+            color: #2d3a4a;
+        }
+
+        #fasting-sidebar {
+            width: 300px;
+            background: linear-gradient(135deg, #f3e7e9 0%, #e3eeff 100%);
+            padding: 2.5rem 2rem 2rem 2rem;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            min-height: 100%;
+        }
+
+        #fasting-sidebar h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            color: #4a2d7b;
+            letter-spacing: 0.01em;
+        }
+
+        #fasting-sidebar h3 {
+            margin-top: 0;
+            text-align: left;
+            font-size: 1.1rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.2rem;
+            color: #2d3a4a;
+        }
+
+        #fasting-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+            width: 100%;
+        }
+
+        #fasting-list li {
+            padding: 1rem 1.2rem;
+            cursor: pointer;
+            border-radius: 10px;
+            margin-bottom: 0.7rem;
+            border-left: 8px solid transparent;
+            transition: background 0.2s, border-color 0.2s;
+            font-size: 1.08rem;
+            background: #f7f7fa;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+        }
+
+        #fasting-list li:hover {
+            background: #e3eeff;
+        }
+
+        #fasting-list li.active {
+            font-weight: bold;
+            background: linear-gradient(90deg, #e3eeff 60%, #f3e7e9 100%);
+            border-left-color: #4a2d7b;
+            color: #4a2d7b;
+        }
+
+        .fasting-day-marker {
+            background-color: rgba(76, 175, 80, 0.13) !important;
+            box-shadow: 0 0 0 2px #4a2d7b33;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: 0.5rem auto;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            background-color: #fff;
+            border-radius: 18px;
+            overflow: hidden;
+            width: 95%;
+            max-width: 600px;
+        }
+
+        th,
+        td {
+            border: 1px solid #e0e0e0;
+            padding: 0.25rem;
+            width: 48px;
+            height: 48px;
+            vertical-align: top;
+            position: relative;
+            border-radius: 12px;
+        }
+
+        th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .today {
+            background-color: #fffde7;
+            border: 2px solid #ffc107;
+            font-weight: bold;
+        }
+
+        td.event-day {
+            cursor: pointer;
+        }
+
+        .official-holiday {
+            background-color: #e3f2fd;
+        }
+
+        .christian-holiday {
+            background-color: #ebf5ff;
+        }
+
+        .jummah-day {
+            background-color: #e8f5e9;
+        }
+
+        .holiday-labels {
+            font-size: 0.75rem;
+            color: #333;
+            margin-top: 5px;
+            line-height: 1.2;
+            text-align: left;
+            max-height: 3.6em;
+            overflow: hidden;
+        }
+
+        .holiday-labels .is-nigs {
+            font-weight: bold;
+            color: #b58c00;
+        }
+
+        .holiday-labels .jummah-label {
+            font-weight: bold;
+            color: #388e3c;
+        }
+
+        .header-controls,
+        .controls,
+        .filter-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 1rem 0;
+            align-items: center;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .controls {
+            gap: 20px;
+        }
+
+        .filter-controls {
+            margin-bottom: 1.5rem;
+            background-color: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-controls label,
+        .controls label {
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .filter-controls label.disabled {
+            color: #aaa;
+            cursor: not-allowed;
+        }
+
+        button,
+        select {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 25px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: left;
+        }
+
+        .modal-close {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+        }
+
+        .modal-content .is-nigs-title {
+            color: #b58c00;
+        }
+
+        .modal-content hr {
+            border: 0;
+            border-top: 1px solid #eee;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <div id="fasting-sidebar">
+            <h2>Fasting Period Selector</h2>
+            <h3>Choose a Fasting Period</h3>
+            <ul id="fasting-list"></ul>
+        </div>
+        <div id="calendar-container">
+            <h1>Kenat Calendar</h1>
+            <div id="calendar">Loading...</div>
+        </div>
+    </div>
+
+    <div id="holidayModal" class="modal">
+        <div class="modal-content"><span class="modal-close">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import Kenat, { MonthGrid, HolidayTags, toArabic } from '../../src/index.js';
+        import { monthNames } from '../../src/constants.js';
+        import { getFastingPeriod } from '../../src/fasting.js';
+
+        // State variables
+        let monthGridInstance;
+        let useGeez = false;
+        let weekdayLang = 'amharic';
+        let weekStart = 1;
+        let holidayFilter = null;
+        let activeMode = 'public';
+        let showAllSaints = false;
+        let activeFastingRange = null;
+
+        const initialDate = new Kenat().getEthiopian();
+        let currentYear = initialDate.year;
+        let currentMonth = initialDate.month;
+
+        const modal = document.getElementById('holidayModal');
+        const modalBody = document.getElementById('modalBody');
+        const closeModal = document.querySelector('.modal-close');
+
+        function showHolidayModal(holidays) {
+            let content = '';
+            holidays.forEach((h, index) => {
+                const nigsClass = h.isNigs ? 'is-nigs-title' : '';
+                const description = h.description ? `<p>${h.description}</p>` : '';
+                content += `<h3 class="${nigsClass}">${h.name}</h3>${description}`;
+                if (index < holidays.length - 1) content += '<hr>';
+            });
+            modalBody.innerHTML = content;
+            modal.style.display = 'flex';
+        }
+
+        closeModal.onclick = () => { modal.style.display = 'none'; }
+        window.onclick = (event) => { if (event.target == modal) modal.style.display = 'none'; }
+
+        function isWithinRange(dayObj, range) {
+            if (!range || !dayObj) return false;
+            // Accept both Kenat instances and plain objects
+            let currentDayKenat;
+            if (dayObj instanceof Kenat) {
+                currentDayKenat = dayObj;
+            } else if (dayObj.ethiopianRaw) {
+                currentDayKenat = new Kenat(dayObj.ethiopianRaw);
+            } else if (dayObj.ethiopian) {
+                currentDayKenat = new Kenat(dayObj.ethiopian);
+            } else {
+                return false;
+            }
+            return (
+                (currentDayKenat.isSameDay(range.start) || currentDayKenat.isAfter(range.start)) &&
+                (currentDayKenat.isSameDay(range.end) || currentDayKenat.isBefore(range.end))
+            );
+        }
+
+        function renderCalendar(gridData) {
+            let { headers, days, year, month } = gridData;
+            const holidaysForDay = (item) => item.holidays.map(h => `<div class="${h.isNigs ? 'is-nigs' : ''} ${h.key === 'jummah' ? 'jummah-label' : ''}">${h.name}</div>`).join('');
+
+            const yearForComparison = typeof year === 'string' ? toArabic(year) : year;
+            const yearOptions = Array.from({ length: 201 }, (_, i) => 1900 + i).map(y => `<option value="${y}" ${y === yearForComparison ? 'selected' : ''}>${y}</option>`).join('');
+            const monthOptions = monthNames.amharic.map((name, i) => `<option value="${i + 1}" ${i + 1 === month ? 'selected' : ''}>${name}</option>`).join('');
+            let html = `<div class="header-controls"><button id="prevMonth">⬅️</button><div class="nav-controls"><select id="monthSelector">${monthOptions}</select><select id="yearSelector">${yearOptions}</select></div><button id="nextMonth">➡️</button></div><div class="controls" id="topControls"></div><div class="filter-controls" id="filterControls"></div><table><thead><tr>${headers.map(day => `<th>${day}</th>`).join('')}</tr></thead><tbody>`;
+
+            for (let i = 0; i < days.length; i += 7) {
+                html += '<tr>';
+                for (let j = 0; j < 7; j++) {
+                    const item = days[i + j];
+                    if (!item) {
+                        html += '<td></td>';
+                    } else {
+                        const hasEvents = item.holidays && item.holidays.length > 0;
+                        let dayClasses = [item.isToday ? 'today' : ''];
+                        let inlineStyle = '';
+                        if (hasEvents) {
+                            dayClasses.push('event-day');
+                            if (item.holidays.some(h => h.tags.includes(HolidayTags.PUBLIC))) dayClasses.push('official-holiday');
+                            if (item.holidays.some(h => h.tags.includes(HolidayTags.CHRISTIAN)) && !dayClasses.includes('official-holiday')) dayClasses.push('christian-holiday');
+                            if (item.holidays.some(h => h.key === 'jummah')) dayClasses.push('jummah-day');
+                        }
+                        if (activeFastingRange && isWithinRange(item, activeFastingRange)) {
+                            dayClasses.push('fasting-day-marker');
+                            inlineStyle = `style="background-color: ${activeFastingRange.color}"`;
+                        }
+                        const holidaysText = hasEvents ? holidaysForDay(item) : '';
+                        const eventAttr = hasEvents ? `data-day-index="${i + j}"` : '';
+                        html += `<td class="${dayClasses.join(' ')}" ${eventAttr} ${inlineStyle}><strong>${item.ethiopian.day}</strong><br/><small>${item.gregorian.month}/${item.gregorian.day}</small>${holidaysText ? `<div class="holiday-labels">${holidaysText}</div>` : ''}</td>`;
+                    }
+                }
+                html += '</tr>';
+            }
+            html += '</tbody></table>';
+            document.getElementById('calendar').innerHTML = html;
+            renderControls();
+            attachEventListeners(days);
+        }
+
+        function renderControls() {
+            const topControlsContainer = document.getElementById('topControls');
+            const filterControlsContainer = document.getElementById('filterControls');
+            topControlsContainer.innerHTML = `<label for="modeSelector">Mode:</label><select id="modeSelector"><option value="public" ${activeMode === 'public' ? 'selected' : ''}>Public</option><option value="christian" ${activeMode === 'christian' ? 'selected' : ''}>Christian</option><option value="muslim" ${activeMode === 'muslim' ? 'selected' : ''}>Muslim</option><option value="none" ${activeMode === 'none' ? 'selected' : ''}>All</option></select><button id="toggleGeez">Geez (${useGeez ? 'ON' : 'OFF'})</button><button id="toggleLang">Lang (${weekdayLang})</button><button id="toggleWeekStart">Start (${weekStart === 1 ? 'Mon' : 'Sun'})</button>`;
+            let filterHtml = '';
+            if (activeMode === 'christian') {
+                filterHtml += `<label><input type="checkbox" id="showAllSaintsToggle" ${showAllSaints ? 'checked' : ''}> Show All Saints</label>`;
+            }
+            const isDisabled = activeMode !== 'none';
+            const disabledAttr = isDisabled ? 'disabled' : '';
+            filterHtml += `<label class="${isDisabled ? 'disabled' : ''}"><input type="checkbox" name="holidayTag" value="all" ${!holidayFilter || isDisabled ? 'checked' : ''} ${disabledAttr}> All Holidays</label>`;
+            for (const key in HolidayTags) {
+                const value = HolidayTags[key];
+                const isChecked = !isDisabled && holidayFilter && holidayFilter.includes(value);
+                filterHtml += `<label class="${isDisabled ? 'disabled' : ''}"><input type="checkbox" name="holidayTag" value="${value}" ${isChecked ? 'checked' : ''} ${disabledAttr}> ${value}</label>`;
+            }
+            filterControlsContainer.innerHTML = filterHtml;
+        }
+
+        const fastingPeriods = [
+            { key: 'ABIY_TSOME', name: 'The Great Lent (Hudade)', color: '#fff59d' },
+            { key: 'TSOME_NEBIYAT', name: 'Fast of the Prophets', color: '#b3e5fc' },
+            { key: 'TSOME_HAWARYAT', name: 'Fast of the Apostles', color: '#c8e6c9' },
+            { key: 'NINEVEH', name: 'Fast of Nineveh', color: '#ffccbc' },
+            { key: 'RAMADAN', name: 'Ramadan', color: '#d1c4e9' }
+        ];
+
+        function renderFastingSidebar() {
+            const list = document.getElementById('fasting-list');
+            list.innerHTML = '';
+            fastingPeriods.forEach(fast => {
+                const li = document.createElement('li');
+                li.textContent = fast.name;
+                li.style.borderLeftColor = fast.color;
+                if (activeFastingRange && activeFastingRange.key === fast.key) {
+                    li.classList.add('active');
+                }
+                li.onclick = () => {
+                    const yearToSearch = currentYear;
+                    const period = getFastingPeriod(fast.key, yearToSearch);
+
+                    if (period) {
+                        if (activeFastingRange && activeFastingRange.key === fast.key) {
+                            activeFastingRange = null;
+                        } else {
+                            activeFastingRange = {
+                                key: fast.key,
+                                start: new Kenat(period.start),
+                                end: new Kenat(period.end),
+                                color: fast.color
+                            };
+                            currentYear = activeFastingRange.start.getEthiopian().year;
+                            currentMonth = activeFastingRange.start.getEthiopian().month;
+                        }
+                    } else {
+                        alert(`Fasting period for ${fast.name} not found in ${yearToSearch} E.C.`);
+                        activeFastingRange = null;
+                    }
+                    rerender();
+                };
+                list.appendChild(li);
+            });
+
+            // Fasting info display
+            let infoBox = document.getElementById('fasting-info-box');
+            if (!infoBox) {
+                infoBox = document.createElement('div');
+                infoBox.id = 'fasting-info-box';
+                infoBox.style.marginTop = '1.5rem';
+                infoBox.style.padding = '1rem';
+                infoBox.style.background = '#f7f7fa';
+                infoBox.style.borderRadius = '10px';
+                infoBox.style.boxShadow = '0 1px 4px rgba(0,0,0,0.03)';
+                infoBox.style.fontSize = '1rem';
+                infoBox.style.color = '#2d3a4a';
+                list.parentNode.appendChild(infoBox);
+            }
+            if (activeFastingRange) {
+                const start = activeFastingRange.start.getEthiopian();
+                const end = activeFastingRange.end.getEthiopian();
+                const days = Kenat.generateDateRange(activeFastingRange.start, activeFastingRange.end).length;
+                const fastName = fastingPeriods.find(f => f.key === activeFastingRange.key).name;
+                // Use a colored dot for the fast color, but keep text readable
+                infoBox.innerHTML = `<strong>Selected Fast:</strong> <span style="display:inline-flex;align-items:center;"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${activeFastingRange.color};margin-right:7px;border:1px solid #ccc;"></span><span style="color:#2d3a4a;">${fastName}</span></span><br>
+                <strong>Start:</strong> ${start.month}/${start.day}/${start.year}<br>
+                <strong>End:</strong> ${end.month}/${end.day}/${end.year}<br>
+                <strong>Days:</strong> ${days}`;
+                infoBox.style.display = 'block';
+            } else {
+                infoBox.innerHTML = '';
+                infoBox.style.display = 'none';
+            }
+        }
+
+        function attachEventListeners(days) {
+            // ✨ FIX: The line `activeFastingRange = null;` has been REMOVED from the four
+            // navigation handlers below to ensure the highlight persists between months.
+            document.getElementById('prevMonth').onclick = () => {
+                const newGrid = monthGridInstance.down().generate();
+                currentYear = (typeof newGrid.year === 'string') ? toArabic(newGrid.year) : newGrid.year;
+                currentMonth = newGrid.month;
+                rerender();
+            };
+            document.getElementById('nextMonth').onclick = () => {
+                const newGrid = monthGridInstance.up().generate();
+                currentYear = (typeof newGrid.year === 'string') ? toArabic(newGrid.year) : newGrid.year;
+                currentMonth = newGrid.month;
+                rerender();
+            };
+            document.getElementById('monthSelector').onchange = (e) => {
+                currentMonth = parseInt(e.target.value);
+                rerender();
+            };
+            document.getElementById('yearSelector').onchange = (e) => {
+                currentYear = parseInt(e.target.value);
+                rerender();
+            };
+
+            // --- Other event listeners (no changes needed here) ---
+            document.getElementById('toggleGeez').onclick = () => { useGeez = !useGeez; rerender(); };
+            document.getElementById('toggleLang').onclick = () => { weekdayLang = weekdayLang === 'amharic' ? 'english' : 'amharic'; rerender(); };
+            document.getElementById('toggleWeekStart').onclick = () => { weekStart = weekStart === 1 ? 0 : 1; rerender(); };
+            document.getElementById('modeSelector').onchange = (e) => { activeMode = e.target.value; if (activeMode !== 'none') { holidayFilter = null; } showAllSaints = false; rerender(); };
+
+            const saintsToggle = document.getElementById('showAllSaintsToggle');
+            if (saintsToggle) { saintsToggle.onchange = (e) => { showAllSaints = e.target.checked; rerender(); }; }
+
+            document.querySelectorAll('.event-day').forEach(cell => {
+                cell.onclick = () => {
+                    const dayIndex = parseInt(cell.getAttribute('data-day-index'));
+                    const dayData = days[dayIndex];
+                    if (dayData && dayData.holidays.length > 0) { showHolidayModal(dayData.holidays); }
+                };
+            });
+            const allCheckbox = document.querySelector('input[name="holidayTag"][value="all"]');
+            const otherCheckboxes = document.querySelectorAll('input[name="holidayTag"]:not([value="all"])');
+            const updateFilter = () => {
+                const checkedValues = Array.from(otherCheckboxes).filter(i => i.checked).map(i => i.value);
+                if (checkedValues.length === 0) { allCheckbox.checked = true; holidayFilter = null; }
+                else { allCheckbox.checked = false; holidayFilter = checkedValues; }
+                rerender();
+            };
+            if (allCheckbox) {
+                allCheckbox.onchange = () => {
+                    if (allCheckbox.checked) { otherCheckboxes.forEach(cb => cb.checked = false); holidayFilter = null; rerender(); }
+                    else { allCheckbox.checked = true; }
+                };
+            }
+            otherCheckboxes.forEach(checkbox => { if (checkbox) checkbox.onchange = updateFilter; });
+        }
+
+        function rerender() {
+            monthGridInstance = new MonthGrid({
+                year: currentYear,
+                month: currentMonth,
+                useGeez, weekdayLang, weekStart,
+                holidayFilter,
+                mode: activeMode,
+                showAllSaints: showAllSaints,
+            });
+            renderCalendar(monthGridInstance.generate());
+            renderFastingSidebar();
+        }
+
+        rerender();
+    </script>
+</body>
+
+</html>
