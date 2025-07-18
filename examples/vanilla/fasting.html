@@ -459,6 +459,36 @@
                 };
                 list.appendChild(li);
             });
+
+            // Fasting info display
+            let infoBox = document.getElementById('fasting-info-box');
+            if (!infoBox) {
+                infoBox = document.createElement('div');
+                infoBox.id = 'fasting-info-box';
+                infoBox.style.marginTop = '1.5rem';
+                infoBox.style.padding = '1rem';
+                infoBox.style.background = '#f7f7fa';
+                infoBox.style.borderRadius = '10px';
+                infoBox.style.boxShadow = '0 1px 4px rgba(0,0,0,0.03)';
+                infoBox.style.fontSize = '1rem';
+                infoBox.style.color = '#2d3a4a';
+                list.parentNode.appendChild(infoBox);
+            }
+            if (activeFastingRange) {
+                const start = activeFastingRange.start.getEthiopian();
+                const end = activeFastingRange.end.getEthiopian();
+                const days = Kenat.generateDateRange(activeFastingRange.start, activeFastingRange.end).length;
+                const fastName = fastingPeriods.find(f => f.key === activeFastingRange.key).name;
+                // Use a colored dot for the fast color, but keep text readable
+                infoBox.innerHTML = `<strong>Selected Fast:</strong> <span style="display:inline-flex;align-items:center;"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${activeFastingRange.color};margin-right:7px;border:1px solid #ccc;"></span><span style="color:#2d3a4a;">${fastName}</span></span><br>
+                <strong>Start:</strong> ${start.month}/${start.day}/${start.year}<br>
+                <strong>End:</strong> ${end.month}/${end.day}/${end.year}<br>
+                <strong>Days:</strong> ${days}`;
+                infoBox.style.display = 'block';
+            } else {
+                infoBox.innerHTML = '';
+                infoBox.style.display = 'none';
+            }
         }
 
         function attachEventListeners(days) {
