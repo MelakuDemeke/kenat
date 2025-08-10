@@ -7,7 +7,7 @@ import { Time } from './Time.js';
 import { HolidayTags } from './constants.js';
 import { getBahireHasab } from './bahireHasab.js';
 import { monthNames } from './constants.js';
-import { getFastingPeriod } from './fasting.js';
+import { getFastingPeriod, getFastingInfo } from './fasting.js';
 
 // Default export is the Kenat class directly
 export default Kenat;
@@ -22,6 +22,7 @@ export {
   getHolidaysForYear,
   getBahireHasab,
   getFastingPeriod,
+  getFastingInfo,
   MonthGrid,
   Time,
   getHoliday,

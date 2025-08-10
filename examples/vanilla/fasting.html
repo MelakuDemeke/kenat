@@ -87,6 +87,18 @@
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
         }
 
+        #fasting-list li .fast-title {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        #fasting-list li .fast-desc {
+            font-size: 0.9rem;
+            color: #3e4b5c;
+            line-height: 1.3;
+        }
+
         #fasting-list li:hover {
             background: #e3eeff;
         }
@@ -300,8 +312,8 @@
 
     <script type="module">
         import Kenat, { MonthGrid, HolidayTags, toArabic } from '../../src/index.js';
-        import { monthNames } from '../../src/constants.js';
-        import { getFastingPeriod } from '../../src/fasting.js';
+        import { monthNames, FastingKeys } from '../../src/constants.js';
+        import { getFastingPeriod, getFastingInfo } from '../../src/fasting.js';
 
         // State variables
         let monthGridInstance;
@@ -416,20 +428,44 @@
             filterControlsContainer.innerHTML = filterHtml;
         }
 
-        const fastingPeriods = [
-            { key: 'ABIY_TSOME', name: 'The Great Lent (Hudade)', color: '#fff59d' },
-            { key: 'TSOME_NEBIYAT', name: 'Fast of the Prophets', color: '#b3e5fc' },
-            { key: 'TSOME_HAWARYAT', name: 'Fast of the Apostles', color: '#c8e6c9' },
-            { key: 'NINEVEH', name: 'Fast of Nineveh', color: '#ffccbc' },
-            { key: 'RAMADAN', name: 'Ramadan', color: '#d1c4e9' }
-        ];
+        // Color palette per fasting key
+        const FAST_COLORS = {
+            [FastingKeys.ABIY_TSOME]: '#fff59d',
+            [FastingKeys.TSOME_NEBIYAT]: '#b3e5fc',
+            [FastingKeys.TSOME_HAWARYAT]: '#c8e6c9',
+            [FastingKeys.NINEVEH]: '#ffccbc',
+            [FastingKeys.RAMADAN]: '#d1c4e9',
+            [FastingKeys.FILSETA]: '#f8bbd0',
+        };
+
+        function buildFastingList() {
+            const keys = [
+                FastingKeys.ABIY_TSOME,
+                FastingKeys.TSOME_NEBIYAT,
+                FastingKeys.TSOME_HAWARYAT,
+                FastingKeys.NINEVEH,
+                FastingKeys.RAMADAN,
+                FastingKeys.FILSETA,
+            ];
+            return keys.map(key => {
+                const info = getFastingInfo(key, currentYear, { lang: weekdayLang });
+                return {
+                    key,
+                    name: info?.name || key,
+                    description: info?.description || '',
+                    color: FAST_COLORS[key] || '#e0e0e0',
+                };
+            });
+        }
 
         function renderFastingSidebar() {
             const list = document.getElementById('fasting-list');
             list.innerHTML = '';
+            const fastingPeriods = buildFastingList();
             fastingPeriods.forEach(fast => {
                 const li = document.createElement('li');
-                li.textContent = fast.name;
+                const shortDesc = fast.description || '';
+                li.innerHTML = `<span class="fast-title">${fast.name}</span>${shortDesc ? `<div class="fast-desc">${shortDesc}</div>` : ''}`;
                 li.style.borderLeftColor = fast.color;
                 if (activeFastingRange && activeFastingRange.key === fast.key) {
                     li.classList.add('active');
@@ -478,12 +514,15 @@
                 const start = activeFastingRange.start.getEthiopian();
                 const end = activeFastingRange.end.getEthiopian();
                 const days = Kenat.generateDateRange(activeFastingRange.start, activeFastingRange.end).length;
-                const fastName = fastingPeriods.find(f => f.key === activeFastingRange.key).name;
+                const selectedInfo = getFastingInfo(activeFastingRange.key, start.year, { lang: weekdayLang });
+                const fastName = selectedInfo?.name || activeFastingRange.key;
+                const fastDesc = selectedInfo?.description || '';
                 // Use a colored dot for the fast color, but keep text readable
                 infoBox.innerHTML = `<strong>Selected Fast:</strong> <span style="display:inline-flex;align-items:center;"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${activeFastingRange.color};margin-right:7px;border:1px solid #ccc;"></span><span style="color:#2d3a4a;">${fastName}</span></span><br>
                 <strong>Start:</strong> ${start.month}/${start.day}/${start.year}<br>
                 <strong>End:</strong> ${end.month}/${end.day}/${end.year}<br>
-                <strong>Days:</strong> ${days}`;
+                <strong>Days:</strong> ${days}
+                ${fastDesc ? `<hr><div>${fastDesc}</div>` : ''}`;
                 infoBox.style.display = 'block';
             } else {
                 infoBox.innerHTML = '';
