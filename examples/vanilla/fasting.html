@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kenat Calendar Example</title>
     <style>
+        html,
+        body {
+            height: 100%;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: #f9f9f9;
@@ -22,12 +27,16 @@
             border-radius: 16px;
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
             overflow: hidden;
+            height: calc(100vh - 2rem);
         }
 
         #calendar-container {
             flex: 1 1 0%;
-            padding: 2.5rem 2rem 2rem 2rem;
+            padding: 2rem 2rem;
             min-width: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         #calendar-container h1 {
@@ -36,6 +45,20 @@
             margin-bottom: 1.2rem;
             letter-spacing: 0.02em;
             color: #2d3a4a;
+        }
+
+        #calendar-container .header-controls {
+            position: sticky;
+            top: 0;
+            background: #fff;
+            padding: 0.5rem 0;
+            z-index: 2;
+        }
+
+        #calendar {
+            flex: 1;
+            overflow: auto;
+            padding-bottom: 1rem;
         }
 
         #fasting-sidebar {
@@ -47,6 +70,7 @@
             flex-direction: column;
             align-items: flex-start;
             min-height: 100%;
+            overflow-y: auto;
         }
 
         #fasting-sidebar h2 {
@@ -73,6 +97,8 @@
             margin: 0;
             text-align: left;
             width: 100%;
+            overflow-y: auto;
+            max-height: calc(100% - 120px);
         }
 
         #fasting-list li {
@@ -85,6 +111,18 @@
             font-size: 1.08rem;
             background: #f7f7fa;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+        }
+
+        #fasting-list li .fast-title {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        #fasting-list li .fast-desc {
+            font-size: 0.9rem;
+            color: #3e4b5c;
+            line-height: 1.3;
         }
 
         #fasting-list li:hover {
@@ -100,7 +138,8 @@
 
         .fasting-day-marker {
             background-color: rgba(76, 175, 80, 0.13) !important;
-            box-shadow: 0 0 0 2px #4a2d7b33;
+            box-shadow: inset 0 0 0 2px #4a2d7b33;
+            border-radius: 12px;
         }
 
         table {
@@ -110,31 +149,52 @@
             background-color: #fff;
             border-radius: 18px;
             overflow: hidden;
-            width: 95%;
-            max-width: 600px;
+            width: 100%;
+            max-width: 720px;
         }
 
         th,
         td {
-            border: 1px solid #e0e0e0;
-            padding: 0.25rem;
-            width: 48px;
-            height: 48px;
+            border: 1px solid #eef0f3;
+            padding: 0.35rem;
+            width: 52px;
+            height: 56px;
             vertical-align: top;
             position: relative;
             border-radius: 12px;
         }
 
         th {
-            background-color: #f5f5f5;
-            font-weight: 600;
+            background: linear-gradient(180deg, #f6f7fb 0%, #eef1f7 100%);
+            font-weight: 700;
             border-radius: 12px 12px 0 0;
+            position: sticky;
+            top: 0;
+            z-index: 1;
         }
 
         .today {
-            background-color: #fffde7;
-            border: 2px solid #ffc107;
-            font-weight: bold;
+            background-color: #fffbe6;
+            border: 2px solid #ffd54f;
+            font-weight: 700;
+        }
+
+        td strong {
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+        }
+
+        .today strong {
+            background-color: #ffecb3;
+        }
+
+        td:hover {
+            background-color: #f7faff;
         }
 
         td.event-day {
@@ -142,15 +202,15 @@
         }
 
         .official-holiday {
-            background-color: #e3f2fd;
+            background-color: #e8f3ff;
         }
 
         .christian-holiday {
-            background-color: #ebf5ff;
+            background-color: #eef7ff;
         }
 
         .jummah-day {
-            background-color: #e8f5e9;
+            background-color: #e9f7ef;
         }
 
         .holiday-labels {
@@ -224,6 +284,13 @@
             border-radius: 6px;
             border: 1px solid #ccc;
             background-color: #fff;
+            transition: all 0.15s ease-in-out;
+        }
+
+        button:hover,
+        select:hover {
+            border-color: #9fb3ff;
+            box-shadow: 0 0 0 3px #9fb3ff22;
         }
 
         .modal {
@@ -300,8 +367,8 @@
 
     <script type="module">
         import Kenat, { MonthGrid, HolidayTags, toArabic } from '../../src/index.js';
-        import { monthNames } from '../../src/constants.js';
-        import { getFastingPeriod } from '../../src/fasting.js';
+        import { monthNames, FastingKeys } from '../../src/constants.js';
+        import { getFastingPeriod, getFastingInfo, getFastingDays } from '../../src/fasting.js';
 
         // State variables
         let monthGridInstance;
@@ -312,6 +379,7 @@
         let activeMode = 'public';
         let showAllSaints = false;
         let activeFastingRange = null;
+        let activeFastingKey = null;
 
         const initialDate = new Kenat().getEthiopian();
         let currentYear = initialDate.year;
@@ -384,6 +452,13 @@
                             dayClasses.push('fasting-day-marker');
                             inlineStyle = `style="background-color: ${activeFastingRange.color}"`;
                         }
+                        if (!activeFastingRange && activeFastingKey === FastingKeys.TSOME_DIHENET) {
+                            const fdays = getFastingDays(FastingKeys.TSOME_DIHENET, yearForComparison, month);
+                            if (fdays.includes(item.ethiopian.day)) {
+                                dayClasses.push('fasting-day-marker');
+                                inlineStyle = `style="background-color: #ffe0b2"`;
+                            }
+                        }
                         const holidaysText = hasEvents ? holidaysForDay(item) : '';
                         const eventAttr = hasEvents ? `data-day-index="${i + j}"` : '';
                         html += `<td class="${dayClasses.join(' ')}" ${eventAttr} ${inlineStyle}><strong>${item.ethiopian.day}</strong><br/><small>${item.gregorian.month}/${item.gregorian.day}</small>${holidaysText ? `<div class="holiday-labels">${holidaysText}</div>` : ''}</td>`;
@@ -416,44 +491,77 @@
             filterControlsContainer.innerHTML = filterHtml;
         }
 
-        const fastingPeriods = [
-            { key: 'ABIY_TSOME', name: 'The Great Lent (Hudade)', color: '#fff59d' },
-            { key: 'TSOME_NEBIYAT', name: 'Fast of the Prophets', color: '#b3e5fc' },
-            { key: 'TSOME_HAWARYAT', name: 'Fast of the Apostles', color: '#c8e6c9' },
-            { key: 'NINEVEH', name: 'Fast of Nineveh', color: '#ffccbc' },
-            { key: 'RAMADAN', name: 'Ramadan', color: '#d1c4e9' }
-        ];
+        // Color palette per fasting key
+        const FAST_COLORS = {
+            [FastingKeys.ABIY_TSOME]: '#fff59d',
+            [FastingKeys.TSOME_NEBIYAT]: '#b3e5fc',
+            [FastingKeys.TSOME_HAWARYAT]: '#c8e6c9',
+            [FastingKeys.NINEVEH]: '#ffccbc',
+            [FastingKeys.RAMADAN]: '#d1c4e9',
+            [FastingKeys.FILSETA]: '#f8bbd0',
+            [FastingKeys.TSOME_DIHENET]: '#ffe0b2',
+        };
+
+        function buildFastingList() {
+            const keys = [
+                FastingKeys.ABIY_TSOME,
+                FastingKeys.TSOME_NEBIYAT,
+                FastingKeys.TSOME_HAWARYAT,
+                FastingKeys.NINEVEH,
+                FastingKeys.RAMADAN,
+                FastingKeys.FILSETA,
+                FastingKeys.TSOME_DIHENET,
+            ];
+            return keys.map(key => {
+                const info = getFastingInfo(key, currentYear, { lang: weekdayLang });
+                return {
+                    key,
+                    name: info?.name || key,
+                    description: info?.description || '',
+                    color: FAST_COLORS[key] || '#e0e0e0',
+                };
+            });
+        }
 
         function renderFastingSidebar() {
             const list = document.getElementById('fasting-list');
             list.innerHTML = '';
+            const fastingPeriods = buildFastingList();
             fastingPeriods.forEach(fast => {
                 const li = document.createElement('li');
-                li.textContent = fast.name;
+                const shortDesc = fast.description || '';
+                li.innerHTML = `<span class="fast-title">${fast.name}</span>${shortDesc ? `<div class="fast-desc">${shortDesc}</div>` : ''}`;
                 li.style.borderLeftColor = fast.color;
-                if (activeFastingRange && activeFastingRange.key === fast.key) {
+                if ((activeFastingRange && activeFastingRange.key === fast.key) || (activeFastingKey === fast.key)) {
                     li.classList.add('active');
                 }
                 li.onclick = () => {
                     const yearToSearch = currentYear;
-                    const period = getFastingPeriod(fast.key, yearToSearch);
-
-                    if (period) {
-                        if (activeFastingRange && activeFastingRange.key === fast.key) {
-                            activeFastingRange = null;
-                        } else {
-                            activeFastingRange = {
-                                key: fast.key,
-                                start: new Kenat(period.start),
-                                end: new Kenat(period.end),
-                                color: fast.color
-                            };
-                            currentYear = activeFastingRange.start.getEthiopian().year;
-                            currentMonth = activeFastingRange.start.getEthiopian().month;
-                        }
-                    } else {
-                        alert(`Fasting period for ${fast.name} not found in ${yearToSearch} E.C.`);
+                    if (fast.key === FastingKeys.TSOME_DIHENET) {
+                        activeFastingKey = (activeFastingKey === FastingKeys.TSOME_DIHENET) ? null : FastingKeys.TSOME_DIHENET;
                         activeFastingRange = null;
+                    } else {
+                        const period = getFastingPeriod(fast.key, yearToSearch);
+                        if (period) {
+                            if (activeFastingRange && activeFastingRange.key === fast.key) {
+                                activeFastingRange = null;
+                                activeFastingKey = null;
+                            } else {
+                                activeFastingRange = {
+                                    key: fast.key,
+                                    start: new Kenat(period.start),
+                                    end: new Kenat(period.end),
+                                    color: fast.color
+                                };
+                                activeFastingKey = null;
+                                currentYear = activeFastingRange.start.getEthiopian().year;
+                                currentMonth = activeFastingRange.start.getEthiopian().month;
+                            }
+                        } else {
+                            alert(`Fasting period for ${fast.name} not found in ${yearToSearch} E.C.`);
+                            activeFastingRange = null;
+                            activeFastingKey = null;
+                        }
                     }
                     rerender();
                 };
@@ -478,12 +586,15 @@
                 const start = activeFastingRange.start.getEthiopian();
                 const end = activeFastingRange.end.getEthiopian();
                 const days = Kenat.generateDateRange(activeFastingRange.start, activeFastingRange.end).length;
-                const fastName = fastingPeriods.find(f => f.key === activeFastingRange.key).name;
+                const selectedInfo = getFastingInfo(activeFastingRange.key, start.year, { lang: weekdayLang });
+                const fastName = selectedInfo?.name || activeFastingRange.key;
+                const fastDesc = selectedInfo?.description || '';
                 // Use a colored dot for the fast color, but keep text readable
                 infoBox.innerHTML = `<strong>Selected Fast:</strong> <span style="display:inline-flex;align-items:center;"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${activeFastingRange.color};margin-right:7px;border:1px solid #ccc;"></span><span style="color:#2d3a4a;">${fastName}</span></span><br>
                 <strong>Start:</strong> ${start.month}/${start.day}/${start.year}<br>
                 <strong>End:</strong> ${end.month}/${end.day}/${end.year}<br>
-                <strong>Days:</strong> ${days}`;
+                <strong>Days:</strong> ${days}
+                ${fastDesc ? `<hr><div>${fastDesc}</div>` : ''}`;
                 infoBox.style.display = 'block';
             } else {
                 infoBox.innerHTML = '';
