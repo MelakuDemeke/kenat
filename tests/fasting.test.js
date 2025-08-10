@@ -1,5 +1,8 @@
-import { getFastingPeriod, getFastingInfo } from '../src/fasting.js';
+import { getFastingPeriod, getFastingInfo, getFastingDays } from '../src/fasting.js';
 import { FastingKeys } from '../src/constants.js';
+import { getBahireHasab } from '../src/bahireHasab.js';
+import { addDays } from '../src/dayArithmetic.js';
+import { getWeekday, getEthiopianDaysInMonth } from '../src/utils.js';
 
 // Mock dependencies if they are not available in the test environment
 // For this example, we assume the underlying functions are correct.
@@ -100,5 +103,68 @@ describe('getFastingInfo', () => {
         expect(info.name).toBe('ፍልሰታ');
         expect(info.period.start).toEqual({ year: 2016, month: 12, day: 1 });
         expect(info.period.end).toEqual({ year: 2016, month: 12, day: 14 });
+    });
+});
+
+describe('Orthodox Weekly Fasting (Tsome Dihnet)', () => {
+    test('Wednesdays and Fridays are fasting days outside the 50 days after Easter', () => {
+        const year = 2016;
+        // Choose a month well before Easter season: Hidar (month 3)
+        const month = 3;
+        const daysInMonth = getEthiopianDaysInMonth(year, month);
+        let foundWed = false;
+        let foundFri = false;
+        const days = getFastingDays('TSOME_DIHENET', year, month);
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = { year, month, day };
+            const wd = getWeekday(date);
+            if (wd === 3) { // Wednesday
+                foundWed = true;
+                expect(days.includes(day)).toBe(true);
+            }
+            if (wd === 5) { // Friday
+                foundFri = true;
+                expect(days.includes(day)).toBe(true);
+            }
+        }
+        expect(foundWed || foundFri).toBe(true);
+    });
+
+    test('No fasting on Wednesdays/Fridays during the 50 days after Easter (until Pentecost)', () => {
+        const year = 2016;
+        const bh = getBahireHasab(year);
+        const easter = bh.movableFeasts.fasika.ethiopian;
+        const pentecost = bh.movableFeasts.paraclete.ethiopian;
+
+        // Scan the full window starting the day after Easter through Pentecost inclusive
+        let d = addDays(easter, 1);
+        while (true) {
+            const wd = getWeekday(d);
+            if (wd === 3 || wd === 5) {
+                const list = getFastingDays('TSOME_DIHENET', d.year, d.month);
+                expect(list.includes(d.day)).toBe(false);
+            }
+            if (d.year === pentecost.year && d.month === pentecost.month && d.day === pentecost.day) break;
+            d = addDays(d, 1);
+        }
+    });
+
+    test('Fasting resumes on Wed/Fri after Pentecost in the same year', () => {
+        const year = 2016;
+        const bh = getBahireHasab(year);
+        const pentecost = bh.movableFeasts.paraclete.ethiopian;
+        // Search within a few weeks after Pentecost for a Wed or Fri marked as fasting
+        let found = false;
+        for (let i = 1; i <= 21; i++) {
+            const d = addDays(pentecost, i);
+            const wd = getWeekday(d);
+            if (wd === 3 || wd === 5) {
+                const list = getFastingDays('TSOME_DIHENET', d.year, d.month);
+                expect(list.includes(d.day)).toBe(true);
+                found = true;
+                break;
+            }
+        }
+        expect(found).toBe(true);
     });
 });

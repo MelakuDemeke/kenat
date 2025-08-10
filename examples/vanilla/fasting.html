@@ -313,7 +313,7 @@
     <script type="module">
         import Kenat, { MonthGrid, HolidayTags, toArabic } from '../../src/index.js';
         import { monthNames, FastingKeys } from '../../src/constants.js';
-        import { getFastingPeriod, getFastingInfo } from '../../src/fasting.js';
+        import { getFastingPeriod, getFastingInfo, getFastingDays } from '../../src/fasting.js';
 
         // State variables
         let monthGridInstance;
@@ -324,6 +324,7 @@
         let activeMode = 'public';
         let showAllSaints = false;
         let activeFastingRange = null;
+        let activeFastingKey = null;
 
         const initialDate = new Kenat().getEthiopian();
         let currentYear = initialDate.year;
@@ -396,6 +397,13 @@
                             dayClasses.push('fasting-day-marker');
                             inlineStyle = `style="background-color: ${activeFastingRange.color}"`;
                         }
+                        if (!activeFastingRange && activeFastingKey === FastingKeys.TSOME_DIHENET) {
+                            const fdays = getFastingDays(FastingKeys.TSOME_DIHENET, yearForComparison, month);
+                            if (fdays.includes(item.ethiopian.day)) {
+                                dayClasses.push('fasting-day-marker');
+                                inlineStyle = `style="background-color: #ffe0b2"`;
+                            }
+                        }
                         const holidaysText = hasEvents ? holidaysForDay(item) : '';
                         const eventAttr = hasEvents ? `data-day-index="${i + j}"` : '';
                         html += `<td class="${dayClasses.join(' ')}" ${eventAttr} ${inlineStyle}><strong>${item.ethiopian.day}</strong><br/><small>${item.gregorian.month}/${item.gregorian.day}</small>${holidaysText ? `<div class="holiday-labels">${holidaysText}</div>` : ''}</td>`;
@@ -436,6 +444,7 @@
             [FastingKeys.NINEVEH]: '#ffccbc',
             [FastingKeys.RAMADAN]: '#d1c4e9',
             [FastingKeys.FILSETA]: '#f8bbd0',
+            [FastingKeys.TSOME_DIHENET]: '#ffe0b2',
         };
 
         function buildFastingList() {
@@ -446,6 +455,7 @@
                 FastingKeys.NINEVEH,
                 FastingKeys.RAMADAN,
                 FastingKeys.FILSETA,
+                FastingKeys.TSOME_DIHENET,
             ];
             return keys.map(key => {
                 const info = getFastingInfo(key, currentYear, { lang: weekdayLang });
@@ -467,29 +477,36 @@
                 const shortDesc = fast.description || '';
                 li.innerHTML = `<span class="fast-title">${fast.name}</span>${shortDesc ? `<div class="fast-desc">${shortDesc}</div>` : ''}`;
                 li.style.borderLeftColor = fast.color;
-                if (activeFastingRange && activeFastingRange.key === fast.key) {
+                if ((activeFastingRange && activeFastingRange.key === fast.key) || (activeFastingKey === fast.key)) {
                     li.classList.add('active');
                 }
                 li.onclick = () => {
                     const yearToSearch = currentYear;
-                    const period = getFastingPeriod(fast.key, yearToSearch);
-
-                    if (period) {
-                        if (activeFastingRange && activeFastingRange.key === fast.key) {
-                            activeFastingRange = null;
-                        } else {
-                            activeFastingRange = {
-                                key: fast.key,
-                                start: new Kenat(period.start),
-                                end: new Kenat(period.end),
-                                color: fast.color
-                            };
-                            currentYear = activeFastingRange.start.getEthiopian().year;
-                            currentMonth = activeFastingRange.start.getEthiopian().month;
-                        }
-                    } else {
-                        alert(`Fasting period for ${fast.name} not found in ${yearToSearch} E.C.`);
+                    if (fast.key === FastingKeys.TSOME_DIHENET) {
+                        activeFastingKey = (activeFastingKey === FastingKeys.TSOME_DIHENET) ? null : FastingKeys.TSOME_DIHENET;
                         activeFastingRange = null;
+                    } else {
+                        const period = getFastingPeriod(fast.key, yearToSearch);
+                        if (period) {
+                            if (activeFastingRange && activeFastingRange.key === fast.key) {
+                                activeFastingRange = null;
+                                activeFastingKey = null;
+                            } else {
+                                activeFastingRange = {
+                                    key: fast.key,
+                                    start: new Kenat(period.start),
+                                    end: new Kenat(period.end),
+                                    color: fast.color
+                                };
+                                activeFastingKey = null;
+                                currentYear = activeFastingRange.start.getEthiopian().year;
+                                currentMonth = activeFastingRange.start.getEthiopian().month;
+                            }
+                        } else {
+                            alert(`Fasting period for ${fast.name} not found in ${yearToSearch} E.C.`);
+                            activeFastingRange = null;
+                            activeFastingKey = null;
+                        }
                     }
                     rerender();
                 };

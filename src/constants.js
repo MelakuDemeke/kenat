@@ -341,6 +341,7 @@ export const FastingKeys = {
   NINEVEH: 'NINEVEH',
   FILSETA: 'FILSETA',
   RAMADAN: 'RAMADAN',
+  TSOME_DIHENET: 'TSOME_DIHENET',
 };
 
 // Fasting metadata similar to holidayInfo, with i18n-friendly names and descriptions
@@ -392,5 +393,13 @@ export const fastingInfo = {
       english: "The Islamic month of fasting from dawn to sunset; a time of prayer, reflection, and charity.",
     },
     tags: [HolidayTags.RELIGIOUS, HolidayTags.MUSLIM],
+  },
+  TSOME_DIHENET: {
+    name: { amharic: "ጾመ ድኅነት (ረቡእ·ዓርብ)", english: "Fast of Salvation (Wed & Fri)" },
+    description: {
+      amharic: "ከበአለ ሀምሳ ውጭ በሳምንት ረቡእ እና አርብ የምንፆመው ነው።",
+      english: "A fast observed on Wednesdays and Fridays outside of the 50 days after Easter.",
+    },
+    tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
   },
 };
