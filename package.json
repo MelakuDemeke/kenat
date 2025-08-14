@@ -41,7 +41,7 @@
   "exports": {
     ".": {
       "types": "./types/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./src/index.js"
     }
   },
   "repository": {

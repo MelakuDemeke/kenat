@@ -11,7 +11,7 @@
       "module": "ESNext",
       "lib": ["es2022", "dom", "es2020.intl"],
       "skipLibCheck": true,
-      "noEmitOnError": false
+      "noEmitOnError": true
     },
     "include": [
       "src/**/*.js"
