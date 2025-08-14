@@ -4,7 +4,7 @@
  * @param {number} ethiopianYear - The Ethiopian year.
  * @returns {{start: object, end: object}|null} An object with start and end PLAIN date objects.
  */
-export function getFastingPeriod(fastKey: 'ABIY_TSOME' | 'TSOME_HAWARYAT' | 'TSOME_NEBIYAT' | 'NINEVEH' | 'RAMADAN', ethiopianYear: number): {
+export function getFastingPeriod(fastKey: "ABIY_TSOME" | "TSOME_HAWARYAT" | "TSOME_NEBIYAT" | "NINEVEH" | "RAMADAN", ethiopianYear: number): {
     start: object;
     end: object;
 } | null;
@@ -15,8 +15,8 @@ export function getFastingPeriod(fastKey: 'ABIY_TSOME' | 'TSOME_HAWARYAT' | 'TSO
  * @param {{lang?: 'amharic'|'english'}} options
  * @returns {{ key: string, name: string, description: string, period: { start: object, end: object } } | null}
  */
-export function getFastingInfo(fastKey: 'ABIY_TSOME' | 'TSOME_HAWARYAT' | 'TSOME_NEBIYAT' | 'NINEVEH' | 'RAMADAN', ethiopianYear: number, options?: {
-    lang?: 'amharic' | 'english';
+export function getFastingInfo(fastKey: "ABIY_TSOME" | "TSOME_HAWARYAT" | "TSOME_NEBIYAT" | "NINEVEH" | "RAMADAN", ethiopianYear: number, options?: {
+    lang?: "amharic" | "english";
 }): {
     key: string;
     name: string;

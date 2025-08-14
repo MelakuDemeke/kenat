@@ -9,7 +9,7 @@ export function formatStandard(etDate: {
     year: number;
     month: number;
     day: number;
-}, lang?: 'amharic' | 'english'): string;
+}, lang?: "amharic" | "english"): string;
 /**
  * Formats an Ethiopian date in Geez numerals with Amharic month name.
  *
@@ -33,7 +33,7 @@ export function formatWithTime(etDate: {
     year: number;
     month: number;
     day: number;
-}, time: any, lang?: 'amharic' | 'english'): string;
+}, time: any, lang?: "amharic" | "english"): string;
 /**
  * Formats an Ethiopian date object with the weekday name, month name, day, and year.
  *
@@ -73,5 +73,5 @@ export function toISODateString(etDate: {
 }, time?: {
     hour: number;
     minute: number;
-    period: 'day' | 'night';
+    period: "day" | "night";
 } | null): string;

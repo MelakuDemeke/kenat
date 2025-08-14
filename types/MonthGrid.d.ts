@@ -5,8 +5,8 @@ export class MonthGrid {
         year: any;
         month: any;
         monthName: any;
-        up: () => any;
-        down: () => any;
+        up: () => /*elided*/ any;
+        down: () => /*elided*/ any;
     };
     constructor(config?: {});
     year: any;
@@ -24,8 +24,24 @@ export class MonthGrid {
         year: any;
         month: any;
         monthName: any;
-        up: () => any;
-        down: () => any;
+        up: () => {
+            headers: any;
+            days: any[];
+            year: any;
+            month: any;
+            monthName: any;
+            up: /*elided*/ any;
+            down: () => /*elided*/ any;
+        };
+        down: () => {
+            headers: any;
+            days: any[];
+            year: any;
+            month: any;
+            monthName: any;
+            up: () => /*elided*/ any;
+            down: /*elided*/ any;
+        };
     };
     _getRawDays(): any[];
     _getFilteredHolidays(): any[];

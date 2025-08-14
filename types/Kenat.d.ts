@@ -145,7 +145,7 @@ export class Kenat {
      * @param {boolean} [useGeez=false] - Whether to show numerals in Geez.
      * @returns {string} Formatted string with weekday, e.g. "ማክሰኞ, መስከረም ፳፩ ፳፻፲፯"
      */
-    formatWithWeekday(lang?: 'amharic' | 'english', useGeez?: boolean): string;
+    formatWithWeekday(lang?: "amharic" | "english", useGeez?: boolean): string;
     /**
      * Returns the Ethiopian date in "yyyy/mm/dd" short format.
      * @returns {string}
