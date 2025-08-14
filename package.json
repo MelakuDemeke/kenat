@@ -9,7 +9,8 @@
     "docs": "jsdoc -c jsdoc.json",
     "release:patch": "npm version patch && git push && git push --tags && npm publish",
     "release:minor": "npm version minor && git push && git push --tags && npm publish",
-    "release:major": "npm version major && git push && git push --tags && npm publish"
+    "release:major": "npm version major && git push && git push --tags && npm publish",
+    "prepack": "tsc -p tsconfig.json"
   },
   "keywords": [
     "ethiopian",
@@ -36,6 +37,13 @@
   ],
   "author": "Melaku Demeke",
   "license": "MIT",
+  "types": "./types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MelakuDemeke/kenat.git"
