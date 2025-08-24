@@ -91,13 +91,15 @@ export class Kenat {
         day: number;
     };
     /**
-     * Sets the current time.
+     * Sets the time and returns a new Kenat instance.
+     * Supports method chaining.
      *
      * @param {number} hour - The hour value to set.
      * @param {number} minute - The minute value to set.
-     * @param {string} period - The period of the day (e.g., 'AM' or 'PM').
+     * @param {string} period - The period of the day (e.g., 'day' or 'night').
+     * @returns {Kenat} A new Kenat instance with the updated time.
      */
-    setTime(hour: number, minute: number, period: string): void;
+    setTime(hour: number, minute: number, period: string): Kenat;
     /**
      * Calculates and returns the Bahire Hasab values for the current instance's year.
      *
@@ -184,7 +186,26 @@ export class Kenat {
      */
     printThisMonth(useGeez?: boolean): void;
     /**
+     * Adds a specified amount of time to the current date.
+     * Supports method chaining for fluent API.
+     *
+     * @param {number} amount - The amount to add.
+     * @param {string} unit - The unit of time ('days', 'months', 'years').
+     * @returns {Kenat} A new Kenat instance representing the updated date.
+     */
+    add(amount: number, unit: string): Kenat;
+    /**
+     * Subtracts a specified amount of time from the current date.
+     * Supports method chaining for fluent API.
+     *
+     * @param {number} amount - The amount to subtract.
+     * @param {string} unit - The unit of time ('days', 'months', 'years').
+     * @returns {Kenat} A new Kenat instance representing the updated date.
+     */
+    subtract(amount: number, unit: string): Kenat;
+    /**
      * Adds a specified number of days to the current Ethiopian date.
+     * Maintains backward compatibility.
      *
      * @param {number} days - The number of days to add.
      * @returns {Kenat} A new Kenat instance representing the updated date.
@@ -192,6 +213,7 @@ export class Kenat {
     addDays(days: number): Kenat;
     /**
      * Returns a new Kenat instance with the date advanced by the specified number of months.
+     * Maintains backward compatibility.
      *
      * @param {number} months - The number of months to add to the current date.
      * @returns {Kenat} A new Kenat instance representing the updated date.
@@ -199,6 +221,7 @@ export class Kenat {
     addMonths(months: number): Kenat;
     /**
      * Returns a new Kenat instance with the year increased by the specified number of years.
+     * Maintains backward compatibility.
      *
      * @param {number} years - The number of years to add to the current date.
      * @returns {Kenat} A new Kenat instance representing the updated date.
@@ -245,12 +268,30 @@ export class Kenat {
      */
     isSameDay(other: Kenat): boolean;
     /**
+     * Returns a new Kenat instance set to the start of the specified unit.
+     * Supports method chaining.
+     *
+     * @param {string} unit - The unit ('day', 'month', 'year').
+     * @returns {Kenat} A new Kenat instance.
+     */
+    startOf(unit: string): Kenat;
+    /**
+     * Returns a new Kenat instance set to the end of the specified unit.
+     * Supports method chaining.
+     *
+     * @param {string} unit - The unit ('day', 'month', 'year').
+     * @returns {Kenat} A new Kenat instance.
+     */
+    endOf(unit: string): Kenat;
+    /**
      * Returns a new Kenat instance set to the first day of the current month.
+     * Maintains backward compatibility.
      * @returns {Kenat} A new Kenat instance.
      */
     startOfMonth(): Kenat;
     /**
      * Returns a new Kenat instance set to the last day of the current month.
+     * Maintains backward compatibility.
      * @returns {Kenat} A new Kenat instance.
      */
     endOfMonth(): Kenat;

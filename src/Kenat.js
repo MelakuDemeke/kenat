@@ -141,14 +141,18 @@ export class Kenat {
     }
 
     /**
-     * Sets the current time.
+     * Sets the time and returns a new Kenat instance.
+     * Supports method chaining.
      *
      * @param {number} hour - The hour value to set.
      * @param {number} minute - The minute value to set.
-     * @param {string} period - The period of the day (e.g., 'AM' or 'PM').
+     * @param {string} period - The period of the day (e.g., 'day' or 'night').
+     * @returns {Kenat} A new Kenat instance with the updated time.
      */
     setTime(hour, minute, period) {
-        this.time = new Time(hour, minute, period);
+        const newKenat = new Kenat(this.ethiopian);
+        newKenat.time = new Time(hour, minute, period);
+        return newKenat;
     }
 
     /**
@@ -398,7 +402,7 @@ export class Kenat {
         if (!(endDate instanceof Kenat)) {
             throw new InvalidInputTypeError('generateDateRange', 'endDate', 'Kenat instance', endDate);
         }
-        
+
         const range = [];
         let currentDate = startDate;
 
@@ -417,36 +421,84 @@ export class Kenat {
     // Arithmetic methods start here
 
     /**
+     * Adds a specified amount of time to the current date.
+     * Supports method chaining for fluent API.
+     *
+     * @param {number} amount - The amount to add.
+     * @param {string} unit - The unit of time ('days', 'months', 'years').
+     * @returns {Kenat} A new Kenat instance representing the updated date.
+     */
+    add(amount, unit) {
+        if (typeof amount !== 'number') {
+            throw new Error('Amount must be a number');
+        }
+
+        let newDate;
+        switch (unit) {
+            case 'days':
+                newDate = addDays(this.ethiopian, amount);
+                break;
+            case 'months':
+                newDate = addMonths(this.ethiopian, amount);
+                break;
+            case 'years':
+                newDate = addYears(this.ethiopian, amount);
+                break;
+            default:
+                throw new Error(`Invalid unit: ${unit}. Use 'days', 'months', or 'years'`);
+        }
+
+        // Create new Kenat instance with preserved time
+        const newKenat = new Kenat(newDate);
+        if (this.time) {
+            newKenat.time = this.time;
+        }
+        return newKenat;
+    }
+
+    /**
+     * Subtracts a specified amount of time from the current date.
+     * Supports method chaining for fluent API.
+     *
+     * @param {number} amount - The amount to subtract.
+     * @param {string} unit - The unit of time ('days', 'months', 'years').
+     * @returns {Kenat} A new Kenat instance representing the updated date.
+     */
+    subtract(amount, unit) {
+        return this.add(-amount, unit);
+    }
+
+    /**
      * Adds a specified number of days to the current Ethiopian date.
+     * Maintains backward compatibility.
      *
      * @param {number} days - The number of days to add.
      * @returns {Kenat} A new Kenat instance representing the updated date.
      */
     addDays(days) {
-        const newDate = addDays(this.ethiopian, days);
-        return new Kenat(`${newDate.year}/${newDate.month}/${newDate.day}`);
+        return this.add(days, 'days');
     }
 
     /**
      * Returns a new Kenat instance with the date advanced by the specified number of months.
+     * Maintains backward compatibility.
      *
      * @param {number} months - The number of months to add to the current date.
      * @returns {Kenat} A new Kenat instance representing the updated date.
      */
     addMonths(months) {
-        const newDate = addMonths(this.ethiopian, months);
-        return new Kenat(`${newDate.year}/${newDate.month}/${newDate.day}`);
+        return this.add(months, 'months');
     }
 
     /**
      * Returns a new Kenat instance with the year increased by the specified number of years.
+     * Maintains backward compatibility.
      *
      * @param {number} years - The number of years to add to the current date.
      * @returns {Kenat} A new Kenat instance representing the updated date.
      */
     addYears(years) {
-        const newDate = addYears(this.ethiopian, years);
-        return new Kenat(`${newDate.year}/${newDate.month}/${newDate.day}`);
+        return this.add(years, 'years');
     }
 
     /**
@@ -522,20 +574,84 @@ export class Kenat {
     }
 
     /**
+     * Returns a new Kenat instance set to the start of the specified unit.
+     * Supports method chaining.
+     *
+     * @param {string} unit - The unit ('day', 'month', 'year').
+     * @returns {Kenat} A new Kenat instance.
+     */
+    startOf(unit) {
+        switch (unit) {
+            case 'day':
+                // Start of day is the same date with time reset to 00:00
+                const startOfDay = new Kenat(`${this.ethiopian.year}/${this.ethiopian.month}/${this.ethiopian.day}`);
+                startOfDay.time = new Time(12, 0, 'day'); // 6:00 AM Gregorian
+                return startOfDay;
+            case 'month':
+                const startOfMonth = new Kenat(`${this.ethiopian.year}/${this.ethiopian.month}/1`);
+                if (this.time) {
+                    startOfMonth.time = this.time;
+                }
+                return startOfMonth;
+            case 'year':
+                const startOfYear = new Kenat(`${this.ethiopian.year}/1/1`);
+                if (this.time) {
+                    startOfYear.time = this.time;
+                }
+                return startOfYear;
+            default:
+                throw new Error(`Invalid unit: ${unit}. Use 'day', 'month', or 'year'`);
+        }
+    }
+
+    /**
+     * Returns a new Kenat instance set to the end of the specified unit.
+     * Supports method chaining.
+     *
+     * @param {string} unit - The unit ('day', 'month', 'year').
+     * @returns {Kenat} A new Kenat instance.
+     */
+    endOf(unit) {
+        switch (unit) {
+            case 'day':
+                // End of day is the same date with time set to 23:59
+                const endOfDay = new Kenat(`${this.ethiopian.year}/${this.ethiopian.month}/${this.ethiopian.day}`);
+                endOfDay.time = new Time(12, 0, 'night'); // 6:00 PM Gregorian
+                return endOfDay;
+            case 'month':
+                const lastDay = getEthiopianDaysInMonth(this.ethiopian.year, this.ethiopian.month);
+                const endOfMonth = new Kenat(`${this.ethiopian.year}/${this.ethiopian.month}/${lastDay}`);
+                if (this.time) {
+                    endOfMonth.time = this.time;
+                }
+                return endOfMonth;
+            case 'year':
+                const endOfYear = new Kenat(`${this.ethiopian.year}/13/5`); // Last day of Pagume
+                if (this.time) {
+                    endOfYear.time = this.time;
+                }
+                return endOfYear;
+            default:
+                throw new Error(`Invalid unit: ${unit}. Use 'day', 'month', or 'year'`);
+        }
+    }
+
+    /**
      * Returns a new Kenat instance set to the first day of the current month.
+     * Maintains backward compatibility.
      * @returns {Kenat} A new Kenat instance.
      */
     startOfMonth() {
-        return new Kenat(`${this.ethiopian.year}/${this.ethiopian.month}/1`);
+        return this.startOf('month');
     }
 
     /**
      * Returns a new Kenat instance set to the last day of the current month.
+     * Maintains backward compatibility.
      * @returns {Kenat} A new Kenat instance.
      */
     endOfMonth() {
-        const lastDay = getEthiopianDaysInMonth(this.ethiopian.year, this.ethiopian.month);
-        return new Kenat(`${this.ethiopian.year}/${this.ethiopian.month}/${lastDay}`);
+        return this.endOf('month');
     }
 
     /**
