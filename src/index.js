@@ -1,10 +1,11 @@
 import { Kenat } from './Kenat.js';
+import { diffBreakdown } from './dayArithmetic.js';
 import { MonthGrid } from './MonthGrid.js';
 import { toEC, toGC } from './conversions.js';
 import { toArabic, toGeez } from './geezConverter.js';
 import { getHolidaysInMonth, getHoliday, getHolidaysForYear } from './holidays.js';
 import { Time } from './Time.js';
-import { HolidayTags } from './constants.js';
+import { HolidayTags, HolidayNames } from './constants.js';
 import { getBahireHasab } from './bahireHasab.js';
 import { monthNames } from './constants.js';
 import { getFastingPeriod, getFastingInfo, getFastingDays } from './fasting.js';
@@ -28,5 +29,7 @@ export {
   Time,
   getHoliday,
   HolidayTags,
+  HolidayNames,
   monthNames,
+  diffBreakdown,
 };
