@@ -21,6 +21,7 @@ export function addDays(ethiopian, days) {
     let { year, month, day } = ethiopian;
     day += days;
 
+    // Handle positive days (moving forward)
     while (day > getEthiopianDaysInMonth(year, month)) {
         day -= getEthiopianDaysInMonth(year, month);
         month += 1;
@@ -29,6 +30,16 @@ export function addDays(ethiopian, days) {
             month = 1;
             year += 1;
         }
+    }
+
+    // Handle negative days (moving backward)
+    while (day <= 0) {
+        month -= 1;
+        if (month < 1) {
+            month = 13;
+            year -= 1;
+        }
+        day += getEthiopianDaysInMonth(year, month);
     }
 
     return { year, month, day };

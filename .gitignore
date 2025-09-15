@@ -19,6 +19,7 @@ coverage/
 # Build output (if any)
 dist/
 build/
+/docs
 
 # VS Code settings (optional, if you use VS Code)
 .vscode/
