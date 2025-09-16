@@ -25,7 +25,7 @@ const fixedHolidays = {
     },
     beherbehereseb: {
         month: 3,
-        day: 20,
+        day: 29,
         tags: [HolidayTags.PUBLIC, HolidayTags.STATE],
     },
     gena: {
