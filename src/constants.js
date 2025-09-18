@@ -278,6 +278,14 @@ export const holidayInfo = {
   }
 };
 
+// Stable keys for holidays to avoid hardcoded strings in user code
+export const HolidayNames = Object.freeze(
+  Object.keys(holidayInfo).reduce((acc, key) => {
+    acc[key] = key;
+    return acc;
+  }, {})
+);
+
 // Bahire Hasab related constants
 export const evangelistNames = {
   english: { 1: "Matthew", 2: "Mark", 3: "Luke", 0: "John" },

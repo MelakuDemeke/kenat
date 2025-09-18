@@ -5,7 +5,7 @@ import { Time } from './Time.js';
 import { toGeez } from './geezConverter.js';
 import { getBahireHasab } from './bahireHasab.js';
 import { MonthGrid } from './MonthGrid.js';
-import { getHolidaysInMonth } from './holidays.js';
+import { getHolidaysInMonth, getHoliday } from './holidays.js';
 import { getEthiopianDaysInMonth, isValidEthiopianDate, isEthiopianLeapYear, getWeekday } from './utils.js';
 import {
     InvalidEthiopianDateError,
@@ -28,7 +28,8 @@ import {
     addYears,
     diffInDays,
     diffInMonths,
-    diffInYears
+    diffInYears,
+    diffBreakdown
 } from './dayArithmetic.js';
 /**
  * Kenat - Ethiopian Calendar Date Wrapper
@@ -668,5 +669,96 @@ export class Kenat {
      */
     weekday() {
         return getWeekday(this.ethiopian);
+    }
+
+    // --- Distance helpers ---
+    /**
+     * Returns a breakdown of distance from this date to another date.
+     * @param {Kenat|{year:number,month:number,day:number}|string|Date} other - target date
+     * @param {{units?: ('years'|'months'|'days')[], output?: 'object'|'string', lang?: 'english'|'amharic'}} [options]
+     * @returns {Object|string}
+     */
+    distanceTo(other, options = {}) {
+        const target = Kenat._coerceToKenat(other);
+        const breakdown = diffBreakdown(target.getEthiopian(), this.getEthiopian(), { units: options.units || ['years', 'months', 'days'] });
+        if ((options.output || 'object') === 'string') {
+            return Kenat.formatDistance(breakdown, options);
+        }
+        return breakdown;
+    }
+
+    /**
+     * Returns a breakdown of distance from today to this date.
+     */
+    distanceFromToday(options = {}) {
+        const today = new Kenat();
+        return today.distanceTo(this, options);
+    }
+
+    /**
+     * Returns distance from today to the specified holiday occurrence.
+     * @param {string} holidayKey
+     * @param {{direction?: 'auto'|'future'|'past', units?: ('years'|'months'|'days')[], output?: 'object'|'string', lang?: 'english'|'amharic'}} [options]
+     */
+    static distanceToHoliday(holidayKey, options = {}) {
+        const today = new Kenat();
+        const next = Kenat._getHolidayOccurrence(holidayKey, today.getEthiopian(), 'next');
+        const prev = Kenat._getHolidayOccurrence(holidayKey, today.getEthiopian(), 'prev');
+        const direction = options.direction || 'auto';
+
+        let target = next;
+        if (direction === 'past') target = prev;
+        if (direction === 'auto') {
+            const dNext = Math.abs(diffInDays(next.getEthiopian(), today.getEthiopian()));
+            const dPrev = Math.abs(diffInDays(prev.getEthiopian(), today.getEthiopian()));
+            target = dNext <= dPrev ? next : prev;
+        }
+
+        return today.distanceTo(target, options);
+    }
+
+    /**
+     * Formats a breakdown result to human string like "1 year 2 months 5 days".
+     */
+    static formatDistance(breakdown, options = {}) {
+        const lang = options.lang || 'english';
+        const parts = [];
+        const units = options.units || ['years', 'months', 'days'];
+        const labelsEn = { years: 'year', months: 'month', days: 'day' };
+        const labelsAm = { years: 'ዓመት', months: 'ወር', days: 'ቀን' };
+        const labels = lang === 'amharic' ? labelsAm : labelsEn;
+        const plural = (n, k) => lang === 'amharic' ? labels[k] : (n === 1 ? labels[k] : labels[k] + 's');
+        if (units.includes('years') && typeof breakdown.years === 'number') parts.push(`${breakdown.years} ${plural(breakdown.years, 'years')}`);
+        if (units.includes('months') && typeof breakdown.months === 'number') parts.push(`${breakdown.months} ${plural(breakdown.months, 'months')}`);
+        if (units.includes('days') && typeof breakdown.days === 'number') parts.push(`${breakdown.days} ${plural(breakdown.days, 'days')}`);
+        const base = parts.length ? parts.join(' ') : `0 ${plural(0, units[units.length - 1])}`;
+        if (lang === 'amharic') {
+            return `${base}`;
+        }
+        return base;
+    }
+
+    // --- internal helpers ---
+    static _coerceToKenat(input) {
+        if (input instanceof Kenat) return input;
+        if (input instanceof Date) return new Kenat(input);
+        if (typeof input === 'string') return new Kenat(input);
+        if (input && typeof input === 'object' && 'year' in input && 'month' in input && 'day' in input) return new Kenat(input);
+        throw new Error('Unsupported date input');
+    }
+
+    static _getHolidayOccurrence(holidayKey, refEth, which) {
+        const thisYear = getHoliday(holidayKey, refEth.year);
+        const prevYear = getHoliday(holidayKey, refEth.year - 1);
+        const nextYear = getHoliday(holidayKey, refEth.year + 1);
+        const candidates = [thisYear, prevYear, nextYear].filter(Boolean).map(h => new Kenat(h.ethiopian));
+        const ref = new Kenat(refEth);
+        const sorted = candidates.sort((a, b) => diffInDays(a.getEthiopian(), ref.getEthiopian()) - diffInDays(b.getEthiopian(), ref.getEthiopian()));
+        if (which === 'prev') {
+            const past = candidates.filter(c => diffInDays(c.getEthiopian(), ref.getEthiopian()) <= 0).sort((a, b) => Math.abs(diffInDays(b.getEthiopian(), ref.getEthiopian())) - Math.abs(diffInDays(a.getEthiopian(), ref.getEthiopian())));
+            return past[0] || sorted[0];
+        }
+        const future = candidates.filter(c => diffInDays(c.getEthiopian(), ref.getEthiopian()) >= 0).sort((a, b) => Math.abs(diffInDays(a.getEthiopian(), ref.getEthiopian())) - Math.abs(diffInDays(b.getEthiopian(), ref.getEthiopian())));
+        return future[0] || sorted[0];
     }
 }

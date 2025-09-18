@@ -175,3 +175,62 @@ export function diffInYears(a, b) {
 
     return finalDiff;
 }
+
+/**
+ * Calculates a human-friendly breakdown between two Ethiopian dates.
+ * Iteratively accumulates years, then months, then days to avoid off-by-one issues.
+ *
+ * @param {Object} a - First Ethiopian date { year, month, day }.
+ * @param {Object} b - Second Ethiopian date { year, month, day }.
+ * @param {Object} [options]
+ * @param {Array<'years'|'months'|'days'>} [options.units=['years','months','days']] - Units to include, in order.
+ * @returns {{ sign: 1|-1, years?: number, months?: number, days?: number, totalDays: number }}
+ */
+export function diffBreakdown(a, b, options = {}) {
+    validateEthiopianDateObject(a, 'diffBreakdown', 'a');
+    validateEthiopianDateObject(b, 'diffBreakdown', 'b');
+
+    const { units = ['years', 'months', 'days'] } = options;
+    const totalDaysDiff = diffInDays(a, b); // positive if a after b
+
+    const sign = totalDaysDiff === 0 ? 1 : (totalDaysDiff > 0 ? 1 : -1);
+    const later = sign >= 0 ? a : b;
+    const earlier = sign >= 0 ? b : a;
+
+    let cursor = { ...earlier };
+    const result = { sign, totalDays: Math.abs(totalDaysDiff) };
+
+    if (units.includes('years')) {
+        let years = 0;
+        while (true) {
+            const next = addYears(cursor, 1);
+            if (diffInDays(later, next) >= 0) {
+                years += 1;
+                cursor = next;
+            } else {
+                break;
+            }
+        }
+        result.years = years;
+    }
+
+    if (units.includes('months')) {
+        let months = 0;
+        while (true) {
+            const next = addMonths(cursor, 1);
+            if (diffInDays(later, next) >= 0) {
+                months += 1;
+                cursor = next;
+            } else {
+                break;
+            }
+        }
+        result.months = months;
+    }
+
+    if (units.includes('days')) {
+        result.days = Math.abs(diffInDays(later, cursor));
+    }
+
+    return result;
+}
