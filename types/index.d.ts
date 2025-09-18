@@ -14,5 +14,7 @@ import { MonthGrid } from './MonthGrid.js';
 import { Time } from './Time.js';
 import { getHoliday } from './holidays.js';
 import { HolidayTags } from './constants.js';
+import { HolidayNames } from './constants.js';
 import { monthNames } from './constants.js';
-export { toEC, toGC, toArabic, toGeez, getHolidaysInMonth, getHolidaysForYear, getBahireHasab, getFastingPeriod, getFastingInfo, getFastingDays, MonthGrid, Time, getHoliday, HolidayTags, monthNames };
+import { diffBreakdown } from './dayArithmetic.js';
+export { toEC, toGC, toArabic, toGeez, getHolidaysInMonth, getHolidaysForYear, getBahireHasab, getFastingPeriod, getFastingInfo, getFastingDays, MonthGrid, Time, getHoliday, HolidayTags, HolidayNames, monthNames, diffBreakdown };

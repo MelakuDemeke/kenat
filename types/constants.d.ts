@@ -430,6 +430,7 @@ export namespace holidayInfo {
         export { description_23 as description };
     }
 }
+export const HolidayNames: Readonly<{}>;
 export namespace evangelistNames {
     let english_50: {
         1: string;

@@ -52,3 +52,22 @@ export function diffInMonths(a: any, b: any): number;
  * @throws {InvalidInputTypeError} If inputs are not valid date objects.
  */
 export function diffInYears(a: any, b: any): number;
+/**
+ * Calculates a human-friendly breakdown between two Ethiopian dates.
+ * Iteratively accumulates years, then months, then days to avoid off-by-one issues.
+ *
+ * @param {Object} a - First Ethiopian date { year, month, day }.
+ * @param {Object} b - Second Ethiopian date { year, month, day }.
+ * @param {Object} [options]
+ * @param {Array<'years'|'months'|'days'>} [options.units=['years','months','days']] - Units to include, in order.
+ * @returns {{ sign: 1|-1, years?: number, months?: number, days?: number, totalDays: number }}
+ */
+export function diffBreakdown(a: any, b: any, options?: {
+    units?: Array<"years" | "months" | "days">;
+}): {
+    sign: 1 | -1;
+    years?: number;
+    months?: number;
+    days?: number;
+    totalDays: number;
+};

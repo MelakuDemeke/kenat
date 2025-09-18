@@ -50,6 +50,23 @@ export class Kenat {
     */
     static generateDateRange(startDate: Kenat, endDate: Kenat): Kenat[];
     /**
+     * Returns distance from today to the specified holiday occurrence.
+     * @param {string} holidayKey
+     * @param {{direction?: 'auto'|'future'|'past', units?: ('years'|'months'|'days')[], output?: 'object'|'string', lang?: 'english'|'amharic'}} [options]
+     */
+    static distanceToHoliday(holidayKey: string, options?: {
+        direction?: "auto" | "future" | "past";
+        units?: ("years" | "months" | "days")[];
+        output?: "object" | "string";
+        lang?: "english" | "amharic";
+    }): any;
+    /**
+     * Formats a breakdown result to human string like "1 year 2 months 5 days".
+     */
+    static formatDistance(breakdown: any, options?: {}): string;
+    static _coerceToKenat(input: any): Kenat;
+    static _getHolidayOccurrence(holidayKey: any, refEth: any, which: any): Kenat;
+    /**
      * Constructs a Kenat instance.
      * Can be initialized with:
      * - An Ethiopian date string (e.g., '2016/1/1', '2016-1-1').
@@ -305,5 +322,24 @@ export class Kenat {
      * @returns {number} The day of the week (0 for Sunday, 6 for Saturday).
      */
     weekday(): number;
+    /**
+     * Returns a breakdown of distance from this date to another date.
+     * @param {Kenat|{year:number,month:number,day:number}|string|Date} other - target date
+     * @param {{units?: ('years'|'months'|'days')[], output?: 'object'|'string', lang?: 'english'|'amharic'}} [options]
+     * @returns {Object|string}
+     */
+    distanceTo(other: Kenat | {
+        year: number;
+        month: number;
+        day: number;
+    } | string | Date, options?: {
+        units?: ("years" | "months" | "days")[];
+        output?: "object" | "string";
+        lang?: "english" | "amharic";
+    }): any | string;
+    /**
+     * Returns a breakdown of distance from today to this date.
+     */
+    distanceFromToday(options?: {}): any;
 }
 import { Time } from './Time.js';
