@@ -107,4 +107,68 @@ describe('Kenat API Helper Methods', () => {
         const specificDate = new Kenat("2016/9/15");
         expect(specificDate.weekday()).toBe(4);
     });
+
+    test('endOf("year") should return Pagume 6 for leap years', () => {
+        // Ethiopian year 2015 has year % 4 === 3, so it IS a leap year
+        const leapYear = new Kenat('2015/5/10');
+        const end = leapYear.endOf('year');
+        expect(end.getEthiopian()).toEqual({ year: 2015, month: 13, day: 6 });
+    });
+
+    test('endOf("year") should return Pagume 5 for non-leap years', () => {
+        // Ethiopian year 2016 has year % 4 === 0, so it is NOT a leap year
+        const nonLeapYear = new Kenat('2016/5/10');
+        const end = nonLeapYear.endOf('year');
+        expect(end.getEthiopian()).toEqual({ year: 2016, month: 13, day: 5 });
+    });
+
+    test('isSameMonth() should return true for dates in the same month and year', () => {
+        const a = new Kenat('2017/5/1');
+        const b = new Kenat('2017/5/30');
+        expect(a.isSameMonth(b)).toBe(true);
+    });
+
+    test('isSameMonth() should return false for dates in different months', () => {
+        const a = new Kenat('2017/5/15');
+        const b = new Kenat('2017/6/15');
+        expect(a.isSameMonth(b)).toBe(false);
+    });
+
+    test('isSameMonth() should return false for same month but different year', () => {
+        const a = new Kenat('2016/5/15');
+        const b = new Kenat('2017/5/15');
+        expect(a.isSameMonth(b)).toBe(false);
+    });
+
+    test('isSameYear() should return true for dates in the same year', () => {
+        const a = new Kenat('2017/1/1');
+        const b = new Kenat('2017/12/30');
+        expect(a.isSameYear(b)).toBe(true);
+    });
+
+    test('isSameYear() should return false for dates in different years', () => {
+        const a = new Kenat('2016/5/15');
+        const b = new Kenat('2017/5/15');
+        expect(a.isSameYear(b)).toBe(false);
+    });
+
+    test('toJSON() should return a serializable plain object', () => {
+        const kenat = new Kenat('2017/1/15');
+        const json = kenat.toJSON();
+        expect(json.ethiopian).toEqual({ year: 2017, month: 1, day: 15 });
+        expect(json.gregorian).toHaveProperty('year');
+        expect(json.gregorian).toHaveProperty('month');
+        expect(json.gregorian).toHaveProperty('day');
+        expect(json.time).not.toBeNull();
+        expect(json.time).toHaveProperty('hour');
+        expect(json.time).toHaveProperty('minute');
+        expect(json.time).toHaveProperty('period');
+    });
+
+    test('toJSON() should work with JSON.stringify', () => {
+        const kenat = new Kenat('2017/1/15');
+        const str = JSON.stringify(kenat);
+        const parsed = JSON.parse(str);
+        expect(parsed.ethiopian).toEqual({ year: 2017, month: 1, day: 15 });
+    });
 });
