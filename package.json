@@ -2,15 +2,22 @@
   "name": "kenat",
   "version": "3.2.0",
   "description": "A JavaScript library for the Ethiopian calendar with date and time support.",
-  "main": "src/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "unpkg": "./dist/index.global.js",
   "type": "module",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "docs": "jsdoc -c jsdoc.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "tsup",
+    "docs": "typedoc",
     "release:patch": "npm version patch && git push && git push --tags && npm publish",
     "release:minor": "npm version minor && git push && git push --tags && npm publish",
     "release:major": "npm version major && git push && git push --tags && npm publish",
-    "prepack": "tsc -p tsconfig.json"
+    "prepack": "npm run typecheck && npm run build"
   },
   "keywords": [
     "ethiopian",
@@ -37,11 +44,12 @@
   ],
   "author": "Melaku Demeke",
   "license": "MIT",
-  "types": "./types/index.d.ts",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./types/index.d.ts",
-      "import": "./src/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
   "repository": {
@@ -53,8 +61,12 @@
   },
   "homepage": "https://www.kenat.systems/",
   "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^26.1.0",
     "jest": "^29.7.0",
-    "jsdoc": "^4.0.4",
+    "ts-jest": "^29.4.11",
+    "tsup": "^8.5.1",
+    "typedoc": "^0.28.19",
     "typescript": "^5.9.2"
   }
 }
