@@ -21,6 +21,9 @@ dist/
 build/
 /docs
 
+# graphify knowledge graph output
+graphify-out/
+
 # VS Code settings (optional, if you use VS Code)
 .vscode/
 Features.md\
