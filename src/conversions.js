@@ -1,20 +1,6 @@
-import { InvalidEthiopianDateError, InvalidGregorianDateError, InvalidInputTypeError } from './errors/errorHandler.js'
-import { getGregorianDateOfEthiopianNewYear } from './utils.js';
+import { InvalidEthiopianDateError, InvalidGregorianDateError } from './errors/errorHandler.js'
+import { getGregorianDateOfEthiopianNewYear, validateNumericInputs } from './utils.js';
 import { dayOfYear, monthDayFromDayOfYear, isGregorianLeapYear, isEthiopianLeapYear } from './utils.js';
-
-/**
- * Validates that all provided date parts are numbers.
- * @param {string} funcName - The name of the function being validated.
- * @param {Object} dateParts - An object where keys are param names and values are the inputs.
- * @throws {InvalidInputTypeError} if any value is not a number.
- */
-function validateNumericInputs(funcName, dateParts) {
-  for (const [name, value] of Object.entries(dateParts)) {
-    if (typeof value !== 'number') {
-      throw new InvalidInputTypeError(funcName, name, 'number', value);
-    }
-  }
-}
 
 /**
  * Converts an Ethiopian date to its corresponding Gregorian date.

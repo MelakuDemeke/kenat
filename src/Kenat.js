@@ -575,6 +575,39 @@ export class Kenat {
     }
 
     /**
+     * Checks if the current Kenat instance's date is in the same month and year as another.
+     * @param {Kenat} other - The other Kenat instance to compare against.
+     * @returns {boolean} True if the month and year are the same.
+     */
+    isSameMonth(other) {
+        const otherEth = other.getEthiopian();
+        return this.ethiopian.year === otherEth.year &&
+            this.ethiopian.month === otherEth.month;
+    }
+
+    /**
+     * Checks if the current Kenat instance's date is in the same year as another.
+     * @param {Kenat} other - The other Kenat instance to compare against.
+     * @returns {boolean} True if the year is the same.
+     */
+    isSameYear(other) {
+        const otherEth = other.getEthiopian();
+        return this.ethiopian.year === otherEth.year;
+    }
+
+    /**
+     * Returns a plain object representation of the Kenat instance for JSON serialization.
+     * @returns {{ ethiopian: {year: number, month: number, day: number}, gregorian: {year: number, month: number, day: number}, time: {hour: number, minute: number, period: string}|null }}
+     */
+    toJSON() {
+        return {
+            ethiopian: { ...this.ethiopian },
+            gregorian: this.getGregorian(),
+            time: this.time ? { hour: this.time.hour, minute: this.time.minute, period: this.time.period } : null
+        };
+    }
+
+    /**
      * Returns a new Kenat instance set to the start of the specified unit.
      * Supports method chaining.
      *
@@ -627,7 +660,8 @@ export class Kenat {
                 }
                 return endOfMonth;
             case 'year':
-                const endOfYear = new Kenat(`${this.ethiopian.year}/13/5`); // Last day of Pagume
+                const lastDayOfPagume = getEthiopianDaysInMonth(this.ethiopian.year, 13);
+                const endOfYear = new Kenat(`${this.ethiopian.year}/13/${lastDayOfPagume}`);
                 if (this.time) {
                     endOfYear.time = this.time;
                 }
