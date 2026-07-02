@@ -19,7 +19,10 @@ import {
     formatWithTime,
     formatWithWeekday,
     formatShort,
-    toISODateString
+    toISODateString,
+    formatGregorianStandard,
+    formatGregorianWithWeekday,
+    formatGregorianWithTime
 } from './formatting.js';
 
 import {
@@ -142,6 +145,20 @@ export class Kenat {
     }
 
     /**
+     * Returns the date in whichever calendar is requested, so callers with a
+     * user-configurable calendar preference don't need an if/else between
+     * getEthiopian() and getGregorian() at every call site.
+     *
+     * @param {Object} [options={}] - Options.
+     * @param {'ethiopian'|'gregorian'} [options.calendar='ethiopian'] - Which calendar's date to return.
+     * @returns {{ year: number, month: number, day: number }}
+     */
+    getDate(options = {}) {
+        const { calendar = 'ethiopian' } = options;
+        return calendar === 'gregorian' ? this.getGregorian() : this.getEthiopian();
+    }
+
+    /**
      * Sets the time and returns a new Kenat instance.
      * Supports method chaining.
      *
@@ -169,35 +186,64 @@ export class Kenat {
     // Format Methods
 
     /**
-     * Returns a string representation of the Ethiopian date and time.
+     * Returns a string representation of the date and time.
      *
      * The format is: "Ethiopian: {year}-{month}-{day} {hh:mm period}".
      * If the time is not available, hour and minute are replaced with '??'.
      *
-     * @returns {string} The formatted Ethiopian date and time string.
+     * @param {Object} [options={}] - Formatting options.
+     * @param {'ethiopian'|'gregorian'} [options.calendar='ethiopian'] - Which calendar to render the date in.
+     * @returns {string} The formatted date and time string.
      */
-    toString() {
+    toString(options = {}) {
+        const { calendar = 'ethiopian' } = options;
+
+        if (calendar === 'gregorian') {
+            return formatGregorianWithTime(this.getGregorian(), this.time);
+        }
+
         return formatWithTime(this.ethiopian, this.time);
     }
 
 
     /**
-     * Formats the Ethiopian date according to the specified options.
+     * Formats the date according to the specified options.
      *
      * @param {Object} [options={}] - Formatting options.
+     * @param {'ethiopian'|'gregorian'} [options.calendar='ethiopian'] - Which calendar to render the date in. When
+     *   'gregorian', the date is rendered using English Gregorian month names; `useGeez` is ignored.
      * @param {string} [options.lang='amharic'] - Language to use for formatting ('amharic', 'english', etc.).
      * @param {boolean} [options.showWeekday=false] - Whether to include the weekday in the formatted string.
      * @param {boolean} [options.useGeez=false] - Whether to use Geez numerals (only applies if lang is 'amharic').
      * @param {boolean} [options.includeTime=false] - Whether to include the time in the formatted string.
-     * @returns {string} The formatted Ethiopian date string.
+     * @returns {string} The formatted date string.
      */
     format(options = {}) {
         const {
+            calendar = 'ethiopian',
             lang = 'amharic',
             showWeekday = false,
             useGeez = false,
             includeTime = false
         } = options;
+
+        if (calendar === 'gregorian') {
+            const gregorian = this.getGregorian();
+
+            if (showWeekday && includeTime) {
+                return `${formatGregorianWithWeekday(gregorian, lang)} ${this.time.format({ lang, useGeez: false })}`;
+            }
+
+            if (showWeekday) {
+                return formatGregorianWithWeekday(gregorian, lang);
+            }
+
+            if (includeTime) {
+                return formatGregorianWithTime(gregorian, this.time, lang);
+            }
+
+            return formatGregorianStandard(gregorian);
+        }
 
         if (showWeekday && includeTime) {
             return `${formatWithWeekday(this.ethiopian, lang, useGeez)} ${this.time.format({ lang, useGeez })}`;
@@ -248,10 +294,16 @@ export class Kenat {
 
     /**
      * Returns an ISO-style date string: "YYYY-MM-DD" or "YYYY-MM-DDTHH:mm".
+     *
+     * @param {Object} [options={}] - Formatting options.
+     * @param {'ethiopian'|'gregorian'} [options.calendar='ethiopian'] - Which calendar's date to render.
+     *   'gregorian' produces a standard ISO 8601 date, useful for interop (e.g. `<input type="date">`).
      * @returns {string}
      */
-    toISOString() {
-        return toISODateString(this.ethiopian, this.time);
+    toISOString(options = {}) {
+        const { calendar = 'ethiopian' } = options;
+        const date = calendar === 'gregorian' ? this.getGregorian() : this.ethiopian;
+        return toISODateString(date, this.time);
     }
 
     /**

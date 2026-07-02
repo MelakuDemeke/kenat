@@ -70,6 +70,49 @@ export function formatWithWeekday(etDate, lang = 'amharic', useGeez = false) {
 }
 
 /**
+ * Formats a Gregorian date using its English month name.
+ *
+ * @param {{year: number, month: number, day: number}} gDate - Gregorian date object
+ * @returns {string} Formatted string like "September 11, 2023"
+ */
+export function formatGregorianStandard(gDate) {
+  const monthName = monthNames.gregorian[gDate.month - 1] || `Month${gDate.month}`;
+  return `${monthName} ${gDate.day}, ${gDate.year}`;
+}
+
+/**
+ * Formats a Gregorian date object with the weekday name, month name, day, and year.
+ *
+ * @param {{year: number, month: number, day: number}} gDate - Gregorian date object
+ * @param {'amharic'|'english'} [lang='english'] - The language to use for the weekday name.
+ * @returns {string} The formatted date string, e.g., "Monday, September 11, 2023".
+ */
+export function formatGregorianWithWeekday(gDate, lang = 'english') {
+  const weekdayIndex = new Date(gDate.year, gDate.month - 1, gDate.day).getDay();
+  const weekdayName = daysOfWeek[lang]?.[weekdayIndex] || daysOfWeek.english[weekdayIndex];
+  return `${weekdayName}, ${formatGregorianStandard(gDate)}`;
+}
+
+/**
+ * Formats a Gregorian date and time as a string.
+ *
+ * @param {{year: number, month: number, day: number}} gDate - Gregorian date
+ * @param {import('../Time.js').Time} time - An instance of the Time class
+ * @param {'amharic'|'english'} [lang='amharic'] - Language for the time-of-day suffix
+ * @returns {string} Example: "September 11, 2023 08:30 ጠዋት"
+ */
+export function formatGregorianWithTime(gDate, time, lang = 'amharic') {
+  const base = formatGregorianStandard(gDate);
+  const timeString = time.format({
+    lang,
+    useGeez: false,
+    zeroAsDash: false
+  });
+
+  return `${base} ${timeString}`;
+}
+
+/**
  * Returns Ethiopian date in short "yyyy/mm/dd" format.
  * @param {{year: number, month: number, day: number}} etDate 
  * @returns {string} e.g., "2017/10/25"

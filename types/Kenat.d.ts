@@ -108,6 +108,22 @@ export class Kenat {
         day: number;
     };
     /**
+     * Returns the date in whichever calendar is requested, so callers with a
+     * user-configurable calendar preference don't need an if/else between
+     * getEthiopian() and getGregorian() at every call site.
+     *
+     * @param {Object} [options={}] - Options.
+     * @param {'ethiopian'|'gregorian'} [options.calendar='ethiopian'] - Which calendar's date to return.
+     * @returns {{ year: number, month: number, day: number }}
+     */
+    getDate(options?: {
+        calendar?: "ethiopian" | "gregorian";
+    }): {
+        year: number;
+        month: number;
+        day: number;
+    };
+    /**
      * Sets the time and returns a new Kenat instance.
      * Supports method chaining.
      *
@@ -125,25 +141,32 @@ export class Kenat {
      */
     getBahireHasab(): any;
     /**
-     * Returns a string representation of the Ethiopian date and time.
+     * Returns a string representation of the date and time.
      *
      * The format is: "Ethiopian: {year}-{month}-{day} {hh:mm period}".
      * If the time is not available, hour and minute are replaced with '??'.
      *
-     * @returns {string} The formatted Ethiopian date and time string.
+     * @param {Object} [options={}] - Formatting options.
+     * @param {'ethiopian'|'gregorian'} [options.calendar='ethiopian'] - Which calendar to render the date in.
+     * @returns {string} The formatted date and time string.
      */
-    toString(): string;
+    toString(options?: {
+        calendar?: "ethiopian" | "gregorian";
+    }): string;
     /**
-     * Formats the Ethiopian date according to the specified options.
+     * Formats the date according to the specified options.
      *
      * @param {Object} [options={}] - Formatting options.
+     * @param {'ethiopian'|'gregorian'} [options.calendar='ethiopian'] - Which calendar to render the date in. When
+     *   'gregorian', the date is rendered using English Gregorian month names; `useGeez` is ignored.
      * @param {string} [options.lang='amharic'] - Language to use for formatting ('amharic', 'english', etc.).
      * @param {boolean} [options.showWeekday=false] - Whether to include the weekday in the formatted string.
      * @param {boolean} [options.useGeez=false] - Whether to use Geez numerals (only applies if lang is 'amharic').
      * @param {boolean} [options.includeTime=false] - Whether to include the time in the formatted string.
-     * @returns {string} The formatted Ethiopian date string.
+     * @returns {string} The formatted date string.
      */
     format(options?: {
+        calendar?: "ethiopian" | "gregorian";
         lang?: string;
         showWeekday?: boolean;
         useGeez?: boolean;
@@ -172,9 +195,15 @@ export class Kenat {
     formatShort(): string;
     /**
      * Returns an ISO-style date string: "YYYY-MM-DD" or "YYYY-MM-DDTHH:mm".
+     *
+     * @param {Object} [options={}] - Formatting options.
+     * @param {'ethiopian'|'gregorian'} [options.calendar='ethiopian'] - Which calendar's date to render.
+     *   'gregorian' produces a standard ISO 8601 date, useful for interop (e.g. `<input type="date">`).
      * @returns {string}
      */
-    toISOString(): string;
+    toISOString(options?: {
+        calendar?: "ethiopian" | "gregorian";
+    }): string;
     /**
      * Checks if the current date is a holiday.
      * @param {Object} [options={}] - Options for language.
@@ -301,9 +330,21 @@ export class Kenat {
      * @returns {{ ethiopian: {year: number, month: number, day: number}, gregorian: {year: number, month: number, day: number}, time: {hour: number, minute: number, period: string}|null }}
      */
     toJSON(): {
-        ethiopian: { year: number; month: number; day: number };
-        gregorian: { year: number; month: number; day: number };
-        time: { hour: number; minute: number; period: string } | null;
+        ethiopian: {
+            year: number;
+            month: number;
+            day: number;
+        };
+        gregorian: {
+            year: number;
+            month: number;
+            day: number;
+        };
+        time: {
+            hour: number;
+            minute: number;
+            period: string;
+        } | null;
     };
     /**
      * Returns a new Kenat instance set to the start of the specified unit.

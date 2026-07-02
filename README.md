@@ -285,6 +285,22 @@ const date = new Kenat('2017/1/1');
 console.log(date.formatInGeezAmharic()); // → "መስከረም ፩ ፳፻፲፯"
 ```
 
+### Calendar Preference (Ethiopian / Gregorian)
+
+If your app lets end users choose between the Ethiopian and Gregorian calendar, pass `calendar: 'gregorian'` to `format()`, `toString()`, `toISOString()`, or `getDate()` instead of branching with `if`/`else` at every call site:
+
+```js
+const date = new Kenat('2016/1/1');
+const userPref = 'gregorian'; // e.g. from a user setting
+
+date.format({ calendar: userPref }); // → "September 12, 2023"
+date.getDate({ calendar: userPref }); // → { year: 2023, month: 9, day: 12 }
+date.toISOString({ calendar: userPref }); // → "2023-09-12T12:00" (standard ISO 8601)
+
+// Defaults to 'ethiopian' when omitted
+date.format(); // → "መስከረም 1 2016"
+```
+
 ### Time Handling
 
 ```js
@@ -318,7 +334,8 @@ new Kenat(new Date())         // Gregorian Date object
 **Key Methods:**
 - `getEthiopian()` - Returns `{year, month, day}`
 - `getGregorian()` - Returns Gregorian equivalent
-- `format(options)` - Format with various options
+- `getDate({ calendar })` - Returns the date in `'ethiopian'` (default) or `'gregorian'`, no if/else needed
+- `format(options)` - Format with various options, including `{ calendar: 'ethiopian' | 'gregorian' }`
 - `add(amount, unit)` / `subtract(amount, unit)` - Date arithmetic
 - `distanceTo(other, options)` - Human-friendly distance calculation
 - `isHoliday(options)` - Check if date is a holiday
