@@ -3,6 +3,7 @@ import { findHijriMonthRanges } from './holidays.js';
 import { addDays, diffInDays } from './dayArithmetic.js';
 import { fastingInfo, FastingKeys } from './constants.js';
 import { getWeekday, getEthiopianDaysInMonth, validateNumericInputs, validateEthiopianDateObject } from './utils.js';
+import type { EthiopianDate, Lang, DateRange } from './types.js';
 
 /**
  * Calculates the start and end dates of a specific fasting period for a given year.
@@ -10,7 +11,7 @@ import { getWeekday, getEthiopianDaysInMonth, validateNumericInputs, validateEth
  * @param {number} ethiopianYear - The Ethiopian year.
  * @returns {{start: object, end: object}|null} An object with start and end PLAIN date objects.
  */
-export function getFastingPeriod(fastKey, ethiopianYear) {
+export function getFastingPeriod(fastKey: string, ethiopianYear: number): DateRange | null {
     const bh = getBahireHasab(ethiopianYear);
 
     switch (fastKey) {
@@ -25,7 +26,7 @@ export function getFastingPeriod(fastKey, ethiopianYear) {
 
         case FastingKeys.TSOME_HAWARYAT: {
             const start = bh.movableFeasts.tsomeHawaryat?.ethiopian;
-            const end = { year: ethiopianYear, month: 11, day: 4 };
+            const end: EthiopianDate = { year: ethiopianYear, month: 11, day: 4 };
             if (start) {
                 return { start, end };
             }
@@ -42,15 +43,15 @@ export function getFastingPeriod(fastKey, ethiopianYear) {
         }
 
         case FastingKeys.TSOME_NEBIYAT: {
-            const start = { year: ethiopianYear, month: 3, day: 15 };
-            const end = { year: ethiopianYear, month: 4, day: 28 };
+            const start: EthiopianDate = { year: ethiopianYear, month: 3, day: 15 };
+            const end: EthiopianDate = { year: ethiopianYear, month: 4, day: 28 };
             return { start, end };
         }
 
         case FastingKeys.FILSETA: {
             // Nehase 1 to Nehase 14
-            const start = { year: ethiopianYear, month: 12, day: 1 };
-            const end = { year: ethiopianYear, month: 12, day: 14 };
+            const start: EthiopianDate = { year: ethiopianYear, month: 12, day: 1 };
+            const end: EthiopianDate = { year: ethiopianYear, month: 12, day: 14 };
             return { start, end };
         }
 
@@ -72,7 +73,7 @@ export function getFastingPeriod(fastKey, ethiopianYear) {
  * @param {{lang?: 'amharic'|'english'}} options
  * @returns {{ key: string, name: string, description: string, period: { start: object, end: object } } | null}
  */
-export function getFastingInfo(fastKey, ethiopianYear, options = {}) {
+export function getFastingInfo(fastKey: string, ethiopianYear: number, options: { lang?: Lang } = {}) {
     validateNumericInputs('getFastingInfo', { ethiopianYear });
     const { lang = 'amharic' } = options;
     const info = fastingInfo[fastKey];
@@ -113,7 +114,7 @@ export function getFastingInfo(fastKey, ethiopianYear, options = {}) {
  * @param {{year:number, month:number, day:number}} etDate - Ethiopian date object.
  * @returns {boolean} true if it's a fasting day, false otherwise.
  */
-function isTsomeDihnetFastDay(etDate) {
+function isTsomeDihnetFastDay(etDate: EthiopianDate): boolean {
     validateEthiopianDateObject(etDate, 'isTsomeDihnetFastDay', 'etDate');
 
     const weekday = getWeekday(etDate); // 0=Sun ... 6=Sat
@@ -146,12 +147,12 @@ function isTsomeDihnetFastDay(etDate) {
  * @param {number} month - Ethiopian month (1-13)
  * @returns {number[]}
  */
-export function getFastingDays(fastKey, year, month) {
+export function getFastingDays(fastKey: string, year: number, month: number): number[] {
     validateNumericInputs('getFastingDays', { year, month });
     const daysInMonth = getEthiopianDaysInMonth(year, month);
 
     if (fastKey === FastingKeys.TSOME_DIHENET) {
-        const out = [];
+        const out: number[] = [];
         for (let d = 1; d <= daysInMonth; d++) {
             if (isTsomeDihnetFastDay({ year, month, day: d })) out.push(d);
         }
@@ -172,7 +173,7 @@ export function getFastingDays(fastKey, year, month) {
 
     const startDay = (year === period.start.year && month === period.start.month) ? period.start.day : 1;
     const endDay = (year === period.end.year && month === period.end.month) ? period.end.day : daysInMonth;
-    const result = [];
+    const result: number[] = [];
     for (let d = startDay; d <= endDay; d++) result.push(d);
     return result;
 }

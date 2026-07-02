@@ -3,7 +3,12 @@ import { toGeez } from '../geezConverter.js';
 import { validateNumericInputs } from '../utils.js';
 import { InvalidInputTypeError } from '../errors/errorHandler.js';
 
-export function printMonthCalendarGrid(ethiopianYear, ethiopianMonth, calendarData, useGeez = false) {
+interface CalendarGridDay {
+    ethiopian: { day: number };
+    gregorian: { year: number; month: number; day: number };
+}
+
+export function printMonthCalendarGrid(ethiopianYear: number, ethiopianMonth: number, calendarData: CalendarGridDay[], useGeez: boolean = false): void {
     validateNumericInputs('printMonthCalendarGrid', { ethiopianYear, ethiopianMonth });
     if (ethiopianMonth < 1 || ethiopianMonth > 13) {
         throw new InvalidInputTypeError('printMonthCalendarGrid', 'ethiopianMonth', 'number between 1 and 13', ethiopianMonth);

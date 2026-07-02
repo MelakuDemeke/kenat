@@ -8,11 +8,22 @@ import {
 import { validateNumericInputs } from "./utils.js";
 import {
     InvalidInputTypeError,
-    UnknownHolidayError,
 } from "./errors/errorHandler.js";
 import { getMovableHoliday } from "./bahireHasab.js";
+import type { Holiday, Lang, EthiopianDate } from './types.js';
 
-const fixedHolidays = {
+interface FixedHoliday {
+    month: number;
+    day: number;
+    tags: string[];
+}
+
+interface IslamicOccurrence {
+    gregorian: { year: number; month: number; day: number };
+    ethiopian: EthiopianDate;
+}
+
+const fixedHolidays: Record<string, FixedHoliday> = {
     enkutatash: {
         month: 1,
         day: 1,
@@ -52,13 +63,13 @@ const fixedHolidays = {
     },
 };
 
-function findAllIslamicOccurrences(ethiopianYear, hijriMonth, hijriDay) {
+function findAllIslamicOccurrences(ethiopianYear: number, hijriMonth: number, hijriDay: number): IslamicOccurrence[] {
     const startGregorianYear = toGC(ethiopianYear, 1, 1).year;
     const endGregorianYear = toGC(ethiopianYear, 13, 5).year;
-    const occurrences = [];
+    const occurrences: IslamicOccurrence[] = [];
 
-    const checkGregorianYear = (gYear) => {
-        const hijriYearAtStart = getHijriYear(new Date(gYear, 0, 1));
+    const checkGregorianYear = (gYear: number) => {
+        const hijriYearAtStart = getHijriYear(new Date(gYear, 0, 1))!;
         const hijriYearsToCheck = [hijriYearAtStart, hijriYearAtStart + 1];
 
         hijriYearsToCheck.forEach((hYear) => {
@@ -106,13 +117,13 @@ function findAllIslamicOccurrences(ethiopianYear, hijriMonth, hijriDay) {
  * @param {number} hijriMonth - The Hijri month to find (e.g., 9 for Ramadan).
  * @returns {Array<{start: Kenat, end: Kenat}>} An array of start/end date ranges.
  */
-export function findHijriMonthRanges(ethiopianYear, hijriMonth) {
+export function findHijriMonthRanges(ethiopianYear: number, hijriMonth: number): { start: EthiopianDate; end: EthiopianDate }[] {
     const startGregorianYear = toGC(ethiopianYear, 1, 1).year;
     const endGregorianYear = toGC(ethiopianYear, 13, 5).year;
-    const ranges = [];
+    const ranges: { start: EthiopianDate; end: EthiopianDate }[] = [];
 
-    const findRangeInGregorianYear = (gYear) => {
-        const hijriYearAtStart = getHijriYear(new Date(gYear, 0, 1));
+    const findRangeInGregorianYear = (gYear: number) => {
+        const hijriYearAtStart = getHijriYear(new Date(gYear, 0, 1))!;
         const hijriYearsToCheck = [
             hijriYearAtStart - 1,
             hijriYearAtStart,
@@ -125,7 +136,7 @@ export function findHijriMonthRanges(ethiopianYear, hijriMonth) {
 
             const nextMonth = hijriMonth === 12 ? 1 : hijriMonth + 1;
             const nextYear = hijriMonth === 12 ? hYear + 1 : hYear;
-            let endDateGregorian;
+            let endDateGregorian: Date;
 
             const endDateCandidate =
                 hijriToGregorian(nextYear, nextMonth, 1, gYear) ||
@@ -165,11 +176,11 @@ export function findHijriMonthRanges(ethiopianYear, hijriMonth) {
     return uniqueRanges;
 }
 
-const getAllMoulidDates = (year) => findAllIslamicOccurrences(year, 3, 12);
-const getAllEidFitrDates = (year) => findAllIslamicOccurrences(year, 10, 1);
-const getAllEidAdhaDates = (year) => findAllIslamicOccurrences(year, 12, 10);
+const getAllMoulidDates = (year: number) => findAllIslamicOccurrences(year, 3, 12);
+const getAllEidFitrDates = (year: number) => findAllIslamicOccurrences(year, 10, 1);
+const getAllEidAdhaDates = (year: number) => findAllIslamicOccurrences(year, 12, 10);
 
-export function getHoliday(holidayKey, ethYear, options = {}) {
+export function getHoliday(holidayKey: string, ethYear: number, options: { lang?: Lang } = {}): Holiday | null {
     validateNumericInputs("getHoliday", { ethYear });
     const { lang = "amharic" } = options;
 
@@ -205,7 +216,7 @@ export function getHoliday(holidayKey, ethYear, options = {}) {
         };
     }
 
-    let muslimDateData;
+    let muslimDateData: IslamicOccurrence | undefined;
     if (holidayKey === "eidFitr") muslimDateData = getAllEidFitrDates(ethYear)[0];
     else if (holidayKey === "eidAdha")
         muslimDateData = getAllEidAdhaDates(ethYear)[0];
@@ -227,7 +238,7 @@ export function getHoliday(holidayKey, ethYear, options = {}) {
     return null;
 }
 
-export function getHolidaysInMonth(ethYear, ethMonth, options = {}) {
+export function getHolidaysInMonth(ethYear: number, ethMonth: number, options: { lang?: Lang; filter?: string | string[] | null } = {}): Holiday[] {
     validateNumericInputs("getHolidaysInMonth", { ethYear, ethMonth });
     if (ethMonth < 1 || ethMonth > 13) {
         throw new InvalidInputTypeError(
@@ -239,7 +250,7 @@ export function getHolidaysInMonth(ethYear, ethMonth, options = {}) {
     }
     const { lang = "amharic", filter = null } = options;
 
-    const allHolidaysForMonth = [];
+    const allHolidaysForMonth: Holiday[] = [];
     const allHolidayKeys = Object.keys(holidayInfo);
 
     allHolidayKeys.forEach((key) => {
@@ -259,7 +270,7 @@ export function getHolidaysInMonth(ethYear, ethMonth, options = {}) {
     muslimHolidays.forEach((data) => {
         if (data.ethiopian.month === ethMonth) {
             const info = holidayInfo[data.key];
-            const holidayObj = {
+            const holidayObj: Holiday = {
                 key: data.key,
                 tags: movableHolidays[data.key].tags,
                 movable: true,
@@ -296,11 +307,11 @@ export function getHolidaysInMonth(ethYear, ethMonth, options = {}) {
     return finalHolidays;
 }
 
-export function getHolidaysForYear(ethYear, options = {}) {
+export function getHolidaysForYear(ethYear: number, options: { lang?: Lang; filter?: string | string[] | null } = {}): Holiday[] {
     validateNumericInputs("getHolidaysForYear", { ethYear });
     const { lang = "amharic", filter = null } = options;
 
-    const allHolidaysForYear = [];
+    const allHolidaysForYear: Holiday[] = [];
 
     // Process all fixed and Christian movable holidays
     const singleOccurrenceKeys = Object.keys(fixedHolidays).concat(
@@ -314,7 +325,7 @@ export function getHolidaysForYear(ethYear, options = {}) {
     });
 
     // Process all occurrences of Islamic holidays
-    const addMuslimHolidays = (key, dateArray) => {
+    const addMuslimHolidays = (key: string, dateArray: IslamicOccurrence[]) => {
         dateArray.forEach((data) => {
             const info = holidayInfo[key];
             allHolidaysForYear.push({

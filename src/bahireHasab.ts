@@ -11,6 +11,35 @@ import {
     holidayInfo,
     movableHolidays
 } from './constants.js';
+import type { EthiopianDate, Lang, Holiday } from './types.js';
+
+interface BahireHasabBase {
+    ameteAlem: number;
+    meteneRabiet: number;
+    medeb: number;
+    wenber: number;
+    abektie: number;
+    metqi: number;
+    bealeMetqiDate: EthiopianDate;
+    bealeMetqiWeekday: string;
+    mebajaHamer: number;
+    ninevehDate: EthiopianDate;
+}
+
+export interface BahireHasabResult {
+    ameteAlem: number;
+    meteneRabiet: number;
+    evangelist: { name: string; remainder: number };
+    newYear: { dayName: string; tinteQemer: number };
+    medeb: number;
+    wenber: number;
+    abektie: number;
+    metqi: number;
+    bealeMetqi: { date: EthiopianDate; weekday: string };
+    mebajaHamer: number;
+    nineveh: EthiopianDate;
+    movableFeasts: Record<string, Holiday>;
+}
 
 /**
  * Calculates all Bahire Hasab values for a given Ethiopian year, including all movable feasts.
@@ -20,21 +49,23 @@ import {
  * @param {string} [options.lang='amharic'] - The language for names.
  * @returns {Object} An object containing all the calculated Bahire Hasab values.
  */
-export function getBahireHasab(ethiopianYear, options = {}) {
+export function getBahireHasab(ethiopianYear: number, options: { lang?: Lang } = {}): BahireHasabResult {
     validateNumericInputs('getBahireHasab', { ethiopianYear });
     const { lang = 'amharic' } = options;
 
     const base = _calculateBahireHasabBase(ethiopianYear);
 
     const evangelistRemainder = base.ameteAlem % 4;
-    const evangelistName = evangelistNames[lang]?.[evangelistRemainder] || evangelistNames.english[evangelistRemainder];
+    const evangelistNamesMap = evangelistNames as Record<string, Record<number, string>>;
+    const evangelistName = evangelistNamesMap[lang]?.[evangelistRemainder] || evangelistNames.english[evangelistRemainder];
 
     const tinteQemer = (base.ameteAlem + base.meteneRabiet) % 7;
-    const weekdayIndex = (tinteQemer + 1) % 7; 
-    const newYearWeekday = daysOfWeek[lang]?.[weekdayIndex] || daysOfWeek.english[weekdayIndex];
-    
-    const movableFeasts = {};
-    const tewsakToKeyMap = Object.entries(keyToTewsakMap).reduce((acc, [key, val]) => {
+    const weekdayIndex = (tinteQemer + 1) % 7;
+    const daysOfWeekMap = daysOfWeek as Record<string, string[]>;
+    const newYearWeekday = daysOfWeekMap[lang]?.[weekdayIndex] || daysOfWeek.english[weekdayIndex];
+
+    const movableFeasts: Record<string, Holiday> = {};
+    const tewsakToKeyMap: Record<string, string> = Object.entries(keyToTewsakMap).reduce((acc: Record<string, string>, [key, val]) => {
         acc[val] = key; return acc;
     }, {});
 
@@ -83,14 +114,14 @@ export function getBahireHasab(ethiopianYear, options = {}) {
  * @param {number} ethiopianYear - The Ethiopian year.
  * @returns {Object} An Ethiopian date object { year, month, day }.
  */
-export function getMovableHoliday(holidayKey, ethiopianYear) {
+export function getMovableHoliday(holidayKey: string, ethiopianYear: number): EthiopianDate {
     validateNumericInputs('getMovableHoliday', { ethiopianYear });
 
     const tewsak = movableHolidayTewsak[holidayKey];
     if (tewsak === undefined) {
         throw new UnknownHolidayError(holidayKey);
     }
-    
+
     const { ninevehDate } = _calculateBahireHasabBase(ethiopianYear);
 
     return addDays(ninevehDate, tewsak);
@@ -115,7 +146,7 @@ export function getMovableHoliday(holidayKey, ethiopianYear) {
  * ninevehDate: { year: number, month: number, day: number }
  * }} An object containing all core calculated values.
  */
-function _calculateBahireHasabBase(ethiopianYear) {
+function _calculateBahireHasabBase(ethiopianYear: number): BahireHasabBase {
     const ameteAlem = 5500 + ethiopianYear;
     const meteneRabiet = Math.floor(ameteAlem / 4);
     const medeb = ameteAlem % 19;
@@ -126,8 +157,8 @@ function _calculateBahireHasabBase(ethiopianYear) {
 
     const bealeMetqiMonth = metqi > 14 ? 1 : 2;
     const bealeMetqiDay = metqi;
-    const bealeMetqiDate = { year: ethiopianYear, month: bealeMetqiMonth, day: bealeMetqiDay };
-    
+    const bealeMetqiDate: EthiopianDate = { year: ethiopianYear, month: bealeMetqiMonth, day: bealeMetqiDay };
+
     const bealeMetqiWeekday = daysOfWeek.english[getWeekday(bealeMetqiDate)];
     const tewsak = tewsakMap[bealeMetqiWeekday];
     const mebajaHamerSum = bealeMetqiDay + tewsak;
@@ -135,7 +166,7 @@ function _calculateBahireHasabBase(ethiopianYear) {
 
     let ninevehMonth = metqi > 14 ? 5 : 6;
     if (mebajaHamerSum > 30) ninevehMonth++;
-    const ninevehDate = { year: ethiopianYear, month: ninevehMonth, day: mebajaHamer };
+    const ninevehDate: EthiopianDate = { year: ethiopianYear, month: ninevehMonth, day: mebajaHamer };
 
     return {
         ameteAlem,
