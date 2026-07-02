@@ -285,6 +285,27 @@ export class Kenat {
      */
     isSameDay(other: Kenat): boolean;
     /**
+     * Checks if the current Kenat instance's date is in the same month and year as another.
+     * @param {Kenat} other - The other Kenat instance to compare against.
+     * @returns {boolean} True if the month and year are the same.
+     */
+    isSameMonth(other: Kenat): boolean;
+    /**
+     * Checks if the current Kenat instance's date is in the same year as another.
+     * @param {Kenat} other - The other Kenat instance to compare against.
+     * @returns {boolean} True if the year is the same.
+     */
+    isSameYear(other: Kenat): boolean;
+    /**
+     * Returns a plain object representation of the Kenat instance for JSON serialization.
+     * @returns {{ ethiopian: {year: number, month: number, day: number}, gregorian: {year: number, month: number, day: number}, time: {hour: number, minute: number, period: string}|null }}
+     */
+    toJSON(): {
+        ethiopian: { year: number; month: number; day: number };
+        gregorian: { year: number; month: number; day: number };
+        time: { hour: number; minute: number; period: string } | null;
+    };
+    /**
      * Returns a new Kenat instance set to the start of the specified unit.
      * Supports method chaining.
      *
