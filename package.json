@@ -6,18 +6,24 @@
   "module": "./dist/index.js",
   "unpkg": "./dist/index.global.js",
   "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
   "files": [
-    "dist"
+    "dist",
+    "!dist/**/*.map"
   ],
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "build": "tsup",
     "docs": "typedoc",
-    "release:patch": "npm version patch && git push && git push --tags && npm publish",
-    "release:minor": "npm version minor && git push && git push --tags && npm publish",
-    "release:major": "npm version major && git push && git push --tags && npm publish",
-    "prepack": "npm run typecheck && npm run build"
+    "release:patch": "npm version patch && git push --follow-tags",
+    "release:minor": "npm version minor && git push --follow-tags",
+    "release:major": "npm version major && git push --follow-tags",
+    "prepack": "npm run typecheck && npm run build",
+    "prepublishOnly": "npm test"
   },
   "keywords": [
     "ethiopian",
