@@ -1,7 +1,8 @@
 import { toGeez } from './geezConverter.js';
-import { monthNames } from './constants.js';
+import { monthNames, daysOfWeek } from './constants.js';
 import { getWeekday } from './utils.js';
-import { daysOfWeek } from './constants.js';
+import type { EthiopianDate, GregorianDate, Lang, TimePeriod } from './types.js';
+import type { Time } from './Time.js';
 
 /**
  * Formats an Ethiopian date using language-specific month name and Arabic numerals.
@@ -10,8 +11,8 @@ import { daysOfWeek } from './constants.js';
  * @param {'amharic'|'english'} [lang='amharic'] - Language for month name
  * @returns {string} Formatted string like "መስከረም 10 2016"
  */
-export function formatStandard(etDate, lang = 'amharic') {
-  const names = monthNames[lang] || monthNames.amharic;
+export function formatStandard(etDate: EthiopianDate, lang: Lang = 'amharic'): string {
+  const names = (monthNames as Record<string, string[]>)[lang] || monthNames.amharic;
   const monthName = names[etDate.month - 1] || `Month${etDate.month}`;
   return `${monthName} ${etDate.day} ${etDate.year}`;
 }
@@ -22,7 +23,7 @@ export function formatStandard(etDate, lang = 'amharic') {
  * @param {{year: number, month: number, day: number}} etDate - Ethiopian date
  * @returns {string} Example: "መስከረም ፲፩ ፳፻፲፮"
  */
-export function formatInGeezAmharic(etDate) {
+export function formatInGeezAmharic(etDate: EthiopianDate): string {
   const monthName = monthNames.amharic[etDate.month - 1] || `Month${etDate.month}`;
   return `${monthName} ${toGeez(etDate.day)} ${toGeez(etDate.year)}`;
 }
@@ -35,7 +36,7 @@ export function formatInGeezAmharic(etDate) {
  * @param {'amharic'|'english'} [lang='amharic'] - Language for suffix
  * @returns {string} Example: "መስከረም 10 2016 08:30 ጠዋት"
  */
-export function formatWithTime(etDate, time, lang = 'amharic') {
+export function formatWithTime(etDate: EthiopianDate, time: Time, lang: Lang = 'amharic'): string {
   const base = formatStandard(etDate, lang);
 
   // THIS IS THE FIX: Ensure zeroAsDash is false for this specific format.
@@ -59,10 +60,11 @@ export function formatWithTime(etDate, time, lang = 'amharic') {
  * @param {boolean} [useGeez=false] - Whether to format the day and year in Geez numerals.
  * @returns {string} The formatted date string, e.g., "ማክሰኞ, መስከረም 1 2016".
  */
-export function formatWithWeekday(etDate, lang = 'amharic', useGeez = false) {
+export function formatWithWeekday(etDate: EthiopianDate, lang: Lang = 'amharic', useGeez = false): string {
   const weekdayIndex = getWeekday(etDate);
-  const weekdayName = daysOfWeek[lang]?.[weekdayIndex] || daysOfWeek.amharic[weekdayIndex];
-  const monthName = monthNames[lang]?.[etDate.month - 1] || `Month${etDate.month}`;
+  const daysMap = daysOfWeek as Record<string, string[]>;
+  const weekdayName = daysMap[lang]?.[weekdayIndex] || daysOfWeek.amharic[weekdayIndex];
+  const monthName = (monthNames as Record<string, string[]>)[lang]?.[etDate.month - 1] || `Month${etDate.month}`;
   const day = useGeez ? toGeez(etDate.day) : etDate.day;
   const year = useGeez ? toGeez(etDate.year) : etDate.year;
 
@@ -75,7 +77,7 @@ export function formatWithWeekday(etDate, lang = 'amharic', useGeez = false) {
  * @param {{year: number, month: number, day: number}} gDate - Gregorian date object
  * @returns {string} Formatted string like "September 11, 2023"
  */
-export function formatGregorianStandard(gDate) {
+export function formatGregorianStandard(gDate: GregorianDate): string {
   const monthName = monthNames.gregorian[gDate.month - 1] || `Month${gDate.month}`;
   return `${monthName} ${gDate.day}, ${gDate.year}`;
 }
@@ -87,14 +89,15 @@ export function formatGregorianStandard(gDate) {
  * @param {'amharic'|'english'} [lang='english'] - The language to use for the weekday name.
  * @returns {string} The formatted date string, e.g., "Monday, September 11, 2023".
  */
-export function formatGregorianWithWeekday(gDate, lang = 'english') {
+export function formatGregorianWithWeekday(gDate: GregorianDate, lang: Lang = 'english'): string {
   // Avoid the Date constructor's 2-digit-year-to-1900s mapping (years 0-99) by
   // setting the year explicitly via setUTCFullYear, and use UTC throughout so
   // the result doesn't depend on the runtime's local timezone/DST rules.
   const jsDate = new Date(0);
   jsDate.setUTCFullYear(gDate.year, gDate.month - 1, gDate.day);
   const weekdayIndex = jsDate.getUTCDay();
-  const weekdayName = daysOfWeek[lang]?.[weekdayIndex] || daysOfWeek.english[weekdayIndex];
+  const daysMap = daysOfWeek as Record<string, string[]>;
+  const weekdayName = daysMap[lang]?.[weekdayIndex] || daysOfWeek.english[weekdayIndex];
   return `${weekdayName}, ${formatGregorianStandard(gDate)}`;
 }
 
@@ -106,7 +109,7 @@ export function formatGregorianWithWeekday(gDate, lang = 'english') {
  * @param {'amharic'|'english'} [lang='amharic'] - Language for the time-of-day suffix
  * @returns {string} Example: "September 11, 2023 08:30 ጠዋት"
  */
-export function formatGregorianWithTime(gDate, time, lang = 'amharic') {
+export function formatGregorianWithTime(gDate: GregorianDate, time: Time, lang: Lang = 'amharic'): string {
   const base = formatGregorianStandard(gDate);
   const timeString = time.format({
     lang,
@@ -119,10 +122,10 @@ export function formatGregorianWithTime(gDate, time, lang = 'amharic') {
 
 /**
  * Returns Ethiopian date in short "yyyy/mm/dd" format.
- * @param {{year: number, month: number, day: number}} etDate 
+ * @param {{year: number, month: number, day: number}} etDate
  * @returns {string} e.g., "2017/10/25"
  */
-export function formatShort(etDate) {
+export function formatShort(etDate: EthiopianDate): string {
   const y = etDate.year;
   const m = etDate.month.toString().padStart(2, '0');
   const d = etDate.day.toString().padStart(2, '0');
@@ -131,11 +134,11 @@ export function formatShort(etDate) {
 
 /**
  * Returns an ISO-like string: "YYYY-MM-DD" or "YYYY-MM-DDTHH:mm".
- * @param {{year: number, month: number, day: number}} etDate 
- * @param {{hour: number, minute: number, period: 'day'|'night'}|null} time 
+ * @param {{year: number, month: number, day: number}} etDate
+ * @param {{hour: number, minute: number, period: 'day'|'night'}|null} time
  * @returns {string}
  */
-export function toISODateString(etDate, time = null) {
+export function toISODateString(etDate: EthiopianDate, time: { hour: number; minute: number; period: TimePeriod } | null = null): string {
   const y = etDate.year;
   const m = etDate.month.toString().padStart(2, '0');
   const d = etDate.day.toString().padStart(2, '0');
@@ -159,7 +162,7 @@ export function toISODateString(etDate, time = null) {
  * @param {import('./Time.js').Time|null} [time=null] - Ethiopian time to convert
  * @returns {string}
  */
-export function toGregorianISODateString(gDate, time = null) {
+export function toGregorianISODateString(gDate: GregorianDate, time: Time | null = null): string {
   const y = gDate.year;
   const m = gDate.month.toString().padStart(2, '0');
   const d = gDate.day.toString().padStart(2, '0');

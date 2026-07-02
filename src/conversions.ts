@@ -1,6 +1,7 @@
 import { InvalidEthiopianDateError, InvalidGregorianDateError } from './errors/errorHandler.js'
 import { getGregorianDateOfEthiopianNewYear, validateNumericInputs } from './utils.js';
 import { dayOfYear, monthDayFromDayOfYear, isGregorianLeapYear, isEthiopianLeapYear } from './utils.js';
+import type { EthiopianDate, GregorianDate } from './types.js';
 
 /**
  * Converts an Ethiopian date to its corresponding Gregorian date.
@@ -12,7 +13,7 @@ import { dayOfYear, monthDayFromDayOfYear, isGregorianLeapYear, isEthiopianLeapY
  * @throws {InvalidInputTypeError} If any input is not a number.
  * @throws {InvalidEthiopianDateError} If the provided Ethiopian date is invalid.
  */
-export function toGC(ethYear, ethMonth, ethDay) {
+export function toGC(ethYear: number, ethMonth: number, ethDay: number): GregorianDate {
   // 1. Validate input types first
   validateNumericInputs('toGC', { ethYear, ethMonth, ethDay });
 
@@ -53,12 +54,12 @@ export function toGC(ethYear, ethMonth, ethDay) {
  * @throws {InvalidInputTypeError} If any input is not a number.
  * @throws {InvalidGregorianDateError} If the input date is invalid or out of supported range.
  */
-export function toEC(gYear, gMonth, gDay) {
+export function toEC(gYear: number, gMonth: number, gDay: number): EthiopianDate {
   // 1. Validate input types first
   validateNumericInputs('toEC', { gYear, gMonth, gDay });
 
   // 2. Validate date range and validity
-  const isValidDate = (y, m, d) => {
+  const isValidDate = (y: number, m: number, d: number): boolean => {
     const date = new Date(Date.UTC(y, m - 1, d))
     return (
       date.getUTCFullYear() === y &&
@@ -109,7 +110,7 @@ export function toEC(gYear, gMonth, gDay) {
  * @param {number} ethDay - The Ethiopian day.
  * @returns {Date} A JavaScript Date object representing the equivalent Gregorian date in UTC.
  */
-export function toGCDate(ethYear, ethMonth, ethDay) {
+export function toGCDate(ethYear: number, ethMonth: number, ethDay: number): Date {
   const { year, month, day } = toGC(ethYear, ethMonth, ethDay);
   return new Date(Date.UTC(year, month - 1, day));
 }
@@ -120,7 +121,7 @@ export function toGCDate(ethYear, ethMonth, ethDay) {
  * @param {Date} dateObj - The JavaScript Date object to convert.
  * @returns {*} The Ethiopian Calendar date, as returned by the `toEC` function.
  */
-export function fromDateToEC(dateObj) {
+export function fromDateToEC(dateObj: Date): EthiopianDate {
   return toEC(
     dateObj.getFullYear(),
     dateObj.getMonth() + 1,
@@ -141,16 +142,16 @@ export const islamicFormatter = new Intl.DateTimeFormat('en-TN-u-ca-islamic', {
  * @param {Date} date
  * @returns {number} hijri year
  */
-export function getHijriYear(date) {
+export function getHijriYear(date: Date): number | null {
   const parts = islamicFormatter.formatToParts(date);
-  let hYear = null;
+  let hYear: number | null = null;
   parts.forEach(({ type, value }) => {
     if (type === 'year') hYear = parseInt(value, 10);
   });
   return hYear;
 }
 
-const hijriToGregorianCache = new Map();
+const hijriToGregorianCache = new Map<string, Date | null>();
 
 /**
  * Converts a Hijri date to the corresponding Gregorian date within a given Gregorian year.
@@ -161,10 +162,10 @@ const hijriToGregorianCache = new Map();
  * @param {number} gregorianYear - Target Gregorian year to restrict the search range
  * @returns {Date|null} Gregorian Date object or null if not found
  */
-export function hijriToGregorian(hYear, hMonth, hDay, gregorianYear) {
+export function hijriToGregorian(hYear: number, hMonth: number, hDay: number, gregorianYear: number): Date | null {
   const cacheKey = `${hYear}-${hMonth}-${hDay}-${gregorianYear}`;
   if (hijriToGregorianCache.has(cacheKey)) {
-    return hijriToGregorianCache.get(cacheKey);
+    return hijriToGregorianCache.get(cacheKey) ?? null;
   }
 
   const baseDate = new Date(gregorianYear - 1, 0, 1);
@@ -173,7 +174,7 @@ export function hijriToGregorian(hYear, hMonth, hDay, gregorianYear) {
     testDate.setDate(testDate.getDate() + offset);
 
     const parts = islamicFormatter.formatToParts(testDate);
-    const hijriParts = {};
+    const hijriParts: Record<string, number> = {};
     parts.forEach(({ type, value }) => {
       if (type !== 'literal') hijriParts[type] = parseInt(value, 10);
     });

@@ -1,9 +1,25 @@
 import { toGeez, toArabic } from './geezConverter.js';
-import { PERIOD_LABELS } from './constants.js';
 import { InvalidTimeError } from './errors/errorHandler.js';
 import { validateNumericInputs } from './utils.js';
+import type { TimePeriod, Lang } from './types.js';
+
+export interface TimeFormatOptions {
+    lang?: Lang;
+    useGeez?: boolean;
+    showPeriodLabel?: boolean;
+    zeroAsDash?: boolean;
+}
+
+export interface TimeDuration {
+    hours?: number;
+    minutes?: number;
+}
 
 export class Time {
+    hour: number;
+    minute: number;
+    period: TimePeriod;
+
     /**
      * Constructs a Time instance representing an Ethiopian time.
      * @param {number} hour - The Ethiopian hour (1-12).
@@ -11,7 +27,7 @@ export class Time {
      * @param {string} [period='day'] - The period ('day' or 'night').
      * @throws {InvalidTimeError} If any time component is invalid.
      */
-    constructor(hour, minute = 0, period = 'day') {
+    constructor(hour: number, minute: number = 0, period: TimePeriod = 'day') {
         validateNumericInputs('Time.constructor', { hour, minute });
 
         if (hour < 1 || hour > 12) {
@@ -36,7 +52,7 @@ export class Time {
      * @returns {Time} A new Time instance.
      * @throws {InvalidTimeError} If the Gregorian time is invalid.
      */
-    static fromGregorian(hour, minute = 0) {
+    static fromGregorian(hour: number, minute: number = 0): Time {
         validateNumericInputs('Time.fromGregorian', { hour, minute });
 
         if (hour < 0 || hour > 23) {
@@ -52,7 +68,7 @@ export class Time {
             tempHour += 24;
         }
 
-        const period = (tempHour < 12) ? 'day' : 'night';
+        const period: TimePeriod = (tempHour < 12) ? 'day' : 'night';
         let ethHour = tempHour % 12;
         ethHour = (ethHour === 0) ? 12 : ethHour;
 
@@ -63,7 +79,7 @@ export class Time {
      * Converts the Ethiopian time to Gregorian 24-hour format.
      * @returns {{hour: number, minute: number}}
      */
-    toGregorian() {
+    toGregorian(): { hour: number; minute: number } {
         // Convert Ethiopian 1-12 hour to a 0-11 offset, where 12 o'clock is 0.
         let gregHour = this.hour % 12;
 
@@ -89,7 +105,6 @@ export class Time {
      *
      * The time string must contain a colon (`:`) separating the hour and minute.
      *
-     * @static
      * @param {string} timeString - The string representation of the time.
      *   Expected formats:
      *   - "HH:MM" (e.g., "6:30", "፮:፴")
@@ -111,7 +126,7 @@ export class Time {
      *     (neither as Arabic nor as Ethiopic numerals via `toArabic`).
      *
      */
-    static fromString(timeString) {
+    static fromString(timeString: string): Time {
         if (typeof timeString !== 'string' || timeString.trim() === '') {
             throw new InvalidTimeError(`Input must be a non-empty string, but received "${timeString}".`);
         }
@@ -120,7 +135,7 @@ export class Time {
             throw new InvalidTimeError(`Invalid time string format: "${timeString}". Time must include a colon ':' separator.`);
         }
 
-        const parseNumber = (str) => {
+        const parseNumber = (str: string): number => {
             const arabicNum = parseInt(str, 10);
             if (!isNaN(arabicNum)) {
                 return arabicNum;
@@ -145,7 +160,7 @@ export class Time {
             throw new InvalidTimeError(`Invalid number in time string: "${timeString}"`);
         }
 
-        let period = 'day';
+        let period: TimePeriod = 'day';
         if (parts.length > 2) {
             const periodStr = parts[2].toLowerCase();
             if (periodStr === 'night' || periodStr === 'ማታ') {
@@ -161,7 +176,7 @@ export class Time {
      * @param {{hours?: number, minutes?: number}} duration - Object with hours and/or minutes to add.
      * @returns {Time} A new Time instance with the added duration.
      */
-    add(duration) {
+    add(duration: TimeDuration): Time {
         if (typeof duration !== 'object' || duration === null) {
             throw new InvalidTimeError('Duration must be an object.');
         }
@@ -183,7 +198,7 @@ export class Time {
      * @param {{hours?: number, minutes?: number}} duration - Object with hours and/or minutes to subtract.
      * @returns {Time} A new Time instance with the subtracted duration.
      */
-    subtract(duration) {
+    subtract(duration: TimeDuration): Time {
         if (typeof duration !== 'object' || duration === null) {
             throw new InvalidTimeError('Duration must be an object.');
         }
@@ -197,7 +212,7 @@ export class Time {
      * @param {Time} otherTime - Another Time instance to compare against.
      * @returns {{hours: number, minutes: number}} An object with the absolute difference.
      */
-    diff(otherTime) {
+    diff(otherTime: Time): { hours: number; minutes: number } {
         if (!(otherTime instanceof Time)) {
             throw new InvalidTimeError('Can only compare with another Time instance.');
         }
@@ -226,19 +241,19 @@ export class Time {
      * @param {boolean} [options.zeroAsDash=true] - Whether to represent zero minutes as a dash.
      * @returns {string} The formatted time string.
      */
-    format(options = {}) {
+    format(options: TimeFormatOptions = {}): string {
         // If useGeez is explicitly false, the default language should be English.
-        const defaultLang = options.useGeez === false ? 'english' : 'amharic';
+        const defaultLang: Lang = options.useGeez === false ? 'english' : 'amharic';
         const { lang = defaultLang, useGeez = true, showPeriodLabel = true, zeroAsDash = true } = options;
 
-        const formatNum = (num) => {
+        const formatNum = (num: number): string => {
             if (useGeez) return toGeez(num);
             return num.toString().padStart(2, '0');
         };
 
         const hourStr = formatNum(this.hour);
 
-        let minuteStr;
+        let minuteStr: string;
         if (zeroAsDash && this.minute === 0) {
             minuteStr = '_';
         } else {
@@ -252,7 +267,7 @@ export class Time {
                 periodLabel = this.period; // 'day' or 'night'
             } else {
                 // Default to Amharic labels from constants
-                const amharicLabels = { day: 'ጠዋት', night: 'ማታ' };
+                const amharicLabels: Record<TimePeriod, string> = { day: 'ጠዋት', night: 'ማታ' };
                 periodLabel = amharicLabels[this.period];
             }
         }

@@ -4,7 +4,7 @@ import {
     validateNumericInputs,
     validateEthiopianDateObject
 } from './utils.js';
-
+import type { EthiopianDate, DiffBreakdown, DiffUnit } from './types.js';
 
 /**
  * Adds a specified number of days to an Ethiopian date.
@@ -14,7 +14,7 @@ import {
  * @returns {Object} The resulting Ethiopian date.
  * @throws {InvalidInputTypeError} If inputs are not of the correct type.
  */
-export function addDays(ethiopian, days) {
+export function addDays(ethiopian: EthiopianDate, days: number): EthiopianDate {
     validateEthiopianDateObject(ethiopian, 'addDays', 'ethiopian');
     validateNumericInputs('addDays', { days });
 
@@ -53,7 +53,7 @@ export function addDays(ethiopian, days) {
  * @returns {Object} The resulting Ethiopian date.
  * @throws {InvalidInputTypeError} If inputs are not of the correct type.
  */
-export function addMonths(ethiopian, months) {
+export function addMonths(ethiopian: EthiopianDate, months: number): EthiopianDate {
     validateEthiopianDateObject(ethiopian, 'addMonths', 'ethiopian');
     validateNumericInputs('addMonths', { months });
 
@@ -79,7 +79,7 @@ export function addMonths(ethiopian, months) {
  * @returns {Object} The resulting Ethiopian date.
  * @throws {InvalidInputTypeError} If inputs are not of the correct type.
  */
-export function addYears(ethiopian, years) {
+export function addYears(ethiopian: EthiopianDate, years: number): EthiopianDate {
     validateEthiopianDateObject(ethiopian, 'addYears', 'ethiopian');
     validateNumericInputs('addYears', { years });
 
@@ -101,11 +101,11 @@ export function addYears(ethiopian, years) {
  * @returns {number} The difference in days.
  * @throws {InvalidInputTypeError} If inputs are not valid date objects.
  */
-export function diffInDays(a, b) {
+export function diffInDays(a: EthiopianDate, b: EthiopianDate): number {
     validateEthiopianDateObject(a, 'diffInDays', 'a');
     validateEthiopianDateObject(b, 'diffInDays', 'b');
 
-    const totalDays = (eth) => {
+    const totalDays = (eth: EthiopianDate): number => {
         let days = 0;
         for (let y = 1; y < eth.year; y++) {
             days += isEthiopianLeapYear(y) ? 366 : 365;
@@ -128,7 +128,7 @@ export function diffInDays(a, b) {
  * @returns {number} The difference in months.
  * @throws {InvalidInputTypeError} If inputs are not valid date objects.
  */
-export function diffInMonths(a, b) {
+export function diffInMonths(a: EthiopianDate, b: EthiopianDate): number {
     validateEthiopianDateObject(a, 'diffInMonths', 'a');
     validateEthiopianDateObject(b, 'diffInMonths', 'b');
 
@@ -151,7 +151,7 @@ export function diffInMonths(a, b) {
  * @returns {number} The difference in years.
  * @throws {InvalidInputTypeError} If inputs are not valid date objects.
  */
-export function diffInYears(a, b) {
+export function diffInYears(a: EthiopianDate, b: EthiopianDate): number {
     validateEthiopianDateObject(a, 'diffInYears', 'a');
     validateEthiopianDateObject(b, 'diffInYears', 'b');
 
@@ -186,19 +186,19 @@ export function diffInYears(a, b) {
  * @param {Array<'years'|'months'|'days'>} [options.units=['years','months','days']] - Units to include, in order.
  * @returns {{ sign: 1|-1, years?: number, months?: number, days?: number, totalDays: number }}
  */
-export function diffBreakdown(a, b, options = {}) {
+export function diffBreakdown(a: EthiopianDate, b: EthiopianDate, options: { units?: DiffUnit[] } = {}): DiffBreakdown {
     validateEthiopianDateObject(a, 'diffBreakdown', 'a');
     validateEthiopianDateObject(b, 'diffBreakdown', 'b');
 
     const { units = ['years', 'months', 'days'] } = options;
     const totalDaysDiff = diffInDays(a, b); // positive if a after b
 
-    const sign = totalDaysDiff === 0 ? 1 : (totalDaysDiff > 0 ? 1 : -1);
+    const sign: 1 | -1 = totalDaysDiff === 0 ? 1 : (totalDaysDiff > 0 ? 1 : -1);
     const later = sign >= 0 ? a : b;
     const earlier = sign >= 0 ? b : a;
 
-    let cursor = { ...earlier };
-    const result = { sign, totalDays: Math.abs(totalDaysDiff) };
+    let cursor: EthiopianDate = { ...earlier };
+    const result: DiffBreakdown = { sign, totalDays: Math.abs(totalDaysDiff) };
 
     if (units.includes('years')) {
         let years = 0;
