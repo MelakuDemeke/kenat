@@ -121,7 +121,8 @@ function _calculateBahireHasabBase(ethiopianYear) {
     const medeb = ameteAlem % 19;
     const wenber = medeb === 0 ? 18 : medeb - 1;
     const abektie = (wenber * 11) % 30;
-    const metqi = (wenber * 19) % 30;
+    const rawMetqi = (wenber * 19) % 30;
+    const metqi = rawMetqi === 0 ? 30 : rawMetqi;
 
     const bealeMetqiMonth = metqi > 14 ? 1 : 2;
     const bealeMetqiDay = metqi;
