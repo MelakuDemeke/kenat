@@ -1,0 +1,1359 @@
+{
+  "1": [
+    {
+      "id": "ledeta_mariam",
+      "name": {
+        "english": "Ldata Mariam, The nativity of Our Holy Mother Virgin Mariam",
+        "amharic": "ልደታ ማርያም"
+      },
+      "description": {
+        "english": "Commemoration of the birth of St. Mary.",
+        "amharic": "የቅድስት ድንግል ማርያም ልደት መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        9
+      ]
+    },
+    {
+      "id": "archangel_raguel",
+      "name": {
+        "english": "Archangel Raguel",
+        "amharic": "ራጉኤል"
+      },
+      "description": {
+        "english": "Commemoration of Archangel Raguel.",
+        "amharic": "የመላኩ ራጉኤል መታሰቢያ።"
+      },
+      "major": true,
+      "negs": []
+    },
+    {
+      "id": "bartholomew_the_apostle",
+      "name": {
+        "english": "Bartholomew the Apostle",
+        "amharic": "ሐዋርያው በርተሎሜዎስ"
+      },
+      "description": {
+        "english": "Commemoration of Bartholomew the Apostle.",
+        "amharic": "የሐዋርያው በርተሎሜዎስ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": []
+    },
+    {
+      "id": "prophet_elijah_ginbot",
+      "name": {
+        "english": "Prophet Elijah",
+        "amharic": "ነብዩ ኤልያስ"
+      },
+      "description": {
+        "english": "Commemoration of Prophet Elijah.",
+        "amharic": "የነብዩ ኤልያስ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        4
+      ]
+    },
+    {
+      "id": "kidus_yohannes",
+      "name": {
+        "english": "Kidus Yohannes",
+        "amharic": "ቅዱስ ዮሐንስ"
+      },
+      "description": {
+        "english": "Commemoration of Kidus Yohannes.",
+        "amharic": "የቅዱስ ዮሐንስ መታሰቢያ።"
+      },
+      "major": false,
+      "negs": [
+        1
+      ]
+    }
+  ],
+  "2": [
+    {
+      "id": "abba_guba",
+      "name": {
+        "english": "Abba Guba, one of the Nine Saints",
+        "amharic": "አባ ጉባ"
+      },
+      "description": {
+        "english": "Commemoration of Abba Guba, one of the Nine Saints.",
+        "amharic": "ከዘጠኙ ቅዱሳን አንዱ የአባ ጉባ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": []
+    },
+    {
+      "id": "thaddeus_the_apostle_major",
+      "name": {
+        "english": "Thaddeus the Apostle",
+        "amharic": "ሐዋርያው ታድዮስ"
+      },
+      "description": {
+        "english": "Commemoration of Thaddeus the Apostle.",
+        "amharic": "የሐዋርያው ታድዮስ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        11
+      ]
+    },
+    {
+      "id": "thaddeus_apostle_minor",
+      "name": {
+        "english": "Thaddeus the Apostle",
+        "amharic": "ሐዋርያው ታድዮስ"
+      },
+      "description": {
+        "english": "Commemoration of Thaddeus the Apostle.",
+        "amharic": "የሐዋርያው ታድዮስ መታሰቢያ።"
+      },
+      "major": false,
+      "negs": [
+        13
+      ]
+    },
+    {
+      "id": "st_john_the_baptist_martyrdom",
+      "name": {
+        "english": "The Martyrdom (Beheading) of St. John the Baptist",
+        "amharic": "የቅዱስ ዮሐንስ መጥምቅ አንገት መቁረጥ"
+      },
+      "description": {
+        "english": "Commemoration of the Martyrdom (Beheading) of St. John the Baptist.",
+        "amharic": "የቅዱስ ዮሐንስ መጥምቅ አንገት መቁረጥ መታሰቢያ።"
+      },
+      "major": false,
+      "negs": [
+        1
+      ]
+    }
+  ],
+  "3": [
+    {
+      "id": "beata",
+      "name": {
+        "english": "Beata: The Entrance of the three years old Virgin Mariam into the Temple",
+        "amharic": "በአታለማርያም"
+      },
+      "description": {
+        "english": "Commemoration of St. Mary's entrance into the Temple.",
+        "amharic": "የቅድስት ድንግል ማርያም ወደ ቤተመቅደስ መግባት መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        4
+      ]
+    },
+    {
+      "id": "abune_zena_markos",
+      "name": {
+        "english": "Abune Zena Markos",
+        "amharic": "አቡነ ዜና ማርቆስ"
+      },
+      "description": {
+        "english": "Commemoration of Abune Zena Markos.",
+        "amharic": "የአቡነ ዜና ማርቆስ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": []
+    },
+    {
+      "id": "archangel_phanuel",
+      "name": {
+        "english": "Archangel Phanuel",
+        "amharic": "ቅዱስ ፋኑኤል"
+      },
+      "description": {
+        "english": "Commemoration of Archangel Phanuel.",
+        "amharic": "የመላኩ ፋኑኤል መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        13
+      ]
+    },
+    {
+      "id": "saint_neakuto_leab",
+      "name": {
+        "english": "Saint Neakuto Leab",
+        "amharic": "ቅዱስ ነአኩቶ ለአብ"
+      },
+      "description": {
+        "english": "Commemoration of Saint Neakuto Leab.",
+        "amharic": "የቅዱስ ነአኩቶ ለአብ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": []
+    }
+  ],
+  "4": [
+    {
+      "id": "johannis_welde_negedguad",
+      "name": {
+        "english": "John the son of the Thunder (Yohannis Welde Negedguad)",
+        "amharic": "ዮሐንስ ወልደ ነጎድጓድ"
+      },
+      "description": {
+        "english": "Commemoration of John the son of the Thunder.",
+        "amharic": "የዮሐንስ ወልደ ነጎድጓድ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        5
+      ]
+    },
+    {
+      "id": "andrew_the_apostle",
+      "name": {
+        "english": "Andrew the Apostle",
+        "amharic": "ሐዋርያው እንድርያስ"
+      },
+      "description": {
+        "english": "Commemoration of Andrew the Apostle.",
+        "amharic": "የሐዋርያው እንድርያስ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        4
+      ]
+    }
+  ],
+  "5": [
+    {
+      "id": "petros_we_paulos",
+      "name": {
+        "english": "Petros we Paulos (Peter and Paul)",
+        "amharic": "ጴጥሮስወ ጳውሎስ"
+      },
+      "description": {
+        "english": "Commemoration of Saints Peter and Paul.",
+        "amharic": "የቅዱሳን ጴጥሮስና ጳውሎስ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        11
+      ]
+    },
+    {
+      "id": "abuna_gebre_menfes_kidus",
+      "name": {
+        "english": "Abuna Gebre Menfes Kidus",
+        "amharic": "ገብረ መንፈስ ቅዱስ"
+      },
+      "description": {
+        "english": "Commemoration of Abuna Gebre Menfes Kidus.",
+        "amharic": "የአቡነ ገብረ መንፈስ ቅዱስ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        2
+      ]
+    },
+    {
+      "id": "abune_arone",
+      "name": {
+        "english": "Abune Arone",
+        "amharic": "አቡነ አሮን"
+      },
+      "description": {
+        "english": "Commemoration of Abune Arone.",
+        "amharic": "የአቡነ አሮን መታሰቢያ።"
+      },
+      "major": true,
+      "negs": []
+    }
+  ],
+  "6": [
+    {
+      "id": "iyyasu",
+      "name": {
+        "english": "Iyyasus",
+        "amharic": "ኢየሱስ"
+      },
+      "description": {
+        "english": "Commemoration of Iyyasus.",
+        "amharic": "የኢየሱስ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        5
+      ]
+    },
+    {
+      "id": "dabra_quesqam_mariam",
+      "name": {
+        "english": "Dabra Quesqam Mariam",
+        "amharic": "ቁስቋም ማርያም"
+      },
+      "description": {
+        "english": "Commemoration of Dabra Quesqam Mariam.",
+        "amharic": "የቁስቋም ማርያም መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        3
+      ]
+    },
+    {
+      "id": "saint_arsema",
+      "name": {
+        "english": "Saint Arsema",
+        "amharic": "አርሴማ"
+      },
+      "description": {
+        "english": "Commemoration of Saint Arsema.",
+        "amharic": "የቅድስት አርሴማ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        4
+      ]
+    }
+  ],
+  "7": [
+    {
+      "id": "holy_trinity",
+      "name": {
+        "english": "Holy Trinity",
+        "amharic": "አጋዕዝተ አለም ስላሴ"
+      },
+      "description": {
+        "english": "Commemoration of the Holy Trinity.",
+        "amharic": "የአጋዕዝተ ዓለም ስላሴ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        5
+      ]
+    }
+  ],
+  "8": [
+    {
+      "id": "cherubim",
+      "name": {
+        "english": "Cherubim (Four Living Creatures)",
+        "amharic": "ኪሩቤል አርባእቱ እንስሳ"
+      },
+      "description": {
+        "english": "Commemoration of the Cherubim, the four living creatures.",
+        "amharic": "የኪሩቤል አርባእቱ እንስሳ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        3
+      ]
+    },
+    {
+      "id": "saint_matthias_apostle",
+      "name": {
+        "english": "Saint Matthias the Apostle",
+        "amharic": "ሐዋርያው ማትያስ"
+      },
+      "description": {
+        "english": "Commemoration of Saint Matthias the Apostle.",
+        "amharic": "የሐዋርያው ማትያስ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        7
+      ]
+    },
+    {
+      "id": "abune_kiros",
+      "name": {
+        "english": "Abune Kiros",
+        "amharic": "አቡነ ኪሮስ"
+      },
+      "description": {
+        "english": "Commemoration of Abune Kiros.",
+        "amharic": "የአቡነ ኪሮስ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        3
+      ]
+    },
+    {
+      "id": "abba_banuda",
+      "name": {
+        "english": "Abba Banuda",
+        "amharic": "አባ ባኑዳ"
+      },
+      "description": {
+        "english": "Commemoration of Abba Banuda.",
+        "amharic": "የአባ ባኑዳ መታሰቢያ።"
+      },
+      "major": false,
+      "negs": []
+    }
+  ],
+  "9": [
+    {
+      "id": "saint_thomas_apostle",
+      "name": {
+        "english": "Saint Thomas the Apostle",
+        "amharic": "ሐዋርያው ቶማስ"
+      },
+      "description": {
+        "english": "Commemoration of Saint Thomas the Apostle.",
+        "amharic": "የሐዋርያው ቶማስ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        2
+      ]
+    },
+    {
+      "id": "abune_isitinifase_kirisitosi",
+      "name": {
+        "english": "Abune Isitinifase Kirisitosi",
+        "amharic": "አቡነ እስትንፋሰ ክርስቶስ"
+      },
+      "description": {
+        "english": "Commemoration of Abune Isitinifase Kirisitosi.",
+        "amharic": "የአቡነ እስትንፋሰ ክርስቶስ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": []
+    },
+    {
+      "id": "three_eighteen_holy_fathers_nice",
+      "name": {
+        "english": "The 318 holy fathers assembled in the city of Nice",
+        "amharic": "ሰልስቱ ምዕት"
+      },
+      "description": {
+        "english": "Commemoration of the 318 holy fathers assembled in the city of Nice.",
+        "amharic": "በኒቂያ ከተማ የተሰበሰቡት 318 ቅዱሳን አባቶች መታሰቢያ።"
+      },
+      "major": true,
+      "negs": []
+    }
+  ],
+  "10": [
+    {
+      "id": "holy_cross",
+      "name": {
+        "english": "Holy Cross (Masqal)",
+        "amharic": "መስቀለ ክርስቶስ"
+      },
+      "description": {
+        "english": "Commemoration of the Holy Cross (Masqal)/the finding of true cross.",
+        "amharic": "የመስቀለ ክርስቶስ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        7
+      ]
+    },
+    {
+      "id": "tsedeniya_mariyami",
+      "name": {
+        "english": "Ts'edeniya Mariyami",
+        "amharic": "ፀደንያ ማርያም"
+      },
+      "description": {
+        "english": "Commemoration of Ts'edeniya Mariyami.",
+        "amharic": "የፀደንያ ማርያም መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        1
+      ]
+    },
+    {
+      "id": "simon_the_zealot",
+      "name": {
+        "english": "Simon the Zealot",
+        "amharic": "ስምኦን ቀኖናዊ ሐዋርያ"
+      },
+      "description": {
+        "english": "Commemoration of Simon the Zealot.",
+        "amharic": "የስምኦን ቀኖናዊ ሐዋርያ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        11
+      ]
+    }
+  ],
+  "11": [
+    {
+      "id": "saint_hanna",
+      "name": {
+        "english": "Saint Hanna, the mother of our holy Mother",
+        "amharic": "ሐና"
+      },
+      "description": {
+        "english": "Commemoration of Saint Hanna, the mother of Our Holy Mother.",
+        "amharic": "የቅድስት ሐና (የእመቤታችን እናት) መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        11
+      ]
+    },
+    {
+      "id": "saint_joachim",
+      "name": {
+        "english": "Saint Joachim, the father of our holy Mother",
+        "amharic": "ኢያቄም"
+      },
+      "description": {
+        "english": "Commemoration of Saint Joachim, the father of Our Holy Mother.",
+        "amharic": "የቅዱስ ኢያቄም (የእመቤታችን አባት) መታሰቢያ።"
+      },
+      "major": false,
+      "negs": []
+    },
+    {
+      "id": "saint_yared",
+      "name": {
+        "english": "Saint Yared",
+        "amharic": "ቅዱስ ያሬድ"
+      },
+      "description": {
+        "english": "Commemoration of Saint Yared.",
+        "amharic": "የቅዱስ ያሬድ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        9
+      ]
+    },
+    {
+      "id": "abune_hara",
+      "name": {
+        "english": "Abune Hara",
+        "amharic": "አቡነ ሐራ"
+      },
+      "description": {
+        "english": "Commemoration of Abune Hara.",
+        "amharic": "የአቡነ ሐራ መታሰቢያ።"
+      },
+      "major": false,
+      "negs": []
+    }
+  ],
+  "12": [
+    {
+      "id": "archangel_michael",
+      "name": {
+        "english": "Archangel Michael",
+        "amharic": "ቅዱስ ሚካኤል"
+      },
+      "description": {
+        "english": "Commemoration of Archangel Michael.",
+        "amharic": "የቅዱስ ሚካኤል መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        3,
+        12
+      ]
+    },
+    {
+      "id": "matthew_apostle",
+      "name": {
+        "english": "Matthew the Apostle",
+        "amharic": "ሐዋርያ ማቴዎስ"
+      },
+      "description": {
+        "english": "Commemoration of Matthew the Apostle.",
+        "amharic": "የሐዋርያ ማቴዎስ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": []
+    },
+    {
+      "id": "abba_samuel_waldeba",
+      "name": {
+        "english": "Abba Samuel from Waldeba",
+        "amharic": "አባ ሳሙኤል"
+      },
+      "description": {
+        "english": "Commemoration of Abba Samuel from Waldeba.",
+        "amharic": "ከዋልድባ የአባ ሳሙኤል መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        4
+      ]
+    }
+  ],
+  "13": [
+    {
+      "id": "god_the_father",
+      "name": {
+        "english": "Egziabher Abe (God the Father)",
+        "amharic": "እግዚአብሔር አብ"
+      },
+      "description": {
+        "english": "Commemoration of God the Father.",
+        "amharic": "የእግዚአብሔር አብ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        3
+      ]
+    },
+    {
+      "id": "archangel_raphael",
+      "name": {
+        "english": "Archangel Raphael",
+        "amharic": "ቅዱስ ሩፋኤል"
+      },
+      "description": {
+        "english": "Commemoration of Archangel Raphael.",
+        "amharic": "የቅዱስ ሩፋኤል መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        4
+      ]
+    },
+    {
+      "id": "saint_abba_zara_buruk",
+      "name": {
+        "english": "Saint Abba Zar'a-Buruk",
+        "amharic": "አቡነ ዘርአ ብሩክ"
+      },
+      "description": {
+        "english": "Commemoration of Saint Abba Zar'a-Buruk-departed from this world.",
+        "amharic": "የቅዱስ አባ ዘርአ ብሩክ እረፍታቸው መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        5
+      ]
+    }
+  ],
+  "14": [
+    {
+      "id": "abuna_aragwi",
+      "name": {
+        "english": "Abuna Aragwi-one of the Nine Saints",
+        "amharic": "አቡነ አረጋዊ "
+      },
+      "description": {
+        "english": "Commemoration of Abuna Aragwi, one of the Nine Saints",
+        "amharic": "ከዘጠኙ ቅዱሳን አንዱ የአቡነ አረጋዊ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        2
+      ]
+    },
+    {
+      "id": "gabra_krestos_the_hermit",
+      "name": {
+        "english": "Gabra Krestos the hermit",
+        "amharic": "ገብረ ክርስቶስ/ገብረ መርአዊ"
+      },
+      "description": {
+        "english": "Commemoration of  Gabra Krestos the hermit.",
+        "amharic": "የገብረ ክርስቶስ ገዳማዊ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        9
+      ]
+    }
+  ],
+  "15": [
+    {
+      "id": "cyriacus_julietta",
+      "name": {
+        "english": "St. Cyriacus and St. Julietta",
+        "amharic": "ቂርቆስና እየሉጣ"
+      },
+      "description": {
+        "english": "Commemoration of St. Cyriacus and St. Julietta.",
+        "amharic": "የቅዱስ ቂርቆስና የቅድስት እየሉጣ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        11,
+        5
+      ]
+    },
+    {
+      "id": "saint_stefanos_migration_of_his_body",
+      "name": {
+        "english": "Saint Stefanos",
+        "amharic": "ቅዱስ እስጢፋኖስ "
+      },
+      "description": {
+        "english": "Commemoration  of Saint Estifanos the First Martyr migration of his body",
+        "amharic": "የቅዱስ እስጢፋኖስ ሰማዕት (ቀዳሚ ሰማዕትና ሊቀ ዲያቆናት) አካል ሽግግራቸው መታሰቢያ"
+      },
+      "major": false,
+      "negs": []
+    }
+  ],
+  "16": [
+    {
+      "id": "kidane_meheret",
+      "name": {
+        "english": "Kidane Meheret - Our Lady, Covenant of Mercy",
+        "amharic": "ኪዳነ ምህረት"
+      },
+      "description": {
+        "english": "Commemoration of Kidane Meheret (Covenant of Mercy).",
+        "amharic": "የኪዳነ ምህረት መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        12,
+        6
+      ]
+    },
+    {
+      "id": "johannis_welde_negedguad_16",
+      "name": {
+        "english": "John the son of the Thunder (Yohannis Welde Negedguad)",
+        "amharic": "ዮሐንስ ወልደ ነጎድጓድ"
+      },
+      "description": {
+        "english": "Commemoration of John, the Son of Thunder his taken away to heaven.",
+        "amharic": "የዮሐንስ ወልደ ነጎድጓድ ወደ ሰማይ መውሰዳቸው መታሰቢያ።"
+      },
+      "major": false,
+      "negs": [
+        11
+      ]
+    }
+  ],
+  "17": [
+    {
+      "id": "saint_stefanos",
+      "name": {
+        "english": "Saint Stefanos (Stephen the Martyr) - the First Martyr and Archdeacon)",
+        "amharic": "ቅዱስ እስጢፋኖስ ፣ ሐዋርያውያዕቆብ ወልደ ዘብዲዮስ ፣ አባ ገሪማ"
+      },
+      "description": {
+        "english": "Commemoration of Saint Stephen the Martyr (First Martyr and Archdeacon) ordination date",
+        "amharic": "የቅዱስ እስጢፋኖስ ሰማዕት (ቀዳሚ ሰማዕትና ሊቀ ዲያቆናት)  የክህነት ዘመቻቸው መታሰቢያ"
+      },
+      "major": true,
+      "negs": [
+        2
+      ]
+    },
+    {
+      "id": "james_the_apostle_17",
+      "name": {
+        "english": " James the apostle",
+        "amharic": " ሐዋርያው ያዕቆብ ወልደ ዘብዲዮስ"
+      },
+      "description": {
+        "english": "Commemoration of James the Apostle.",
+        "amharic": "የሐዋርያው ያዕቆብ ወልደ ዘብዲዮስ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        8
+      ]
+    },
+    {
+      "id": "abba_gerima",
+      "name": {
+        "english": "Abba Gerima (one of the Nine saints)",
+        "amharic": "አባ ገሪማ"
+      },
+      "description": {
+        "english": "Commemoration of  Abba Gerima (one of the Nine Saints).",
+        "amharic": "የአባ ገሪማ (ከዘጠኙ ቅዱሳን አንዱ) መታሰቢያ።"
+      },
+      "major": true,
+      "negs": []
+    }
+  ],
+  "18": [
+    {
+      "id": "philip_the_apostle",
+      "name": {
+        "english": "Philip the Apostle /Abune Ewostatewos",
+        "amharic": "ሐዋርያው ፊሊጶስ "
+      },
+      "description": {
+        "english": "Commemoration of Philip the Apostle.",
+        "amharic": "የሐዋርያው ፊሊጶስ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        3
+      ]
+    },
+    {
+      "id": "abune_ewostatewos",
+      "name": {
+        "english": "Abune_Ewostatewos",
+        "amharic": "አቡነ ኢዩስጣቲዮስ"
+      },
+      "description": {
+        "english": "Commemoration of  Abune Ewostatewos.",
+        "amharic": "የአቡነ ኢዩስጣቲዮስ መታሰቢያ።"
+      },
+      "major": true,
+      "negs": [
+        1
+      ]
+    },
+    {
+      "id": "james_the_apostle_18",
+      "name": {
+        "english": " James the apostle",
+        "amharic": " ሐዋርያው ያዕቆብ ወልደ ዘብዲዮስ"
+      },
+      "description": {
+        "english": "Commemoration of James the Apostle.",
+        "amharic": "የሐዋርያው ያዕቆብ ወልደ ዘብዲዮስ መታሰቢያ።"
+      },
+      "major": false,
+      "negs": [
+        11
+      ]
+    }
+  ],
+  "19": [
+    {
+      "id": "gabriel_archangel_rescue_of_the_three_youths",
+      "name": {
+        "english": "Gabriel the Archangel",
+        "amharic": "ቅዱስ ገብርኤል"
+      },
+      "description": {
+        "english": "Commemoration of Archangel Gabriel is dedicated to the rescue of the three youths (Sidraq, Misaq, and Abdenago).",
+        "amharic": "ሊቀ መላእክት ገብርኤል ሦስቱን ወጣቶች (ሲድራቅ፣ ሚሳቅና አብደናጎን) ማዳን መታሰቢያ"
+      },
+      "major": true,
+      "negs": [
+        4
+      ]
+    },
+    {
+      "id": "gabriel_archangel_rescue_of_rescue_of_quirqos_and_his_mother",
+      "name": {
+        "english": "Gabriel the Archangel",
+        "amharic": "ቅዱስ ገብርኤል"
+      },
+      "description": {
+        "english": "Commemoration of Archangel Gabriel is dedicated to the rescue of rescue of Quirqos and his mother, Saint Iyeluta (Julitta). .",
+        "amharic": "የእግዚአብሔር መልአክ ቅዱስ ገብርኤል ቂርቆስን እና እናቱን ቅድስት ኢየሉጣን ማዳን መታሰቢያ"
+      },
+      "major": false,
+      "negs": [
+        11
+      ]
+    }
+  ],
+  "20": [
+    {
+      "id": "hnstata_betkerestyan",
+      "name": {
+        "english": "Hnstata Betkerestyan",
+        "amharic": "ሕንፀተ ቤተ ክርስቲያን"
+      },
+      "description": {
+        "english": "Commemoration of the building of the church in the name of Our Holy Virgin Mary.",
+        "amharic": "ሄነሳተ ቤተ ክርስቲያን - ለቅድስት ድንግል ማርያም የተሰጠች የመጀመሪያዋ ቤተ ክርስቲያን በፊልጵስዩስ መመሥረት"
+      },
+      "major": true,
+      "negs": [
+        10
+      ]
+    }
+  ],
+  "21": [
+    {
+      "id": "egzeet_na_maryam_departure",
+      "name": {
+        "english": "Egze'et-na Maryam",
+        "amharic": "ቅድስት ድንግል ማርያም"
+      },
+      "description": {
+        "english": "The departure of Our Holy Mother.",
+        "amharic": "የቅድስት ድንግል ማርያም ዕርገት"
+      },
+      "major": false,
+      "negs": [
+        5
+      ]
+    },
+    {
+      "id": "egzeet_na_maryam_debre_mitmak",
+      "name": {
+        "english": "Egze'et-na Maryam",
+        "amharic": "ቅድስት ድንግል ማርያም"
+      },
+      "description": {
+        "english": "The appearance of Our Holy Mother Virgin Mariam in the church of Debre Mitmak",
+        "amharic": "የቅድስት ድንግል ማርያም በደብረ ምጥማቅ ቤተ ክርስቲያን መገለጥ።"
+      },
+      "major": false,
+      "negs": [
+        9
+      ]
+    },
+    {
+      "id": "egzeet_na_maryam_prayed_at_golgota",
+      "name": {
+        "english": "Egze'et-na Maryam",
+        "amharic": "ቅድስት ድንግል ማርያም"
+      },
+      "description": {
+        "english": "Sene Golgota - Our Holy Mother Virgin Mariam prayed at Golgota",
+        "amharic": "ሰኔ ጎልጎታ - ቅድስት ድንግል ማርያም በጎልጎታ ጸለየች"
+      },
+      "major": false,
+      "negs": [
+        10
+      ]
+    }
+  ],
+  "22": [
+    {
+      "id": "archangel_uriel",
+      "name": {
+        "english": "Archangel Uriel",
+        "amharic": "ቅዱስ ኡራኤል"
+      },
+      "description": {
+        "english": "Archangel Uriel received covenant and ordained as an Archangel",
+        "amharic": "ሊቀ መላእክት ዑራኤል ቃል ኪዳን ተቀብሎ ሊቀ መልአክ ሆኖ ተሾመ።"
+      },
+      "major": false,
+      "negs": [
+        11
+      ]
+    },
+    {
+      "id": "saint_lukas",
+      "name": {
+        "english": "Saint Lukas",
+        "amharic": "ቅዱስ ሉቃስ"
+      },
+      "description": {
+        "english": "Saint Mark departed from this world",
+        "amharic": "ቅዱስ ማርቆስ ከዚህ ዓለም በሞት ተለየ"
+      },
+      "major": true,
+      "negs": [
+        2
+      ]
+    },
+    {
+      "id": "saint_daqsyos",
+      "name": {
+        "english": "Saint Daqsyos",
+        "amharic": "ቅዱስ ደቅስዮስ"
+      },
+      "description": {
+        "english": "Saint_Daqsyos",
+        "amharic": "ቅዱስ ደቅስዮስ"
+      },
+      "major": true,
+      "negs": [
+        4
+      ]
+    },
+    {
+      "id": "bisrate_gebriel",
+      "name": {
+        "english": "bisrate gebriel ",
+        "amharic": "ብስራተ ገብርኤል"
+      },
+      "description": {
+        "english": "Commemoration of the Annunciation",
+        "amharic": "ብስራተ ገብርኤል"
+      },
+      "major": true,
+      "negs": [
+        4
+      ]
+    }
+  ],
+  "23": [
+    {
+      "id": "saint_georgis_of_Lydda",
+      "name": {
+        "english": "Saint Georgis - George of Lydda",
+        "amharic": "ቅዱስ ጊዮርጊስ"
+      },
+      "description": {
+        "english": " Saint Georgis - George of Lydda",
+        "amharic": "ቅዱስ ጊዮርጊስ "
+      },
+      "major": false,
+      "negs": [
+        8
+      ]
+    },
+    {
+      "id": "saint_georgis_the_battle_of_adwa",
+      "name": {
+        "english": "Saint Giorgis (George)-The Battle of Adwa",
+        "amharic": "ቅዱስ ጊዮርጊስ - የአድዋ ጦርነት"
+      },
+      "description": {
+        "english": "Saint Giorgis (George)-The Battle of Adwa",
+        "amharic": "ቅዱስ ጊዮርጊስ - የአድዋ ጦርነት"
+      },
+      "major": true,
+      "negs": [
+        6
+      ]
+    }
+  ],
+  "24": [
+    {
+      "id": "saint_georgis_scattering_of_his_bone",
+      "name": {
+        "english": "Saint Georgis",
+        "amharic": "ቅዱስ ጊዮርጊስ"
+      },
+      "description": {
+        "english": " Feast of the Great Martyr Saint George, the scattering of his bone",
+        "amharic": "ቅዱስ ጊዮርጊስ የአጥንቱ ፍልሰት መታሰቢያ"
+      },
+      "major": false,
+      "negs": [
+        5
+      ]
+    },
+    {
+      "id": "takla_haymanot_diparted_from_this_world",
+      "name": {
+        "english": "Abuna Takla Haymanot",
+        "amharic": "አቡነ ተክለ ሐይማኖት"
+      },
+      "description": {
+        "english": "Abuna Takla Haymanot departed from this world",
+        "amharic": "አቡነ ተክለ ሃይማኖት ከዚህ ዓለም በሞት ተለዩ"
+      },
+      "major": true,
+      "negs": [
+        12
+      ]
+    },
+    {
+      "id": "takla_haymanot_legs_broke",
+      "name": {
+        "english": "Abuna Takla Haymanot",
+        "amharic": "አቡነ ተክለ ሐይማኖት"
+      },
+      "description": {
+        "english": "Having stood for 7 years, one of his legs broke",
+        "amharic": "ለሰባት ዓመታት ከቆሙ በኋላ አንደኛው እግራቸው ተሰበረ።"
+      },
+      "major": true,
+      "negs": [
+        5
+      ]
+    },
+    {
+      "id": "takla_haymanot_birth_date",
+      "name": {
+        "english": "Abuna Takla Haymanot",
+        "amharic": "አቡነ ተክለ ሐይማኖት"
+      },
+      "description": {
+        "english": "Abuna Takla Haymanot's birth date",
+        "amharic": "የአቡነ ተክለ ሃይማኖት የልደት ቀን"
+      },
+      "major": false,
+      "negs": [
+        4
+      ]
+    },
+    {
+      "id": "saint_kirstos_semera",
+      "name": {
+        "english": "Saint Kirstos Semera",
+        "amharic": "ቅድስት ክርስረቶስ ሰምራ "
+      },
+      "description": {
+        "english": "Saint Kirstos Semera",
+        "amharic": "ቅድስት ክርስረቶስ ሰምራ "
+      },
+      "major": true,
+      "negs": [
+        12
+      ]
+    },
+    {
+      "id": "24_heavenly_priests",
+      "name": {
+        "english": "24 Heavenly Priests",
+        "amharic": "24ቱ ካህናተ ሰማይ"
+      },
+      "description": {
+        "english": "24 Heavenly Priests",
+        "amharic": "24ቱ ካህናተ ሰማይ"
+      },
+      "major": true,
+      "negs": [
+        3
+      ]
+    }
+  ],
+  "25": [
+    {
+      "id": "abune_habibe",
+      "name": {
+        "english": "Abune Habibe",
+        "amharic": "አቡነ ሀቢብ (አባ ቡላ)"
+      },
+      "description": {
+        "english": "Abune_Habibe",
+        "amharic": "አረጋዊው ዮሴፍ "
+      },
+      "major": true,
+      "negs": [
+        2
+      ]
+    },
+    {
+      "id": "saint_jude_son_of_alpheus",
+      "name": {
+        "english": "Saint Jude, son of Alpheus, the Apostle",
+        "amharic": "ቅዱስ ይሁዳ ዘአልፍዮስ ሐዋርያው"
+      },
+      "description": {
+        "english": "Saint Jude, son of Alpheus, the Apostle his martyrdom",
+        "amharic": "ቅዱስ ይሁዳ ዘአልፍዮስ ሐዋርያውሰማዕትነቱ"
+      },
+      "major": false,
+      "negs": [
+        10
+      ]
+    }
+  ],
+  "26": [
+    {
+      "id": "saint_joseph",
+      "name": {
+        "english": "Saint Joseph ",
+        "amharic": "አረጋዊው ዮሴፍ"
+      },
+      "description": {
+        "english": "Saint Joseph",
+        "amharic": "አረጋዊው ዮሴፍ "
+      },
+      "major": true,
+      "negs": [
+        11
+      ]
+    },
+    {
+      "id": "abba_salama_frumentius",
+      "name": {
+        "english": " Abba_Salama_Frumentius, the Enlightener of Ethiopia",
+        "amharic": "አባ ሰላማ ከሳቴ ብርሀን"
+      },
+      "description": {
+        "english": "Abba_Salama_Frumentius, the Enlightener of Ethiopia",
+        "amharic": "አባ ሰላማ ከሳቴ ብርሀን "
+      },
+      "major": true,
+      "negs": [
+        11
+      ]
+    },
+    {
+      "id": "thomas_the_apostle",
+      "name": {
+        "english": "Thomas the apostle",
+        "amharic": " ቶማስ ዘህንደኬ"
+      },
+      "description": {
+        "english": "Thomas the apostle",
+        "amharic": "ቶማስ ዘህንደኬ "
+      },
+      "major": true,
+      "negs": [
+        9
+      ]
+    },
+    {
+      "id": "abune_habte_mariam",
+      "name": {
+        "english": "Abune Habte Mariam",
+        "amharic": "አቡነ ሀብተ ማርያም"
+      },
+      "description": {
+        "english": "Abune Habte Mariam",
+        "amharic": "አቡነ ሀብተ ማርያም"
+      },
+      "major": true,
+      "negs": [
+        3
+      ]
+    },
+    {
+      "id": "aba_eyesus_moea",
+      "name": {
+        "english": "Aba Eyesus Moe`a",
+        "amharic": "አባ ኢየሱስ ሞአ"
+      },
+      "description": {
+        "english": "Saint Eyesus Moe`a",
+        "amharic": "አባ ኢየሱስ ሞአ "
+      },
+      "major": true,
+      "negs": []
+    }
+  ],
+  "27": [
+    {
+      "id": "saint_marqorewos",
+      "name": {
+        "english": "Saint Marqorewos (Merkorios)/ Abune Habibe",
+        "amharic": "ቅዱስ መርቆሬዎስ ፣አቡነ ሀቢብ (አባ ቡላ)"
+      },
+      "description": {
+        "english": "Saint Joseph",
+        "amharic": "አረጋዊው ዮሴፍ "
+      },
+      "major": true,
+      "negs": [
+        3
+      ]
+    },
+    {
+      "id": "medhane_alem",
+      "name": {
+        "english": "Medhane Alem -The Saviour of the world/ Abune Mebea Zion",
+        "amharic": "መድሐኔአለም "
+      },
+      "description": {
+        "english": "Medhane Alem -The Saviour of the world",
+        "amharic": "የዓለም መድኃኒት"
+      },
+      "major": true,
+      "negs": [
+        7
+      ]
+    },
+    {
+      "id": "abune_mebea_zion",
+      "name": {
+        "english": " Abune Mebea Zion",
+        "amharic": "አቡነ መባዓ ፅዮን"
+      },
+      "description": {
+        "english": "Abune Mebea Zion",
+        "amharic": "አቡነ መባዓ ፅዮን"
+      },
+      "major": false,
+      "negs": [
+        2
+      ]
+    }
+  ],
+  "28": [
+    {
+      "id": "ammanuel",
+      "name": {
+        "english": "ammanuel",
+        "amharic": "አማኑኤል"
+      },
+      "description": {
+        "english": "ammanuel",
+        "amharic": "አማኑኤል"
+      },
+      "major": true,
+      "negs": [
+        2,
+        5,
+        9
+      ]
+    }
+  ],
+  "29": [
+    {
+      "id": "baale_wold",
+      "name": {
+        "english": "Ba`ale Wold",
+        "amharic": "በዓለወልድ"
+      },
+      "description": {
+        "english": "Ba`ale Wold (Feast of God The Son)",
+        "amharic": "ዮሐንስ መጥምቅ"
+      },
+      "major": true,
+      "negs": [
+        4,
+        5
+      ]
+    },
+    {
+      "id": "saint_lalibela",
+      "name": {
+        "english": "Saint Lalibela",
+        "amharic": "ቅዱስ ላሊበላ"
+      },
+      "description": {
+        "english": "Saint Lalibela",
+        "amharic": "ቅዱስ ላሊበላ"
+      },
+      "major": true,
+      "negs": [
+        4
+      ]
+    },
+    {
+      "id": "saint_arsema_29",
+      "name": {
+        "english": "Saint Arsema",
+        "amharic": "አርሴማ"
+      },
+      "description": {
+        "english": "Commemoration of The Martyrdom (Beheading) of Kidist Arsema",
+        "amharic": "የቅድስት አርሴማ ሰማዕትነት (ራስ መቁረጥ)"
+      },
+      "major": false,
+      "negs": [
+        1
+      ]
+    }
+  ],
+  "30": [
+    {
+      "id": "john_baptist",
+      "name": {
+        "english": "John the baptist",
+        "amharic": "ዮሐንስ መጥምቅ "
+      },
+      "description": {
+        "english": "John the baptist",
+        "amharic": "ዮሐንስ መጥምቅ"
+      },
+      "major": true,
+      "negs": [
+        10
+      ]
+    },
+    {
+      "id": "saint_markos",
+      "name": {
+        "english": "Saint_Markos",
+        "amharic": "ቅዱስ ማርቆስ"
+      },
+      "description": {
+        "english": "Saint Markos /St. Mark the Evangelist/",
+        "amharic": "የቅዱስ ማርቆስ የልደት"
+      },
+      "major": true,
+      "negs": [
+        2,
+        8
+      ]
+    }
+  ]
+}

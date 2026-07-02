@@ -1,11 +1,20 @@
 import { Kenat } from './Kenat.js';
 import { getHolidaysInMonth } from './holidays.js';
 import { toGeez } from './geezConverter.js';
-import { orthodoxMonthlydays } from './nigs.js';
+import orthodoxMonthlydaysByDay from './nigs.json' with { type: 'json' };
 import { daysOfWeek, monthNames, HolidayTags, holidayInfo } from './constants.js';
 import { getWeekday, validateNumericInputs } from './utils.js';
 import { InvalidGridConfigError } from './errors/errorHandler.js';
-import type { Holiday, Lang } from './types.js';
+import type { Holiday, Lang, LocalizedText } from './types.js';
+
+/** A single Orthodox commemoration recurring on a given day-of-month, as stored in nigs.json. */
+interface OrthodoxDayEntry {
+    id: string;
+    name: LocalizedText;
+    description: LocalizedText;
+    major: boolean;
+    negs: number[];
+}
 
 export interface MonthGridConfig {
     year?: number;
@@ -137,51 +146,23 @@ export class MonthGrid {
         if (this.mode !== 'christian') return {};
         const map: Record<number, DayHolidayEntry[]> = {};
 
-        Object.entries(orthodoxMonthlydays).forEach(([saintKey, saint]: [string, any]) => {
-            if (saint.events) {
-                // This is a nested saint object with multiple events
-                const nigsEvent = saint.events.find((event: any) =>
-                    Array.isArray(event.negs) ? event.negs.includes(this.month) : event.negs === this.month
-                );
+        const dayEntries = orthodoxMonthlydaysByDay as unknown as Record<string, OrthodoxDayEntry[]>;
 
-                if (nigsEvent) {
-                    // It's a major feast ("Nigs") month, so show the specific event
-                    const day = saint.recuringDate;
-                    if (!map[day]) map[day] = [];
-                    map[day].push({
-                        key: nigsEvent.key,
-                        name: saint.name[this.weekdayLang] || saint.name.english,
-                        description: nigsEvent.description[this.weekdayLang] || nigsEvent.description.english,
-                        isNigs: true,
-                        tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN, 'NIGS']
-                    });
-                } else if (this.showAllSaints && saint.defaultDescription) {
-                    // It's NOT a major feast month, but the user wants to see all saints. Show the generic commemoration.
-                    const day = saint.recuringDate;
-                    if (!map[day]) map[day] = [];
-                    map[day].push({
-                        key: saintKey, // Use the parent key for the generic event
-                        name: saint.name[this.weekdayLang] || saint.name.english,
-                        description: saint.defaultDescription[this.weekdayLang] || saint.defaultDescription.english,
-                        isNigs: false,
-                        tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN, 'SAINT_DAY']
-                    });
-                }
-            } else {
-                // This is a flat (single-event) saint object
-                const isNigs = Array.isArray(saint.negs) ? saint.negs.includes(this.month) : saint.negs === this.month;
-                if (isNigs || this.showAllSaints) {
-                    const day = saint.recuringDate;
-                    if (!map[day]) map[day] = [];
-                    map[day].push({
-                        key: saint.key,
-                        name: saint.name[this.weekdayLang] || saint.name.english,
-                        description: saint.description[this.weekdayLang] || saint.description.english,
-                        isNigs,
-                        tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN, isNigs ? 'NIGS' : 'SAINT_DAY']
-                    });
-                }
-            }
+        Object.entries(dayEntries).forEach(([dayStr, entries]) => {
+            const day = Number(dayStr);
+            entries.forEach(entry => {
+                const isNigs = entry.negs.includes(this.month);
+                if (!isNigs && !this.showAllSaints) return;
+
+                if (!map[day]) map[day] = [];
+                map[day].push({
+                    key: entry.id,
+                    name: entry.name[this.weekdayLang] || entry.name.english,
+                    description: entry.description[this.weekdayLang] || entry.description.english,
+                    isNigs,
+                    tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN, isNigs ? 'NIGS' : 'SAINT_DAY']
+                });
+            });
         });
         return map;
     }
