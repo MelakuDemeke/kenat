@@ -5,7 +5,7 @@ import { toEC, toGC } from './conversions.js';
 import { toArabic, toGeez } from './geezConverter.js';
 import { getHolidaysInMonth, getHoliday, getHolidaysForYear } from './holidays.js';
 import { Time } from './Time.js';
-import { HolidayTags, HolidayNames } from './constants.js';
+import { HolidayTags, HolidayNames, FastingKeys } from './constants.js';
 import { getBahireHasab } from './bahireHasab.js';
 import { monthNames } from './constants.js';
 import { getFastingPeriod, getFastingInfo, getFastingDays } from './fasting.js';
@@ -30,6 +30,7 @@ export {
   getHoliday,
   HolidayTags,
   HolidayNames,
+  FastingKeys,
   monthNames,
   diffBreakdown,
 };
