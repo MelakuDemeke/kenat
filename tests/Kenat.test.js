@@ -225,8 +225,22 @@ describe('Calendar preference option', () => {
             expect(kenat.toISOString()).toBe('2016-01-01T12:00');
         });
 
-        test('returns a standard Gregorian ISO date when requested', () => {
-            expect(kenat.toISOString({ calendar: 'gregorian' })).toBe('2023-09-12T12:00');
+        test('appends the non-standard +12h suffix for a night time on the Ethiopian calendar', () => {
+            const nightKenat = new Kenat('2016/1/1', { hour: 8, minute: 15, period: 'night' });
+            expect(nightKenat.toISOString()).toBe('2016-01-01T08:15+12h');
+        });
+
+        test('returns a standard Gregorian ISO date with the time converted to 24-hour format', () => {
+            // 12:00 day Ethiopian time is 06:00 Gregorian, not 12:00.
+            expect(kenat.toISOString({ calendar: 'gregorian' })).toBe('2023-09-12T06:00');
+        });
+
+        test('converts a night time to Gregorian 24-hour format with no non-standard suffix', () => {
+            const nightKenat = new Kenat('2016/1/1', { hour: 8, minute: 15, period: 'night' });
+            const iso = nightKenat.toISOString({ calendar: 'gregorian' });
+            expect(iso).toBe('2023-09-12T02:15');
+            expect(iso).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/); // no +12h or similar non-standard suffix
+            expect(new Date(iso).toString()).not.toBe('Invalid Date');
         });
     });
 });

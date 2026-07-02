@@ -88,7 +88,12 @@ export function formatGregorianStandard(gDate) {
  * @returns {string} The formatted date string, e.g., "Monday, September 11, 2023".
  */
 export function formatGregorianWithWeekday(gDate, lang = 'english') {
-  const weekdayIndex = new Date(gDate.year, gDate.month - 1, gDate.day).getDay();
+  // Avoid the Date constructor's 2-digit-year-to-1900s mapping (years 0-99) by
+  // setting the year explicitly via setUTCFullYear, and use UTC throughout so
+  // the result doesn't depend on the runtime's local timezone/DST rules.
+  const jsDate = new Date(0);
+  jsDate.setUTCFullYear(gDate.year, gDate.month - 1, gDate.day);
+  const weekdayIndex = jsDate.getUTCDay();
   const weekdayName = daysOfWeek[lang]?.[weekdayIndex] || daysOfWeek.english[weekdayIndex];
   return `${weekdayName}, ${formatGregorianStandard(gDate)}`;
 }
@@ -142,4 +147,28 @@ export function toISODateString(etDate, time = null) {
   const suffix = time.period === 'night' ? '+12h' : '';
 
   return `${y}-${m}-${d}T${hr}:${min}${suffix}`;
+}
+
+/**
+ * Returns a standard ISO 8601 date-time string for a Gregorian date. Unlike
+ * toISODateString(), the Ethiopian `time` (12-hour, day/night) is converted to
+ * Gregorian 24-hour time via Time#toGregorian() and no non-standard suffix is
+ * appended, so the result is a valid ISO 8601 string parsers can consume.
+ *
+ * @param {{year: number, month: number, day: number}} gDate - Gregorian date
+ * @param {import('./Time.js').Time|null} [time=null] - Ethiopian time to convert
+ * @returns {string}
+ */
+export function toGregorianISODateString(gDate, time = null) {
+  const y = gDate.year;
+  const m = gDate.month.toString().padStart(2, '0');
+  const d = gDate.day.toString().padStart(2, '0');
+
+  if (!time) return `${y}-${m}-${d}`;
+
+  const { hour, minute } = time.toGregorian();
+  const hr = hour.toString().padStart(2, '0');
+  const min = minute.toString().padStart(2, '0');
+
+  return `${y}-${m}-${d}T${hr}:${min}`;
 }

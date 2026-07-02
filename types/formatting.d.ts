@@ -111,3 +111,18 @@ export function toISODateString(etDate: {
     minute: number;
     period: "day" | "night";
 } | null): string;
+/**
+ * Returns a standard ISO 8601 date-time string for a Gregorian date. Unlike
+ * toISODateString(), the Ethiopian `time` (12-hour, day/night) is converted to
+ * Gregorian 24-hour time via Time#toGregorian() and no non-standard suffix is
+ * appended, so the result is a valid ISO 8601 string parsers can consume.
+ *
+ * @param {{year: number, month: number, day: number}} gDate - Gregorian date
+ * @param {import('./Time.js').Time|null} [time=null] - Ethiopian time to convert
+ * @returns {string}
+ */
+export function toGregorianISODateString(gDate: {
+    year: number;
+    month: number;
+    day: number;
+}, time?: import("./Time.js").Time | null): string;

@@ -395,11 +395,13 @@ const userPref = 'gregorian'; // e.g. from a user setting
 
 date.format({ calendar: userPref });      // → "September 12, 2023"
 date.getDate({ calendar: userPref });     // → { year: 2023, month: 9, day: 12 }
-date.toISOString({ calendar: userPref }); // → "2023-09-12T12:00" (standard ISO 8601)
+date.toISOString({ calendar: userPref }); // → "2023-09-12T06:00" (standard ISO 8601)
 
 // Defaults to 'ethiopian' when omitted
 date.format(); // → "መስከረም 1 2016"
 ```
+
+> `toISOString({ calendar: 'gregorian' })` converts Kenat's Ethiopian 12-hour time to Gregorian 24-hour time (12:00 day → 06:00) and never appends the non-standard `+12h` suffix that the default Ethiopian-calendar ISO string uses for night times — the result is a genuine, parser-safe ISO 8601 string.
 
 ### Time Handling
 

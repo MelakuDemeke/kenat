@@ -20,6 +20,7 @@ import {
     formatWithWeekday,
     formatShort,
     toISODateString,
+    toGregorianISODateString,
     formatGregorianStandard,
     formatGregorianWithWeekday,
     formatGregorianWithTime
@@ -186,13 +187,13 @@ export class Kenat {
     // Format Methods
 
     /**
-     * Returns a string representation of the date and time.
-     *
-     * The format is: "Ethiopian: {year}-{month}-{day} {hh:mm period}".
-     * If the time is not available, hour and minute are replaced with '??'.
+     * Returns a string representation of the date and time, e.g. "መስከረም 1 2016 12:00 ጠዋት".
      *
      * @param {Object} [options={}] - Formatting options.
      * @param {'ethiopian'|'gregorian'} [options.calendar='ethiopian'] - Which calendar to render the date in.
+     *   'gregorian' renders the Gregorian date with an English month name, e.g. "September 12, 2023 12:00 ጠዋት".
+     *   In both cases the time-of-day portion still reflects Kenat's Ethiopian 12-hour clock; use
+     *   toISOString({ calendar: 'gregorian' }) if you need the time converted to Gregorian 24-hour format.
      * @returns {string} The formatted date and time string.
      */
     toString(options = {}) {
@@ -297,13 +298,21 @@ export class Kenat {
      *
      * @param {Object} [options={}] - Formatting options.
      * @param {'ethiopian'|'gregorian'} [options.calendar='ethiopian'] - Which calendar's date to render.
-     *   'gregorian' produces a standard ISO 8601 date, useful for interop (e.g. `<input type="date">`).
+     *   'gregorian' produces a genuine ISO 8601 string: the date is Gregorian and the time is converted
+     *   from Kenat's Ethiopian 12-hour clock to Gregorian 24-hour time (e.g. 12:00 day -> 06:00), with
+     *   no non-standard suffix - useful for interop (e.g. `<input type="date">` or `new Date(...)`).
+     *   The default 'ethiopian' calendar keeps the existing Ethiopian-date, Ethiopian-time, ISO-*like*
+     *   string (including the non-standard `+12h` suffix for night times), unchanged for backward compatibility.
      * @returns {string}
      */
     toISOString(options = {}) {
         const { calendar = 'ethiopian' } = options;
-        const date = calendar === 'gregorian' ? this.getGregorian() : this.ethiopian;
-        return toISODateString(date, this.time);
+
+        if (calendar === 'gregorian') {
+            return toGregorianISODateString(this.getGregorian(), this.time);
+        }
+
+        return toISODateString(this.ethiopian, this.time);
     }
 
     /**
