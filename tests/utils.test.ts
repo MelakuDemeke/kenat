@@ -1,10 +1,10 @@
-import { dayOfYear } from "../src/utils";
+import { dayOfYear } from "../src/utils.js";
 import {
     monthDayFromDayOfYear,
     isEthiopianLeapYear,
     isGregorianLeapYear,
     getEthiopianDaysInMonth
-} from "../src/utils";
+} from "../src/utils.js";
 
 
 describe('dayOfYear', () => {

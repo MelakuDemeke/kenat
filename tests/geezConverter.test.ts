@@ -1,4 +1,4 @@
-import { toGeez, toArabic } from '../src/geezConverter';
+import { toGeez, toArabic } from '../src/geezConverter.js';
 import { GeezConverterError } from '../src/errors/errorHandler.js';
 
 
@@ -40,8 +40,8 @@ describe('toGeez', () => {
     it('throws error for invalid input', () => {
         expect(() => toGeez(-1)).toThrow(GeezConverterError);
         expect(() => toGeez('abc')).toThrow(GeezConverterError);
-        expect(() => toGeez(null)).toThrow();
-        expect(() => toGeez(undefined)).toThrow();
+        expect(() => toGeez(null as any)).toThrow();
+        expect(() => toGeez(undefined as any)).toThrow();
         expect(() => toGeez(1.5)).toThrow(GeezConverterError);
     });
 });
@@ -84,9 +84,9 @@ describe('toArabic', () => {
     });
 
     it('throws error for non-string input', () => {
-        expect(() => toArabic(null)).toThrow(GeezConverterError);
-        expect(() => toArabic(undefined)).toThrow(GeezConverterError);
-        expect(() => toArabic(123)).toThrow(GeezConverterError);
+        expect(() => toArabic(null as any)).toThrow(GeezConverterError);
+        expect(() => toArabic(undefined as any)).toThrow(GeezConverterError);
+        expect(() => toArabic(123 as any)).toThrow(GeezConverterError);
     });
 
     it('converts round-trip toGeez -> toArabic', () => {

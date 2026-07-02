@@ -31,7 +31,7 @@ describe('toGeez', () => {
     test('throws error for invalid inputs', () => {
         expect(() => toGeez(-1)).toThrow();
         expect(() => toGeez('abc')).toThrow();
-        expect(() => toGeez(null)).toThrow();
+        expect(() => toGeez(null as any)).toThrow();
     });
 });
 

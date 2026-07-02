@@ -92,8 +92,8 @@ describe('Bahire Hasab Calculation', () => {
 
     describe('Error Handling', () => {
         test('should throw InvalidInputTypeError for non-numeric input', () => {
-            expect(() => getBahireHasab('2016')).toThrow(InvalidInputTypeError);
-            expect(() => getMovableHoliday('TINSAYE', '2016')).toThrow(InvalidInputTypeError);
+            expect(() => getBahireHasab('2016' as any)).toThrow(InvalidInputTypeError);
+            expect(() => getMovableHoliday('TINSAYE', '2016' as any)).toThrow(InvalidInputTypeError);
         });
     });
 });

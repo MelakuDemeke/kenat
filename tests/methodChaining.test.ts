@@ -90,21 +90,21 @@ describe('Method Chaining Tests', () => {
 
     test('should throw error for invalid unit in add()', () => {
         const date = new Kenat('2017/1/1');
-        expect(() => date.add(1, 'weeks')).toThrow('Invalid unit: weeks');
+        expect(() => date.add(1, 'weeks' as any)).toThrow('Invalid unit: weeks');
     });
 
     test('should throw error for invalid unit in startOf()', () => {
         const date = new Kenat('2017/1/1');
-        expect(() => date.startOf('week')).toThrow('Invalid unit: week');
+        expect(() => date.startOf('week' as any)).toThrow('Invalid unit: week');
     });
 
     test('should throw error for invalid unit in endOf()', () => {
         const date = new Kenat('2017/1/1');
-        expect(() => date.endOf('week')).toThrow('Invalid unit: week');
+        expect(() => date.endOf('week' as any)).toThrow('Invalid unit: week');
     });
 
     test('should throw error for non-numeric amount in add()', () => {
         const date = new Kenat('2017/1/1');
-        expect(() => date.add('seven', 'days')).toThrow('Amount must be a number');
+        expect(() => date.add('seven' as any, 'days')).toThrow('Amount must be a number');
     });
 });

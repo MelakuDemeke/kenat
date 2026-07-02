@@ -30,12 +30,12 @@ describe('Time Class and Related Logic', () => {
       expect(() => new Time(13, 0, 'day')).toThrow(InvalidTimeError); // Hour 13 is invalid
       expect(() => new Time(5, -1, 'day')).toThrow(InvalidTimeError); // Negative minute
       expect(() => new Time(5, 60, 'day')).toThrow(InvalidTimeError); // Minute >= 60
-      expect(() => new Time(5, 0, 'morning')).toThrow(InvalidTimeError); // Invalid period
+      expect(() => new Time(5, 0, 'morning' as any)).toThrow(InvalidTimeError); // Invalid period
     });
 
     test('should throw InvalidInputTypeError for non-numeric inputs', () => {
-      expect(() => new Time('three', 30)).toThrow(InvalidInputTypeError);
-      expect(() => new Time(3, 'thirty')).toThrow(InvalidInputTypeError);
+      expect(() => new Time('three' as any, 30)).toThrow(InvalidInputTypeError);
+      expect(() => new Time(3, 'thirty' as any)).toThrow(InvalidInputTypeError);
     });
   });
 
@@ -150,8 +150,8 @@ describe('Time Class and Related Logic', () => {
     });
 
     test('add/subtract should throw on invalid duration', () => {
-      expect(() => startTime.add({ hours: 'two' })).toThrow(InvalidInputTypeError);
-      expect(() => startTime.subtract('one hour')).toThrow(InvalidTimeError);
+      expect(() => startTime.add({ hours: 'two' as any })).toThrow(InvalidInputTypeError);
+      expect(() => startTime.subtract('one hour' as any)).toThrow(InvalidTimeError);
     });
   });
 
