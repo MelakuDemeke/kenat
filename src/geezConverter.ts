@@ -32,7 +32,7 @@ const symbols = {
  * @returns {string} Ethiopic numeral string.
  * @throws {GeezConverterError} If input is not a valid positive integer.
  */
-export function toGeez(input) {
+export function toGeez(input: number | string): string {
     if (typeof input !== 'number' && typeof input !== 'string') {
         throw new GeezConverterError("Input must be a number or a string.");
     }
@@ -42,11 +42,11 @@ export function toGeez(input) {
     if (isNaN(num) || !Number.isInteger(num) || num < 0) {
         throw new GeezConverterError("Input must be a non-negative integer.");
     }
-    
+
     if (num === 0) return '0'; // Often Ge'ez doesn't have a zero, but useful for modern contexts.
 
     // Helper for numbers 1-99
-    function convertBelow100(n) {
+    function convertBelow100(n: number): string {
         if (n <= 0) return '';
         const tensDigit = Math.floor(n / 10);
         const onesDigit = n % 10;
@@ -85,7 +85,7 @@ export function toGeez(input) {
  * @returns {number} The Arabic numeral representation of the input string.
  * @throws {GeezConverterError} If the input is not a valid Ge'ez numeral string.
  */
-export function toArabic(geezStr) {
+export function toArabic(geezStr: string): number {
     if (typeof geezStr !== 'string') {
         throw new GeezConverterError('Input must be a non-empty string.');
     }
@@ -93,7 +93,7 @@ export function toArabic(geezStr) {
         return 0; // Or throw error, depending on desired behavior for empty string
     }
 
-    const reverseMap = {};
+    const reverseMap: Record<string, number> = {};
     symbols.ones.forEach((char, i) => { if (char) reverseMap[char] = i; });
     symbols.tens.forEach((char, i) => { if (char) reverseMap[char] = i * 10; });
     reverseMap[symbols.hundred] = 100;

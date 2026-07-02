@@ -1,6 +1,6 @@
-import { toGC, toEC } from './conversions.js';
-import { monthNames } from './constants.js';
+import { toGC } from './conversions.js';
 import { InvalidInputTypeError } from './errors/errorHandler.js';
+import type { EthiopianDate } from './types.js';
 
 // --- Validation Helpers ---
 
@@ -10,7 +10,7 @@ import { InvalidInputTypeError } from './errors/errorHandler.js';
  * @param {Object} dateParts - An object where keys are param names and values are the inputs.
  * @throws {InvalidInputTypeError} if any value is not a number.
  */
-export function validateNumericInputs(funcName, dateParts) {
+export function validateNumericInputs(funcName: string, dateParts: Record<string, unknown>): void {
     for (const [name, value] of Object.entries(dateParts)) {
         if (typeof value !== 'number' || isNaN(value)) {
             throw new InvalidInputTypeError(funcName, name, 'number', value);
@@ -25,14 +25,15 @@ export function validateNumericInputs(funcName, dateParts) {
  * @param {string} paramName - The name of the parameter being validated.
  * @throws {InvalidInputTypeError} if the object is invalid.
  */
-export function validateEthiopianDateObject(dateObj, funcName, paramName) {
+export function validateEthiopianDateObject(dateObj: unknown, funcName: string, paramName: string): void {
     if (typeof dateObj !== 'object' || dateObj === null) {
         throw new InvalidInputTypeError(funcName, paramName, 'object', dateObj);
     }
+    const d = dateObj as Record<string, unknown>;
     validateNumericInputs(funcName, {
-        [`${paramName}.year`]: dateObj.year,
-        [`${paramName}.month`]: dateObj.month,
-        [`${paramName}.day`]: dateObj.day,
+        [`${paramName}.year`]: d.year,
+        [`${paramName}.month`]: d.month,
+        [`${paramName}.day`]: d.day,
     });
 }
 
@@ -43,16 +44,17 @@ export function validateEthiopianDateObject(dateObj, funcName, paramName) {
  * @param {string} paramName - The name of the parameter being validated.
  * @throws {InvalidInputTypeError} if the object is invalid.
  */
-export function validateEthiopianTimeObject(timeObj, funcName, paramName) {
+export function validateEthiopianTimeObject(timeObj: unknown, funcName: string, paramName: string): void {
     if (typeof timeObj !== 'object' || timeObj === null) {
         throw new InvalidInputTypeError(funcName, paramName, 'object', timeObj);
     }
-    if (typeof timeObj.period !== 'string' || (timeObj.period !== 'day' && timeObj.period !== 'night')) {
-        throw new InvalidInputTypeError(funcName, `${paramName}.period`, "'day' or 'night'", timeObj.period);
+    const t = timeObj as Record<string, unknown>;
+    if (typeof t.period !== 'string' || (t.period !== 'day' && t.period !== 'night')) {
+        throw new InvalidInputTypeError(funcName, `${paramName}.period`, "'day' or 'night'", t.period);
     }
     validateNumericInputs(funcName, {
-        [`${paramName}.hour`]: timeObj.hour,
-        [`${paramName}.minute`]: timeObj.minute,
+        [`${paramName}.hour`]: t.hour,
+        [`${paramName}.minute`]: t.minute,
     });
 }
 
@@ -64,7 +66,7 @@ export function validateEthiopianTimeObject(timeObj, funcName, paramName) {
  * @param {number} day - The day of the month.
  * @returns {number} The day of the year (1-based).
  */
-export function dayOfYear(year, month, day) {
+export function dayOfYear(year: number, month: number, day: number): number {
     const monthLengths = [31, isGregorianLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     let doy = 0;
     for (let i = 0; i < month - 1; i++) {
@@ -77,7 +79,7 @@ export function dayOfYear(year, month, day) {
 /**
  * Convert a day of year to Gregorian month and day.
  */
-export function monthDayFromDayOfYear(year, dayOfYear) {
+export function monthDayFromDayOfYear(year: number, dayOfYear: number): { month: number; day: number } {
     const monthLengths = [31, isGregorianLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     let month = 1;
     while (dayOfYear > monthLengths[month - 1]) {
@@ -96,7 +98,7 @@ export function monthDayFromDayOfYear(year, dayOfYear) {
  * @param {number} year - Gregorian calendar year (e.g., 2025)
  * @returns {boolean} - True if the year is a leap year, otherwise false.
  */
-export function isGregorianLeapYear(year) {
+export function isGregorianLeapYear(year: number): boolean {
     return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
 }
 
@@ -109,7 +111,7 @@ export function isGregorianLeapYear(year) {
  * @param {number} year - Ethiopian calendar year (e.g., 2011)
  * @returns {boolean} - True if the year is a leap year, otherwise false.
  */
-export function isEthiopianLeapYear(year) {
+export function isEthiopianLeapYear(year: number): boolean {
     return year % 4 === 3;
 }
 
@@ -119,7 +121,7 @@ export function isEthiopianLeapYear(year) {
  * @param {number} month - Ethiopian month (1-13)
  * @returns {number} Number of days in the month
  */
-export function getEthiopianDaysInMonth(year, month) {
+export function getEthiopianDaysInMonth(year: number, month: number): number {
     if (month === 13) {
         return isEthiopianLeapYear(year) ? 6 : 5;
     }
@@ -128,14 +130,14 @@ export function getEthiopianDaysInMonth(year, month) {
 
 /**
  * Returns the weekday (0-6) for a given Ethiopian date.
- * 
+ *
  * @param {Object} param0 - The Ethiopian date.
  * @param {number} param0.year - The Ethiopian year.
  * @param {number} param0.month - The Ethiopian month (1-13).
  * @param {number} param0.day - The Ethiopian day (1-30).
  * @returns {number} The day of the week (0 for Sunday, 6 for Saturday).
  */
-export function getWeekday({ year, month, day }) {
+export function getWeekday({ year, month, day }: EthiopianDate): number {
     const g = toGC(year, month, day);
     return new Date(g.year, g.month - 1, g.day).getDay();
 }
@@ -147,7 +149,7 @@ export function getWeekday({ year, month, day }) {
  * @param {number} day - Ethiopian day (1-30 or 1-5/6)
  * @returns {boolean} - True if the date is valid, otherwise false.
  */
-export function isValidEthiopianDate(year, month, day) {
+export function isValidEthiopianDate(year: number, month: number, day: number): boolean {
     if (month < 1 || month > 13) {
         return false;
     }
@@ -163,7 +165,7 @@ export function isValidEthiopianDate(year, month, day) {
  * @returns {{gregorianYear: number, month: number, day: number}}
  * @throws {InvalidInputTypeError} If gYear is not a number.
  */
-export function getEthiopianNewYearForGregorian(gYear) {
+export function getEthiopianNewYearForGregorian(gYear: number): { gregorianYear: number; month: number; day: number } {
     validateNumericInputs('getEthiopianNewYearForGregorian', { gYear });
     const prevGYear = gYear - 1;
     const newYearDay = isGregorianLeapYear(prevGYear) ? 12 : 11;
@@ -181,7 +183,7 @@ export function getEthiopianNewYearForGregorian(gYear) {
  * @returns {{gregorianYear: number, month: number, day: number}}
  * @throws {InvalidInputTypeError} If ethiopianYear is not a number.
  */
-export function getGregorianDateOfEthiopianNewYear(ethiopianYear) {
+export function getGregorianDateOfEthiopianNewYear(ethiopianYear: number): { gregorianYear: number; month: number; day: number } {
     validateNumericInputs('getGregorianDateOfEthiopianNewYear', { ethiopianYear });
     const gregorianYear = ethiopianYear + 7;
     const newYearDay = isGregorianLeapYear(gregorianYear + 1) ? 12 : 11;

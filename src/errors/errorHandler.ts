@@ -1,19 +1,16 @@
-/* /src/errors/index.js */
-
 /**
  * Base class for all custom errors in the Kenat library.
  */
 export class KenatError extends Error {
-    constructor(message) {
+    constructor(message?: string) {
         super(message);
         this.name = this.constructor.name;
     }
 
     /**
      * Provides a serializable representation of the error.
-     * @returns {Object} A plain object with error details.
      */
-    toJSON() {
+    toJSON(): Record<string, unknown> {
         return {
             type: this.name,
             message: this.message,
@@ -25,7 +22,9 @@ export class KenatError extends Error {
  * Thrown when an Ethiopian date is numerically invalid (e.g., month 14).
  */
 export class InvalidEthiopianDateError extends KenatError {
-    constructor(year, month, day) {
+    date: { year: unknown; month: unknown; day: unknown };
+
+    constructor(year: unknown, month: unknown, day: unknown) {
         super(`Invalid Ethiopian date: ${year}/${month}/${day}`);
         this.date = { year, month, day };
     }
@@ -46,7 +45,9 @@ export class InvalidEthiopianDateError extends KenatError {
  * Thrown when a Gregorian date is numerically invalid.
  */
 export class InvalidGregorianDateError extends KenatError {
-    constructor(year, month, day) {
+    date: { year: unknown; month: unknown; day: unknown };
+
+    constructor(year: unknown, month: unknown, day: unknown) {
         super(`Invalid Gregorian date: ${year}/${month}/${day}`);
         this.date = { year, month, day };
     }
@@ -67,7 +68,9 @@ export class InvalidGregorianDateError extends KenatError {
  * Thrown when a date string provided to the constructor has an invalid format.
  */
 export class InvalidDateFormatError extends KenatError {
-    constructor(inputString) {
+    inputString: unknown;
+
+    constructor(inputString: unknown) {
         super(`Invalid date string format: "${inputString}". Expected 'yyyy/mm/dd' or 'yyyy-mm-dd'.`);
         this.inputString = inputString;
     }
@@ -84,7 +87,9 @@ export class InvalidDateFormatError extends KenatError {
  * Thrown when the Kenat constructor receives an input type it cannot handle.
  */
 export class UnrecognizedInputError extends KenatError {
-    constructor(input) {
+    input: unknown;
+
+    constructor(input: unknown) {
         const inputType = typeof input;
         super(`Unrecognized input type for Kenat constructor: ${inputType}`);
         this.input = input;
@@ -102,7 +107,7 @@ export class UnrecognizedInputError extends KenatError {
  * Thrown for errors occurring during Ge'ez numeral conversion.
  */
 export class GeezConverterError extends KenatError {
-    constructor(message) {
+    constructor(message?: string) {
         super(message);
     }
 }
@@ -111,7 +116,12 @@ export class GeezConverterError extends KenatError {
  * Thrown when a function receives an argument of an incorrect type.
  */
 export class InvalidInputTypeError extends KenatError {
-    constructor(functionName, parameterName, expectedType, receivedValue) {
+    functionName: string;
+    parameterName: string;
+    expectedType: string;
+    receivedValue: unknown;
+
+    constructor(functionName: string, parameterName: string, expectedType: string, receivedValue: unknown) {
         const receivedType = typeof receivedValue;
         super(`Invalid type for parameter '${parameterName}' in function '${functionName}'. Expected '${expectedType}' but got '${receivedType}'.`);
         this.functionName = functionName;
@@ -135,7 +145,7 @@ export class InvalidInputTypeError extends KenatError {
  * Thrown for errors related to invalid time components.
  */
 export class InvalidTimeError extends KenatError {
-    constructor(message) {
+    constructor(message?: string) {
         super(message);
     }
 }
@@ -144,7 +154,7 @@ export class InvalidTimeError extends KenatError {
  * Thrown for invalid configuration options passed to MonthGrid.
  */
 export class InvalidGridConfigError extends KenatError {
-    constructor(message) {
+    constructor(message?: string) {
         super(message);
     }
 }
@@ -153,7 +163,9 @@ export class InvalidGridConfigError extends KenatError {
  * Thrown when an unknown holiday key is used.
  */
 export class UnknownHolidayError extends KenatError {
-    constructor(holidayKey) {
+    holidayKey: unknown;
+
+    constructor(holidayKey: unknown) {
         super(`Unknown movable holiday key: "${holidayKey}"`);
         this.holidayKey = holidayKey;
     }

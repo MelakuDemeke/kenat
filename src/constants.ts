@@ -1,4 +1,6 @@
-export const monthNames = {
+import type { LocalizedText } from './types.js';
+
+export const monthNames: { english: string[]; amharic: string[]; gregorian: string[] } = {
   english: [
     "Meskerem",
     "Tikimt",
@@ -45,7 +47,7 @@ export const monthNames = {
   ],
 };
 
-export const daysOfWeek = {
+export const daysOfWeek: { english: string[]; amharic: string[] } = {
   english: [
     "Sunday",
     "Monday",
@@ -66,9 +68,9 @@ export const HolidayTags = {
   STATE: "state",
   CULTURAL: "cultural",
   OTHER: "other",
-};
+} as const;
 
-export const keyToTewsakMap = {
+export const keyToTewsakMap: Record<string, string> = {
   nineveh: "NINEVEH",
   abiyTsome: "ABIY_TSOME",
   debreZeit: "DEBRE_ZEIT",
@@ -82,13 +84,13 @@ export const keyToTewsakMap = {
   tsomeDihnet: "TSOME_DIHENET",
 };
 
-export const PERIOD_LABELS = {
+export const PERIOD_LABELS: { day: string; night: string } = {
   day: "ጠዋት",
   night: "ማታ",
 };
 
 // Renamed from holidayNames and restructured for i18n
-export const holidayInfo = {
+export const holidayInfo: Record<string, { name: LocalizedText; description: LocalizedText }> = {
   enkutatash: {
     name: { amharic: "እንቁጣጣሽ", english: "Ethiopian New Year (Enkutatash)" },
     description: {
@@ -279,20 +281,20 @@ export const holidayInfo = {
 };
 
 // Stable keys for holidays to avoid hardcoded strings in user code
-export const HolidayNames = Object.freeze(
-  Object.keys(holidayInfo).reduce((acc, key) => {
+export const HolidayNames: Readonly<Record<string, string>> = Object.freeze(
+  Object.keys(holidayInfo).reduce((acc: Record<string, string>, key) => {
     acc[key] = key;
     return acc;
   }, {})
 );
 
 // Bahire Hasab related constants
-export const evangelistNames = {
+export const evangelistNames: { english: Record<number, string>; amharic: Record<number, string> } = {
   english: { 1: "Matthew", 2: "Mark", 3: "Luke", 0: "John" },
   amharic: { 1: "ማቴዎስ", 2: "ማርቆስ", 3: "ሉቃስ", 0: "ዮሐንስ" },
 };
 
-export const tewsakMap = {
+export const tewsakMap: Record<string, number> = {
   Sunday: 7,
   Monday: 6,
   Tuesday: 5,
@@ -302,7 +304,7 @@ export const tewsakMap = {
   Saturday: 8,
 };
 
-export const movableHolidayTewsak = {
+export const movableHolidayTewsak: Record<string, number> = {
   NINEVEH: 0,
   ABIY_TSOME: 14,
   DEBRE_ZEIT: 41,
@@ -316,7 +318,7 @@ export const movableHolidayTewsak = {
   TSOME_DIHENET: 121,
 };
 
-export const movableHolidays = {
+export const movableHolidays: Record<string, { tags: string[] }> = {
   nineveh: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
   abiyTsome: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
   debreZeit: { tags: [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
@@ -350,10 +352,10 @@ export const FastingKeys = {
   FILSETA: 'FILSETA',
   RAMADAN: 'RAMADAN',
   TSOME_DIHENET: 'TSOME_DIHENET',
-};
+} as const;
 
 // Fasting metadata similar to holidayInfo, with i18n-friendly names and descriptions
-export const fastingInfo = {
+export const fastingInfo: Record<string, { name: LocalizedText; description: LocalizedText; tags: string[] }> = {
   ABIY_TSOME: {
     name: { amharic: "ዐቢይ ጾም (ሁዳዴ)", english: "Great Lent (Abiy Tsome)" },
     description: {
