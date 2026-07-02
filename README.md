@@ -19,22 +19,57 @@ Kenat (Amharic: ቀናት) is a comprehensive JavaScript library for the Ethiopi
 
 ---
 
+## 📚 Table of Contents
+
+- [Features](#-features)
+- [Installation](#-installation)
+  - [Requirements](#requirements)
+  - [TypeScript Support](#typescript-support)
+  - [Import Options](#import-options)
+- [Quick Start](#-quick-start)
+- [Design Principles](#-design-principles)
+- [Bahire Hasab & Holiday System](#-bahire-hasab--holiday-system)
+- [More API Examples](#-more-api-examples)
+  - [Date Arithmetic](#date-arithmetic)
+  - [Comparing Dates](#comparing-dates)
+  - [Start / End of a Period](#start--end-of-a-period)
+  - [Date Difference & Distance API](#date-difference--distance-api)
+  - [Calendar Generation](#calendar-generation)
+  - [Fasting Periods](#fasting-periods)
+  - [Holiday Distance Helpers](#holiday-distance-helpers)
+  - [Geez Numerals & Formatting](#geez-numerals--formatting)
+  - [Calendar Preference (Ethiopian / Gregorian)](#calendar-preference-ethiopian--gregorian)
+  - [Time Handling](#time-handling)
+  - [Serialization](#serialization)
+- [API Reference](#-api-reference)
+- [Contribution Guide](#-contribution-guide)
+- [Author](#-author)
+- [Contributors](#-contributors)
+- [License](#-license)
+
+---
+
 ## ✨ Features
 
 - 🔄 **Bidirectional Conversion**: Seamlessly convert between Ethiopian and Gregorian calendars with high precision.
+- 🌓 **Calendar Preference**: Read or format any date as Ethiopian *or* Gregorian with a single `{ calendar }` option — no `if`/`else` needed at call sites.
 - 🗂️ **Complete Holiday System**: Pre-loaded with all public, religious (Christian & Muslim), and cultural holidays.
 - 🔎 **Advanced Holiday Filtering**: Easily filter holidays by tags (e.g., public, christian, muslim).
-- 📖 **Authentic Liturgical Calculations**: Implements Bahire Hasab (ባሕረ ሃሳብ) for movable feasts and fasts.
+- 📖 **Authentic Liturgical Calculations**: Implements Bahire Hasab (ባሕረ ሃሳብ) for movable feasts and fasts, including edge-case years.
 - 🔠 **Localized Formatting**: Display dates in both Amharic and English with multiple format options.
 - 🔢 **Geez Numerals**: Convert numbers and dates to traditional Geez numeral equivalents.
 - ➕ **Full Date Arithmetic**: Add or subtract days, months, and years with support for the 13-month calendar.
+- ⏱️ **Start / End of Period**: Snap any date to the start or end of its day, month, or year (leap-year aware).
+- ⚖️ **Date Comparison**: `isBefore`, `isAfter`, `isSameDay`, `isSameMonth`, and `isSameYear` for clean, readable comparisons.
 - ↔️ **Date Difference & Distance API**: Calculate precise differences and human-friendly distances between dates.
 - 🕒 **Ethiopian Time**: Convert between 24-hour Gregorian and 12-hour Ethiopian time systems.
 - 🗓️ **Calendar Generation**: Create monthly or yearly calendar grids with customizable options.
 - 🕌 **Fasting Periods**: Calculate Orthodox Christian fasting periods and Islamic Ramadan dates.
 - 📅 **Date Range Generation**: Generate arrays of dates between two Ethiopian dates.
 - 🏷️ **Holiday Distance Helpers**: Find distances to next/previous holiday occurrences.
-- 📊 **Multiple Output Formats**: Support for ISO strings, custom formatting, and structured data.
+- 📊 **Multiple Output Formats**: Support for ISO strings, JSON serialization, custom formatting, and structured data.
+- 🧊 **Immutable & Chainable**: Every method that changes a date returns a *new* `Kenat` instance, so chaining is always safe.
+- 📦 **Zero Dependencies**: Pure JavaScript, no runtime dependencies.
 
 ---
 
@@ -43,6 +78,10 @@ Kenat (Amharic: ቀናት) is a comprehensive JavaScript library for the Ethiopi
 ```bash
 npm install kenat
 ```
+
+### Requirements
+
+Kenat is published as a pure **ESM** package (`"type": "module"`) with no runtime dependencies. Use `import` syntax; if your project is CommonJS, use a dynamic `import()`.
 
 ### TypeScript Support
 
@@ -65,12 +104,20 @@ import Kenat from 'kenat';
 // Named imports for utilities
 import { 
   getHolidaysForYear, 
+  getHolidaysInMonth,
+  getHoliday,
   HolidayTags, 
+  HolidayNames,
   toGeez, 
+  toArabic,
   toEC, 
   toGC,
   diffBreakdown,
   getFastingPeriod,
+  getFastingInfo,
+  getFastingDays,
+  getBahireHasab,
+  monthNames,
   MonthGrid,
   Time
 } from 'kenat';
@@ -102,6 +149,22 @@ const withTime = today.setTime(8, 30, 'day');
 console.log(withTime.format({ includeTime: true }));
 // → "2018/1/8 8:30 day"
 ```
+
+---
+
+## 🧭 Design Principles
+
+- **Immutable & chainable** — every method that "changes" a date (`.add()`, `.startOf()`, `.setTime()`, ...) returns a **new** `Kenat` instance rather than mutating the original. This makes chaining predictable and safe:
+
+  ```js
+  const future = new Kenat()
+    .add(2, 'years')
+    .add(3, 'months')
+    .startOf('month');
+  ```
+
+- **Ethiopian-first, calendar-agnostic where it counts** — dates are stored internally as Ethiopian `{year, month, day}`, but every user-facing accessor and formatter (`getDate`, `format`, `toString`, `toISOString`) accepts a `{ calendar: 'ethiopian' | 'gregorian' }` option, so building calendar-switchable UIs doesn't require branching logic in your own code.
+- **No hidden state** — options are always passed explicitly per call (`options = {}`), matching the rest of the library's style; there's no global or instance-level configuration to keep track of.
 
 ---
 
@@ -197,6 +260,8 @@ console.log(bahireHasab.movableFeasts.fasika.ethiopian);
 }
 ```
 
+> The Bahire Hasab engine correctly handles edge-case years where the traditional Metqi calculation lands on 0/30 (e.g. 2006 E.C.), so movable feast dates stay accurate every year.
+
 ---
 
 ## ➕ More API Examples
@@ -212,6 +277,35 @@ const lastMonth = today.addMonths(-1);
 const future = today.add(2, 'years').add(3, 'months').add(15, 'days');
 ```
 
+### Comparing Dates
+
+```js
+const a = new Kenat('2016/1/1');
+const b = new Kenat('2016/2/5');
+
+a.isBefore(b);    // → true
+b.isAfter(a);     // → true
+a.isSameDay(a);   // → true
+a.isSameMonth(b); // → false (different months)
+a.isSameYear(b);  // → true (both 2016)
+```
+
+### Start / End of a Period
+
+`startOf`/`endOf` snap a date to the boundary of its day, month, or year — `endOf('year')` correctly returns Pagume 6 in leap years and Pagume 5 otherwise:
+
+```js
+const date = new Kenat('2016/5/15');
+
+date.startOfMonth().getEthiopian(); // → { year: 2016, month: 5, day: 1 }
+date.endOfMonth().getEthiopian();   // → { year: 2016, month: 5, day: 30 }
+
+date.startOf('year').getEthiopian(); // → { year: 2016, month: 1, day: 1 }
+
+new Kenat('2015/5/1').endOf('year').getEthiopian();
+// → { year: 2015, month: 13, day: 6 }  (2015 is a leap year, so Pagume has 6 days)
+```
+
 ### Date Difference & Distance API
 
 ```js
@@ -225,6 +319,9 @@ console.log(a.diffInYears(b));   // → 3
 // Human-friendly distance
 console.log(a.distanceTo(b, { units: ['years', 'months', 'days'], output: 'string' }));
 // → "2 years 9 months 3 days"
+
+// Distance from today to a given date
+console.log(new Kenat('2018/1/1').distanceFromToday({ output: 'string' }));
 ```
 
 ### Calendar Generation
@@ -243,6 +340,9 @@ const yearCalendar = Kenat.getYearCalendar(2017);
 const start = new Kenat('2017/1/1');
 const end = new Kenat('2017/1/10');
 const range = Kenat.generateDateRange(start, end);
+
+// Print the current month as a grid to the console
+new Kenat().printThisMonth();
 ```
 
 ### Fasting Periods
@@ -293,8 +393,8 @@ If your app lets end users choose between the Ethiopian and Gregorian calendar, 
 const date = new Kenat('2016/1/1');
 const userPref = 'gregorian'; // e.g. from a user setting
 
-date.format({ calendar: userPref }); // → "September 12, 2023"
-date.getDate({ calendar: userPref }); // → { year: 2023, month: 9, day: 12 }
+date.format({ calendar: userPref });      // → "September 12, 2023"
+date.getDate({ calendar: userPref });     // → { year: 2023, month: 9, day: 12 }
 date.toISOString({ calendar: userPref }); // → "2023-09-12T12:00" (standard ISO 8601)
 
 // Defaults to 'ethiopian' when omitted
@@ -314,6 +414,24 @@ console.log(withTime.toISOString());
 // → "2017-01-01T08:30"
 ```
 
+### Serialization
+
+`Kenat` instances serialize cleanly with `JSON.stringify` via a built-in `toJSON()`:
+
+```js
+const date = new Kenat('2017/1/15');
+
+console.log(date.toJSON());
+// → {
+//     ethiopian: { year: 2017, month: 1, day: 15 },
+//     gregorian: { year: 2024, month: 9, day: 25 },
+//     time: { hour: 12, minute: 0, period: 'day' }
+//   }
+
+console.log(JSON.stringify({ createdAt: date }));
+// → '{"createdAt":{"ethiopian":{...},"gregorian":{...},"time":{...}}}'
+```
+
 ---
 
 ## 📊 API Reference
@@ -331,16 +449,52 @@ new Kenat({year: 2017, month: 1, day: 1}) // Date object
 new Kenat(new Date())         // Gregorian Date object
 ```
 
-**Key Methods:**
+**Access & Conversion**
 - `getEthiopian()` - Returns `{year, month, day}`
 - `getGregorian()` - Returns Gregorian equivalent
 - `getDate({ calendar })` - Returns the date in `'ethiopian'` (default) or `'gregorian'`, no if/else needed
-- `format(options)` - Format with various options, including `{ calendar: 'ethiopian' | 'gregorian' }`
-- `add(amount, unit)` / `subtract(amount, unit)` - Date arithmetic
-- `distanceTo(other, options)` - Human-friendly distance calculation
-- `isHoliday(options)` - Check if date is a holiday
-- `getBahireHasab()` - Get liturgical calculations
-- `setTime(hour, minute, period)` - Set Ethiopian time
+- `getCurrentTime()` - Returns the instance's `Time` object
+- `setTime(hour, minute, period)` - Returns a new instance with the given Ethiopian time
+
+**Formatting**
+- `format(options)` - Format with various options, including `lang`, `showWeekday`, `useGeez`, `includeTime`, and `{ calendar: 'ethiopian' | 'gregorian' }`
+- `toString(options)` - String representation of date + time; also accepts `{ calendar }`
+- `formatInGeezAmharic()` - Amharic month name with Geez numerals
+- `formatWithWeekday(lang, useGeez)` - Formatted string including the weekday name
+- `formatShort()` - Compact `"yyyy/mm/dd"` format
+- `toISOString(options)` - ISO-style date string; `{ calendar: 'gregorian' }` returns a standard ISO 8601 date
+- `toJSON()` - Plain-object representation for `JSON.stringify`
+
+**Comparison**
+- `isBefore(other)` / `isAfter(other)` - Chronological comparison
+- `isSameDay(other)` / `isSameMonth(other)` / `isSameYear(other)` - Granular equality checks
+- `isLeapYear()` - Whether the instance's Ethiopian year is a leap year
+- `weekday()` - Day-of-week index (0 = Sunday)
+
+**Arithmetic & Period Boundaries**
+- `add(amount, unit)` / `subtract(amount, unit)` - Chainable arithmetic (`unit`: `'days'|'months'|'years'`)
+- `addDays(n)` / `addMonths(n)` / `addYears(n)` - Direct arithmetic shortcuts
+- `startOf(unit)` / `endOf(unit)` - Snap to the start/end of `'day'`, `'month'`, or `'year'` (leap-year aware)
+- `startOfMonth()` / `endOfMonth()` - Shortcuts for `startOf('month')` / `endOf('month')`
+- `diffInDays(other)` / `diffInMonths(other)` / `diffInYears(other)` - Precise numeric differences
+- `distanceTo(other, options)` - Human-friendly breakdown or string (`{ units, output, lang }`)
+- `distanceFromToday(options)` - Distance from today to this instance
+
+**Holidays & Liturgical Calendar**
+- `isHoliday(options)` - Check if the date is a holiday
+- `getBahireHasab()` - Get liturgical calculations for the instance's year
+
+**Calendar Grids**
+- `getMonthCalendar(year, month, useGeez)` - Instance-level month grid (defaults to the instance's own month)
+- `printThisMonth(useGeez)` - Pretty-print the current month's calendar grid to the console
+
+**Static Helpers**
+- `Kenat.now()` - Same as `new Kenat()`
+- `Kenat.getMonthCalendar(year, month, options)` - Generate a month calendar
+- `Kenat.getYearCalendar(year, options)` - Generate a full year's calendar
+- `Kenat.generateDateRange(start, end)` - Array of `Kenat` instances between two dates
+- `Kenat.distanceToHoliday(holidayKey, options)` - Distance to a holiday occurrence
+- `Kenat.formatDistance(breakdown, options)` - Format a distance breakdown as a human string
 
 ### Utility Functions
 
@@ -353,13 +507,14 @@ new Kenat(new Date())         // Gregorian Date object
 #### Holiday System
 - `getHolidaysForYear(year, options)` - Get all holidays for a year
 - `getHolidaysInMonth(year, month, lang)` - Get holidays for a month
-- `getHoliday(key, year)` - Get specific holiday
+- `getHoliday(key, year)` - Get a specific holiday
 - `HolidayTags` - Constants for filtering holidays
 - `HolidayNames` - Constants for holiday keys
 
 #### Fasting & Religious Calendar
 - `getFastingPeriod(fastKey, year)` - Get fasting period dates
 - `getFastingInfo(fastKey, year)` - Get fasting information
+- `getFastingDays(fastKey, year)` - Get the list of individual fasting days
 - `getBahireHasab(year)` - Get Bahire Hasab calculations
 
 #### Calendar Generation
@@ -375,7 +530,7 @@ new Kenat(new Date())         // Gregorian Date object
 ### Constants
 - `HolidayTags` - Holiday category tags
 - `HolidayNames` - Holiday name constants
-- `monthNames` - Month name arrays in multiple languages
+- `monthNames` - Month name arrays in multiple languages (includes an English `gregorian` set)
 - `FastingKeys` - Fasting period keys
 
 For detailed method signatures and advanced usage, refer to the [full documentation](https://www.kenat.systems/).
@@ -419,5 +574,3 @@ Thanks to all the amazing people who have contributed to this project!
 ## 📄 License
 
 MIT — see [LICENSE](LICENSE) for details.
-
-
