@@ -33,3 +33,32 @@ export {
   monthNames,
   diffBreakdown,
 };
+
+// Type-only exports for TypeScript consumers
+export type {
+  EthiopianDate,
+  GregorianDate,
+  Lang,
+  TimePeriod,
+  LocalizedText,
+  Holiday,
+  DateRange,
+  DiffUnit,
+  DiffBreakdown,
+} from './types.js';
+export type {
+  KenatInput,
+  KenatTimeInput,
+  FormatOptions,
+  ToStringOptions,
+  ToISOStringOptions,
+  GetDateOptions,
+  CalendarDay,
+  StaticCalendarOptions,
+  StaticMonthCalendar,
+  DistanceOptions,
+  DistanceToHolidayOptions,
+} from './Kenat.js';
+export type { MonthGridConfig, MonthGridResult, MonthGridDay, DayHolidayEntry } from './MonthGrid.js';
+export type { TimeFormatOptions, TimeDuration } from './Time.js';
+export type { BahireHasabResult } from './bahireHasab.js';
