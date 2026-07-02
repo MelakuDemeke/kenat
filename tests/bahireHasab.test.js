@@ -32,6 +32,32 @@ describe('Bahire Hasab Calculation', () => {
         });
     });
 
+    // Regression test for https://github.com/MelakuDemeke/kenat/issues/36
+    // "Fix Bahire Hasab Logic for Metqi 30 Edge Case (e.g., 2006 E.C.)" (opened 2026-04-07)
+    describe('getBahireHasab for 2006 E.C. (Metqi 30/0 edge case)', () => {
+        const bahireHasab2006 = getBahireHasab(2006);
+
+        test('should not throw and should treat a Metqi of 0 as 30', () => {
+            expect(() => getBahireHasab(2006)).not.toThrow();
+            expect(bahireHasab2006.metqi).toBe(30);
+        });
+
+        test('should place Beale Metqi on Meskerem 30 (metqi > 14)', () => {
+            expect(bahireHasab2006.bealeMetqi.date).toEqual({ year: 2006, month: 1, day: 30 });
+        });
+
+        test('should correctly roll the Nineveh month over when the tewsak sum exceeds 30', () => {
+            expect(bahireHasab2006.mebajaHamer).toBe(3);
+            expect(bahireHasab2006.nineveh).toEqual({ year: 2006, month: 6, day: 3 });
+        });
+
+        test('should correctly calculate the date for Fasika (Easter) in 2006 E.C.', () => {
+            const fasika = bahireHasab2006.movableFeasts.fasika;
+            expect(fasika.ethiopian).toEqual({ year: 2006, month: 8, day: 12 });
+            expect(fasika.gregorian).toEqual({ year: 2014, month: 4, day: 20 });
+        });
+    });
+
     describe('Internationalization (i18n)', () => {
         test('should return names in English when specified', () => {
             const bahireHasabEnglish = getBahireHasab(2016, { lang: 'english' });
