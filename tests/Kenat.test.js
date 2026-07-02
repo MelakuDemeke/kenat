@@ -172,3 +172,75 @@ describe('Kenat API Helper Methods', () => {
         expect(parsed.ethiopian).toEqual({ year: 2017, month: 1, day: 15 });
     });
 });
+
+// Regression tests for https://github.com/MelakuDemeke/kenat/issues/34
+// "Ability To Give End Users To Switch Their Calendar Preferences" (opened 2026-03-11)
+describe('Calendar preference option', () => {
+    const kenat = new Kenat('2016/1/1'); // Meskerem 1, 2016 -> September 12, 2023
+
+    describe('getDate()', () => {
+        test('defaults to the Ethiopian date', () => {
+            expect(kenat.getDate()).toEqual({ year: 2016, month: 1, day: 1 });
+        });
+
+        test('returns the Gregorian date when calendar is "gregorian"', () => {
+            expect(kenat.getDate({ calendar: 'gregorian' })).toEqual({ year: 2023, month: 9, day: 12 });
+        });
+    });
+
+    describe('format()', () => {
+        test('defaults to Ethiopian formatting', () => {
+            expect(kenat.format()).toBe('መስከረም 1 2016');
+        });
+
+        test('formats the Gregorian date when calendar is "gregorian"', () => {
+            expect(kenat.format({ calendar: 'gregorian' })).toBe('September 12, 2023');
+        });
+
+        test('supports showWeekday for the Gregorian calendar', () => {
+            // Weekday name still honors `lang` (default 'amharic'); the Gregorian
+            // month name itself is always English (no Amharic Gregorian set exists).
+            expect(kenat.format({ calendar: 'gregorian', showWeekday: true })).toBe('ማክሰኞ, September 12, 2023');
+            expect(kenat.format({ calendar: 'gregorian', showWeekday: true, lang: 'english' })).toBe('Tuesday, September 12, 2023');
+        });
+
+        test('supports includeTime for the Gregorian calendar', () => {
+            const timedKenat = new Kenat('2016/1/1', { hour: 8, minute: 30, period: 'day' });
+            expect(timedKenat.format({ calendar: 'gregorian', includeTime: true })).toBe('September 12, 2023 08:30 ጠዋት');
+        });
+    });
+
+    describe('toString()', () => {
+        test('defaults to the Ethiopian representation', () => {
+            expect(kenat.toString()).toContain('መስከረም 1 2016');
+        });
+
+        test('renders the Gregorian representation when requested', () => {
+            expect(kenat.toString({ calendar: 'gregorian' })).toContain('September 12, 2023');
+        });
+    });
+
+    describe('toISOString()', () => {
+        test('defaults to the Ethiopian ISO-style date', () => {
+            expect(kenat.toISOString()).toBe('2016-01-01T12:00');
+        });
+
+        test('appends the non-standard +12h suffix for a night time on the Ethiopian calendar', () => {
+            const nightKenat = new Kenat('2016/1/1', { hour: 8, minute: 15, period: 'night' });
+            expect(nightKenat.toISOString()).toBe('2016-01-01T08:15+12h');
+        });
+
+        test('returns a standard Gregorian ISO date with the time converted to 24-hour format', () => {
+            // 12:00 day Ethiopian time is 06:00 Gregorian, not 12:00.
+            expect(kenat.toISOString({ calendar: 'gregorian' })).toBe('2023-09-12T06:00');
+        });
+
+        test('converts a night time to Gregorian 24-hour format with no non-standard suffix', () => {
+            const nightKenat = new Kenat('2016/1/1', { hour: 8, minute: 15, period: 'night' });
+            const iso = nightKenat.toISOString({ calendar: 'gregorian' });
+            expect(iso).toBe('2023-09-12T02:15');
+            expect(iso).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/); // no +12h or similar non-standard suffix
+            expect(new Date(iso).toString()).not.toBe('Invalid Date');
+        });
+    });
+});
