@@ -1,19 +1,21 @@
 {
-    "compilerOptions": {
-      "allowJs": true,
-      "checkJs": false,
-      "declaration": true,
-      "emitDeclarationOnly": true,
-      "declarationDir": "./types",
-      "outDir": "./dist",
-      "rootDir": "./src",
-      "target": "ES2020",
-      "module": "ESNext",
-      "lib": ["es2022", "dom", "es2020.intl"],
-      "skipLibCheck": true,
-      "noEmitOnError": true
-    },
-    "include": [
-      "src/**/*.js"
-    ]
-  }
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022", "DOM", "ES2020.Intl"],
+    "strict": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "types": ["node", "jest"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.js", "tests/**/*.ts"]
+}

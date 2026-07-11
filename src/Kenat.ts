@@ -1,0 +1,929 @@
+import { toGC, toEC } from './conversions.js';
+import { printMonthCalendarGrid } from './render/printMonthCalendarGrid.js';
+import { monthNames } from './constants.js';
+import { Time } from './Time.js';
+import { toGeez } from './geezConverter.js';
+import { getBahireHasab } from './bahireHasab.js';
+import { MonthGrid } from './MonthGrid.js';
+import { getHolidaysInMonth, getHoliday } from './holidays.js';
+import { getEthiopianDaysInMonth, isValidEthiopianDate, isEthiopianLeapYear, getWeekday } from './utils.js';
+import {
+    InvalidEthiopianDateError,
+    InvalidDateFormatError,
+    UnrecognizedInputError,
+    InvalidInputTypeError
+} from './errors/errorHandler.js';
+import {
+    formatStandard,
+    formatInGeezAmharic,
+    formatWithTime,
+    formatWithWeekday,
+    formatShort,
+    toISODateString,
+    toGregorianISODateString,
+    formatGregorianStandard,
+    formatGregorianWithWeekday,
+    formatGregorianWithTime
+} from './formatting.js';
+
+import {
+    addDays,
+    addMonths,
+    addYears,
+    diffInDays,
+    diffInMonths,
+    diffInYears,
+    diffBreakdown
+} from './dayArithmetic.js';
+import type { EthiopianDate, GregorianDate, Lang, DiffUnit, DiffBreakdown, Holiday } from './types.js';
+
+export interface KenatTimeInput {
+    hour: number;
+    minute: number;
+    period: 'day' | 'night';
+}
+
+export type KenatInput = string | EthiopianDate | Date;
+
+export interface FormatOptions {
+    calendar?: 'ethiopian' | 'gregorian';
+    lang?: Lang;
+    showWeekday?: boolean;
+    useGeez?: boolean;
+    includeTime?: boolean;
+}
+
+export interface ToStringOptions {
+    calendar?: 'ethiopian' | 'gregorian';
+}
+
+export interface ToISOStringOptions {
+    calendar?: 'ethiopian' | 'gregorian';
+}
+
+export interface GetDateOptions {
+    calendar?: 'ethiopian' | 'gregorian';
+}
+
+export interface CalendarDay {
+    ethiopian: EthiopianDate & { display: string };
+    gregorian: GregorianDate & { display: string };
+}
+
+export interface StaticCalendarOptions {
+    useGeez?: boolean;
+    weekdayLang?: Lang;
+    weekStart?: number;
+    holidayFilter?: string | string[] | null;
+    mode?: 'christian' | 'muslim' | 'public' | null;
+}
+
+export interface StaticMonthCalendar {
+    month: number;
+    monthName: string;
+    year: number | string;
+    headers: string[];
+    days: unknown[];
+}
+
+export interface DistanceOptions {
+    units?: DiffUnit[];
+    output?: 'object' | 'string';
+    lang?: 'english' | 'amharic';
+}
+
+export interface DistanceToHolidayOptions extends DistanceOptions {
+    direction?: 'auto' | 'future' | 'past';
+}
+
+/**
+ * Kenat - Ethiopian Calendar Date Wrapper
+ *
+ * A lightweight class to work with both Gregorian and Ethiopian calendars.
+ * It wraps JavaScript's built-in `Date` object and converts Gregorian dates to Ethiopian equivalents.
+ *
+ */
+
+export class Kenat {
+    ethiopian: EthiopianDate;
+    time: Time;
+
+    /**
+     * Constructs a Kenat instance.
+     * Can be initialized with:
+     * - An Ethiopian date string (e.g., '2016/1/1', '2016-1-1').
+     * - An object with { year, month, day }.
+     * - A native JavaScript Date object (will be converted from Gregorian).
+     * - No arguments, for the current date.
+     *
+     * @param {string|Object|Date} [input] - The date input.
+     * @param {Object} [timeObj] - An optional time object.
+     * @throws {InvalidEthiopianDateError} If the provided Ethiopian date is invalid.
+     * @throws {InvalidDateFormatError} If the provided date string format is invalid.
+     * @throws {UnrecognizedInputError} If the input format is unrecognized.
+     */
+    constructor(input?: KenatInput, timeObj: KenatTimeInput | null = null) {
+        let year: number, month: number, day: number;
+
+        if (!input) {
+            // Default to current Gregorian date -> Ethiopian
+            const today = new Date();
+            const ethiopianToday = toEC(
+                today.getFullYear(),
+                today.getMonth() + 1,
+                today.getDate()
+            );
+            year = ethiopianToday.year;
+            month = ethiopianToday.month;
+            day = ethiopianToday.day;
+            // MODIFICATION: Use the Time class
+            this.time = Time.fromGregorian(today.getHours(), today.getMinutes());
+
+        } else if (input instanceof Date) {
+            // Input is a JS Date object
+            const ethiopianDate = toEC(
+                input.getFullYear(),
+                input.getMonth() + 1,
+                input.getDate()
+            );
+            year = ethiopianDate.year;
+            month = ethiopianDate.month;
+            day = ethiopianDate.day;
+            // MODIFICATION: Use the Time class
+            this.time = Time.fromGregorian(input.getHours(), input.getMinutes());
+
+        } else if (typeof input === 'object' && input !== null && 'year' in input && 'month' in input && 'day' in input) {
+            // Input is an object { year, month, day }
+            year = input.year;
+            month = input.month;
+            day = input.day;
+            // MODIFICATION: Create a Time instance
+            const t = timeObj || { hour: 12, minute: 0, period: 'day' as const };
+            this.time = new Time(t.hour, t.minute, t.period);
+        } else if (typeof input === 'string') {
+            const parts = input.split(/[-/]/).map(Number);
+            if (parts.length === 3 && !parts.some(isNaN)) {
+                [year, month, day] = parts;
+            } else {
+                throw new InvalidDateFormatError(input);
+            }
+            // MODIFICATION: Create a Time instance
+            const t = timeObj || { hour: 12, minute: 0, period: 'day' as const };
+            this.time = new Time(t.hour, t.minute, t.period);
+        } else {
+            throw new UnrecognizedInputError(input);
+        }
+
+        if (!isValidEthiopianDate(year, month, day)) {
+            throw new InvalidEthiopianDateError(year, month, day);
+        }
+
+        this.ethiopian = { year, month, day };
+    }
+
+    /**
+     * Creates and returns a new instance of the Kenat class representing the current moment.
+     *
+     * @returns {Kenat} A new Kenat instance set to the current date and time.
+     */
+    static now(): Kenat {
+        return new Kenat();
+    }
+
+    /**
+     * Converts the current Ethiopian date stored in this.ethiopian to its Gregorian equivalent.
+     *
+     * @returns {{ year: number, month: number, day: number }} The Gregorian date corresponding to the Ethiopian date.
+     */
+    getGregorian(): GregorianDate {
+        const { year, month, day } = this.ethiopian;
+        return toGC(year, month, day);
+    }
+
+    /**
+     * Returns the Ethiopian equivalent of the stored Gregorian date.
+     *
+     * @returns {{ year: number, month: number, day: number }} An object representing the Ethiopian date.
+     */
+    getEthiopian(): EthiopianDate {
+        return this.ethiopian;
+    }
+
+    /**
+     * Returns the date in whichever calendar is requested, so callers with a
+     * user-configurable calendar preference don't need an if/else between
+     * getEthiopian() and getGregorian() at every call site.
+     *
+     * @param {Object} [options={}] - Options.
+     * @param {'ethiopian'|'gregorian'} [options.calendar='ethiopian'] - Which calendar's date to return.
+     * @returns {{ year: number, month: number, day: number }}
+     */
+    getDate(options: GetDateOptions = {}): EthiopianDate | GregorianDate {
+        const { calendar = 'ethiopian' } = options;
+        return calendar === 'gregorian' ? this.getGregorian() : this.getEthiopian();
+    }
+
+    /**
+     * Sets the time and returns a new Kenat instance.
+     * Supports method chaining.
+     *
+     * @param {number} hour - The hour value to set.
+     * @param {number} minute - The minute value to set.
+     * @param {string} period - The period of the day (e.g., 'day' or 'night').
+     * @returns {Kenat} A new Kenat instance with the updated time.
+     */
+    setTime(hour: number, minute: number, period: 'day' | 'night'): Kenat {
+        const newKenat = new Kenat(this.ethiopian);
+        newKenat.time = new Time(hour, minute, period);
+        return newKenat;
+    }
+
+    /**
+     * Calculates and returns the Bahire Hasab values for the current instance's year.
+     *
+     * @returns {Object} An object containing all the calculated Bahire Hasab values
+     * (ameteAlem, evangelist, wenber, metqi, nineveh, etc.).
+     */
+    getBahireHasab() {
+        return getBahireHasab(this.ethiopian.year);
+    }
+
+    // Format Methods
+
+    /**
+     * Returns a string representation of the date and time, e.g. "መስከረም 1 2016 12:00 ጠዋት".
+     *
+     * @param {Object} [options={}] - Formatting options.
+     * @param {'ethiopian'|'gregorian'} [options.calendar='ethiopian'] - Which calendar to render the date in.
+     *   'gregorian' renders the Gregorian date with an English month name, e.g. "September 12, 2023 12:00 ጠዋት".
+     *   In both cases the time-of-day portion still reflects Kenat's Ethiopian 12-hour clock; use
+     *   toISOString({ calendar: 'gregorian' }) if you need the time converted to Gregorian 24-hour format.
+     * @returns {string} The formatted date and time string.
+     */
+    toString(options: ToStringOptions = {}): string {
+        const { calendar = 'ethiopian' } = options;
+
+        if (calendar === 'gregorian') {
+            return formatGregorianWithTime(this.getGregorian(), this.time);
+        }
+
+        return formatWithTime(this.ethiopian, this.time);
+    }
+
+
+    /**
+     * Formats the date according to the specified options.
+     *
+     * @param {Object} [options={}] - Formatting options.
+     * @param {'ethiopian'|'gregorian'} [options.calendar='ethiopian'] - Which calendar to render the date in. When
+     *   'gregorian', the date is rendered using English Gregorian month names; `useGeez` is ignored.
+     * @param {string} [options.lang='amharic'] - Language to use for formatting ('amharic', 'english', etc.).
+     * @param {boolean} [options.showWeekday=false] - Whether to include the weekday in the formatted string.
+     * @param {boolean} [options.useGeez=false] - Whether to use Geez numerals (only applies if lang is 'amharic').
+     * @param {boolean} [options.includeTime=false] - Whether to include the time in the formatted string.
+     * @returns {string} The formatted date string.
+     */
+    format(options: FormatOptions = {}): string {
+        const {
+            calendar = 'ethiopian',
+            lang = 'amharic',
+            showWeekday = false,
+            useGeez = false,
+            includeTime = false
+        } = options;
+
+        if (calendar === 'gregorian') {
+            const gregorian = this.getGregorian();
+
+            if (showWeekday && includeTime) {
+                return `${formatGregorianWithWeekday(gregorian, lang)} ${this.time.format({ lang, useGeez: false })}`;
+            }
+
+            if (showWeekday) {
+                return formatGregorianWithWeekday(gregorian, lang);
+            }
+
+            if (includeTime) {
+                return formatGregorianWithTime(gregorian, this.time, lang);
+            }
+
+            return formatGregorianStandard(gregorian);
+        }
+
+        if (showWeekday && includeTime) {
+            return `${formatWithWeekday(this.ethiopian, lang, useGeez)} ${this.time.format({ lang, useGeez })}`;
+        }
+
+        if (showWeekday) {
+            return formatWithWeekday(this.ethiopian, lang, useGeez);
+        }
+
+        if (includeTime) {
+            return formatWithTime(this.ethiopian, this.time, lang);
+        }
+
+        return useGeez && lang === 'amharic'
+            ? formatInGeezAmharic(this.ethiopian)
+            : formatStandard(this.ethiopian, lang);
+    }
+
+    /**
+     * Formats the Ethiopian date in Geez numerals and Amharic month name.
+     *
+     * @returns {string} The formatted date string in the format: "{Amharic Month Name} {Geez Day} {Geez Year}".
+     *
+     * formatInGeezAmharic(); // "የካቲት ፲ ፳፻፲፭"
+     */
+    formatInGeezAmharic(): string {
+        return formatInGeezAmharic(this.ethiopian);
+    }
+
+    /**
+     * Formats the Ethiopian date with weekday name.
+     *
+     * @param {'amharic'|'english'} [lang='amharic'] - Language for month and weekday names.
+     * @param {boolean} [useGeez=false] - Whether to show numerals in Geez.
+     * @returns {string} Formatted string with weekday, e.g. "ማክሰኞ, መስከረም ፳፩ ፳፻፲፯"
+     */
+    formatWithWeekday(lang: Lang = 'amharic', useGeez: boolean = false): string {
+        return formatWithWeekday(this.ethiopian, lang, useGeez);
+    }
+
+    /**
+     * Returns the Ethiopian date in "yyyy/mm/dd" short format.
+     * @returns {string}
+     */
+    formatShort(): string {
+        return formatShort(this.ethiopian);
+    }
+
+    /**
+     * Returns an ISO-style date string: "YYYY-MM-DD" or "YYYY-MM-DDTHH:mm".
+     *
+     * @param {Object} [options={}] - Formatting options.
+     * @param {'ethiopian'|'gregorian'} [options.calendar='ethiopian'] - Which calendar's date to render.
+     *   'gregorian' produces a genuine ISO 8601 string: the date is Gregorian and the time is converted
+     *   from Kenat's Ethiopian 12-hour clock to Gregorian 24-hour time (e.g. 12:00 day -> 06:00), with
+     *   no non-standard suffix - useful for interop (e.g. `<input type="date">` or `new Date(...)`).
+     *   The default 'ethiopian' calendar keeps the existing Ethiopian-date, Ethiopian-time, ISO-*like*
+     *   string (including the non-standard `+12h` suffix for night times), unchanged for backward compatibility.
+     * @returns {string}
+     */
+    toISOString(options: ToISOStringOptions = {}): string {
+        const { calendar = 'ethiopian' } = options;
+
+        if (calendar === 'gregorian') {
+            return toGregorianISODateString(this.getGregorian(), this.time);
+        }
+
+        return toISODateString(this.ethiopian, this.time);
+    }
+
+    /**
+     * Checks if the current date is a holiday.
+     * @param {Object} [options={}] - Options for language.
+     * @param {string} [options.lang='amharic'] - The language for the holiday names and descriptions.
+     * @returns {Array<Object>} An array of holiday objects for the current date, or an empty array if it's not a holiday.
+     */
+    isHoliday(options: { lang?: Lang } = {}): Holiday[] {
+        const { lang = 'amharic' } = options;
+        const { year, month, day } = this.ethiopian;
+
+        // Get all holidays for the current month
+        const holidaysInMonth = getHolidaysInMonth(year, month, { lang });
+
+        // Filter to find holidays that fall on the current day
+        const todaysHolidays = holidaysInMonth.filter(holiday => holiday.ethiopian.day === day);
+
+        return todaysHolidays;
+    }
+
+
+    // format ends
+
+    /**
+     * Generates a calendar for a given Ethiopian month and year, mapping each Ethiopian date
+     * to its corresponding Gregorian date and providing formatted display strings.
+     *
+     * @param {number} [year=this.ethiopian.year] - The Ethiopian year for the calendar.
+     * @param {number} [month=this.ethiopian.month] - The Ethiopian month (1-13).
+     * @param {boolean} [useGeez=false] - Whether to display dates in Geez numerals.
+     * @returns {Array<Object>} An array of objects, each representing a day in the month with
+     *   Ethiopian and Gregorian date information and display strings.
+     */
+    getMonthCalendar(year: number = this.ethiopian.year, month: number = this.ethiopian.month, useGeez: boolean = false): CalendarDay[] {
+        const daysInMonth = getEthiopianDaysInMonth(year, month);
+        const calendar: CalendarDay[] = [];
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const ethDate = { year, month, day };
+            const gregDate = toGC(year, month, day);
+            calendar.push({
+                ethiopian: {
+                    ...ethDate,
+                    display: useGeez
+                        ? `${monthNames.amharic[month - 1]} ${toGeez(day)} ${toGeez(year)}`
+                        : `${monthNames.amharic[month - 1]} ${day} ${year}`
+                },
+                gregorian: {
+                    ...gregDate,
+                    display: `${gregDate.year}-${gregDate.month.toString().padStart(2, '0')}-${gregDate.day.toString().padStart(2, '0')}`
+                }
+            });
+        }
+
+        return calendar;
+    }
+
+    /**
+     * Prints the calendar grid for the current Ethiopian month.
+     *
+     * @param {boolean} [useGeez=false] - If true, displays the calendar using Geez numerals.
+     * @returns {void}
+     */
+    printThisMonth(useGeez: boolean = false): void {
+        const { year, month } = this.getEthiopian();
+        const calendar = this.getMonthCalendar(year, month, useGeez);
+        printMonthCalendarGrid(year, month, calendar, useGeez);
+    }
+
+
+    static getMonthCalendar(year: number, month: number, options: StaticCalendarOptions = {}): StaticMonthCalendar {
+        const { useGeez = false, weekdayLang = 'amharic', weekStart = 0, holidayFilter = null, mode = "public" } = options;
+
+        const monthGrid = MonthGrid.create({
+            year,
+            month,
+            useGeez,
+            weekdayLang,
+            weekStart,
+            holidayFilter,
+            mode
+        });
+
+        return {
+            month,
+            monthName: monthGrid.monthName,
+            year: monthGrid.year,
+            headers: monthGrid.headers,
+            days: monthGrid.days
+        };
+    }
+
+
+    /**
+     * Generates a full-year calendar as an array of month objects for the specified year.
+     *
+     * @param {number} year - The year for which to generate the calendar.
+     * @param {Object} [options={}] - Optional configuration for calendar generation.
+     * @param {boolean} [options.useGeez=false] - Whether to use the Geez calendar system.
+     * @param {string} [options.weekdayLang='amharic'] - Language for weekday names (e.g., 'amharic').
+     * @param {number} [options.weekStart=0] - The starting day of the week (0 = Sunday, 1 = Monday, etc.).
+     * @param {function|null} [options.holidayFilter=null] - Optional filter function for holidays.
+     * @returns {Array<Object>} An array of 13 month objects, each containing:
+     *   - {number} month: The month number (1-13).
+     *   - {string} monthName: The name of the month.
+     *   - {number} year: The year of the month.
+     *   - {Array<string>} headers: The headers for the days of the week.
+     *   - {Array<Array<Object>>} days: The grid of day objects for the month.
+     */
+    static getYearCalendar(year: number, options: StaticCalendarOptions = {}): StaticMonthCalendar[] {
+        const { useGeez = false, weekdayLang = 'amharic', weekStart = 0, holidayFilter = null } = options;
+        const fullYear: StaticMonthCalendar[] = [];
+
+        for (let month = 1; month <= 13; month++) {
+            const monthGrid = MonthGrid.create({
+                year,
+                month,
+                useGeez,
+                weekdayLang,
+                weekStart,
+                holidayFilter // Pass filter to MonthGrid
+            });
+
+            fullYear.push({
+                month,
+                monthName: monthGrid.monthName,
+                year: monthGrid.year,
+                headers: monthGrid.headers,
+                days: monthGrid.days
+            });
+        }
+
+        return fullYear;
+    }
+
+    /**
+    * Generates an array of Kenat instances for a given date range.
+    * @param {Kenat} startDate - The start of the range.
+    * @param {Kenat} endDate - The end of the range.
+    * @returns {Kenat[]} An array of Kenat objects.
+    * @throws {InvalidInputTypeError} If start or end dates are not Kenat instances.
+    */
+    static generateDateRange(startDate: Kenat, endDate: Kenat): Kenat[] {
+        if (!(startDate instanceof Kenat)) {
+            throw new InvalidInputTypeError('generateDateRange', 'startDate', 'Kenat instance', startDate);
+        }
+
+        if (!(endDate instanceof Kenat)) {
+            throw new InvalidInputTypeError('generateDateRange', 'endDate', 'Kenat instance', endDate);
+        }
+
+        const range: Kenat[] = [];
+        let currentDate = startDate;
+
+        if (startDate.isAfter(endDate)) {
+            return [];
+        }
+
+        while (currentDate.isBefore(endDate) || currentDate.isSameDay(endDate)) {
+            range.push(currentDate);
+            currentDate = currentDate.addDays(1);
+        }
+
+        return range;
+    }
+
+    // Arithmetic methods start here
+
+    /**
+     * Adds a specified amount of time to the current date.
+     * Supports method chaining for fluent API.
+     *
+     * @param {number} amount - The amount to add.
+     * @param {string} unit - The unit of time ('days', 'months', 'years').
+     * @returns {Kenat} A new Kenat instance representing the updated date.
+     */
+    add(amount: number, unit: 'days' | 'months' | 'years'): Kenat {
+        if (typeof amount !== 'number') {
+            throw new Error('Amount must be a number');
+        }
+
+        let newDate: EthiopianDate;
+        switch (unit) {
+            case 'days':
+                newDate = addDays(this.ethiopian, amount);
+                break;
+            case 'months':
+                newDate = addMonths(this.ethiopian, amount);
+                break;
+            case 'years':
+                newDate = addYears(this.ethiopian, amount);
+                break;
+            default:
+                throw new Error(`Invalid unit: ${unit}. Use 'days', 'months', or 'years'`);
+        }
+
+        // Create new Kenat instance with preserved time
+        const newKenat = new Kenat(newDate);
+        if (this.time) {
+            newKenat.time = this.time;
+        }
+        return newKenat;
+    }
+
+    /**
+     * Subtracts a specified amount of time from the current date.
+     * Supports method chaining for fluent API.
+     *
+     * @param {number} amount - The amount to subtract.
+     * @param {string} unit - The unit of time ('days', 'months', 'years').
+     * @returns {Kenat} A new Kenat instance representing the updated date.
+     */
+    subtract(amount: number, unit: 'days' | 'months' | 'years'): Kenat {
+        return this.add(-amount, unit);
+    }
+
+    /**
+     * Adds a specified number of days to the current Ethiopian date.
+     * Maintains backward compatibility.
+     *
+     * @param {number} days - The number of days to add.
+     * @returns {Kenat} A new Kenat instance representing the updated date.
+     */
+    addDays(days: number): Kenat {
+        return this.add(days, 'days');
+    }
+
+    /**
+     * Returns a new Kenat instance with the date advanced by the specified number of months.
+     * Maintains backward compatibility.
+     *
+     * @param {number} months - The number of months to add to the current date.
+     * @returns {Kenat} A new Kenat instance representing the updated date.
+     */
+    addMonths(months: number): Kenat {
+        return this.add(months, 'months');
+    }
+
+    /**
+     * Returns a new Kenat instance with the year increased by the specified number of years.
+     * Maintains backward compatibility.
+     *
+     * @param {number} years - The number of years to add to the current date.
+     * @returns {Kenat} A new Kenat instance representing the updated date.
+     */
+    addYears(years: number): Kenat {
+        return this.add(years, 'years');
+    }
+
+    /**
+     * Calculates the difference in days between this object's Ethiopian date and another object's Ethiopian date.
+     *
+     * @param {Object} other - An object with a `getEthiopian` method that returns an Ethiopian date.
+     * @returns {number} The number of days difference between the two Ethiopian dates.
+     */
+    diffInDays(other: Kenat): number {
+        return diffInDays(this.ethiopian, other.getEthiopian());
+    }
+
+    /**
+     * Calculates the difference in months between this instance's Ethiopian date and another Ethiopian date.
+     *
+     * @param {Object} other - An object with a `getEthiopian` method that returns an Ethiopian date.
+     * @returns {number} The number of months difference between the two Ethiopian dates.
+     */
+    diffInMonths(other: Kenat): number {
+        return diffInMonths(this.ethiopian, other.getEthiopian());
+    }
+
+    /**
+     * Calculates the difference in years between this instance's Ethiopian date and another.
+     *
+     * @param {Object} other - An object with a getEthiopian() method returning an Ethiopian date.
+     * @returns {number} The number of years difference between the two Ethiopian dates.
+     */
+    diffInYears(other: Kenat): number {
+        return diffInYears(this.ethiopian, other.getEthiopian());
+    }
+
+    // Arithmetic methods end here
+
+
+    // Time Methods
+    getCurrentTime(): Time {
+        const now = new Date();
+        const hour = now.getHours();
+        const minute = now.getMinutes();
+        return Time.fromGregorian(hour, minute);
+    }
+
+
+    /**
+     * Checks if the current Kenat instance's date is before another Kenat instance's date.
+     * @param {Kenat} other - The other Kenat instance to compare against.
+     * @returns {boolean} True if the current date is before the other date.
+     */
+    isBefore(other: Kenat): boolean {
+        return this.diffInDays(other) < 0;
+    }
+
+    /**
+     * Checks if the current Kenat instance's date is after another Kenat instance's date.
+     * @param {Kenat} other - The other Kenat instance to compare against.
+     * @returns {boolean} True if the current date is after the other date.
+     */
+    isAfter(other: Kenat): boolean {
+        return this.diffInDays(other) > 0;
+    }
+
+    /**
+     * Checks if the current Kenat instance's date is the same as another Kenat instance's date.
+     * @param {Kenat} other - The other Kenat instance to compare against.
+     * @returns {boolean} True if the dates are the same.
+     */
+    isSameDay(other: Kenat): boolean {
+        const otherEth = other.getEthiopian();
+        return this.ethiopian.year === otherEth.year &&
+            this.ethiopian.month === otherEth.month &&
+            this.ethiopian.day === otherEth.day;
+    }
+
+    /**
+     * Checks if the current Kenat instance's date is in the same month and year as another.
+     * @param {Kenat} other - The other Kenat instance to compare against.
+     * @returns {boolean} True if the month and year are the same.
+     */
+    isSameMonth(other: Kenat): boolean {
+        const otherEth = other.getEthiopian();
+        return this.ethiopian.year === otherEth.year &&
+            this.ethiopian.month === otherEth.month;
+    }
+
+    /**
+     * Checks if the current Kenat instance's date is in the same year as another.
+     * @param {Kenat} other - The other Kenat instance to compare against.
+     * @returns {boolean} True if the year is the same.
+     */
+    isSameYear(other: Kenat): boolean {
+        const otherEth = other.getEthiopian();
+        return this.ethiopian.year === otherEth.year;
+    }
+
+    /**
+     * Returns a plain object representation of the Kenat instance for JSON serialization.
+     * @returns {{ ethiopian: {year: number, month: number, day: number}, gregorian: {year: number, month: number, day: number}, time: {hour: number, minute: number, period: string}|null }}
+     */
+    toJSON() {
+        return {
+            ethiopian: { ...this.ethiopian },
+            gregorian: this.getGregorian(),
+            time: this.time ? { hour: this.time.hour, minute: this.time.minute, period: this.time.period } : null
+        };
+    }
+
+    /**
+     * Returns a new Kenat instance set to the start of the specified unit.
+     * Supports method chaining.
+     *
+     * @param {string} unit - The unit ('day', 'month', 'year').
+     * @returns {Kenat} A new Kenat instance.
+     */
+    startOf(unit: 'day' | 'month' | 'year'): Kenat {
+        switch (unit) {
+            case 'day': {
+                // Start of day is the same date with time reset to 00:00
+                const startOfDay = new Kenat(`${this.ethiopian.year}/${this.ethiopian.month}/${this.ethiopian.day}`);
+                startOfDay.time = new Time(12, 0, 'day'); // 6:00 AM Gregorian
+                return startOfDay;
+            }
+            case 'month': {
+                const startOfMonth = new Kenat(`${this.ethiopian.year}/${this.ethiopian.month}/1`);
+                if (this.time) {
+                    startOfMonth.time = this.time;
+                }
+                return startOfMonth;
+            }
+            case 'year': {
+                const startOfYear = new Kenat(`${this.ethiopian.year}/1/1`);
+                if (this.time) {
+                    startOfYear.time = this.time;
+                }
+                return startOfYear;
+            }
+            default:
+                throw new Error(`Invalid unit: ${unit}. Use 'day', 'month', or 'year'`);
+        }
+    }
+
+    /**
+     * Returns a new Kenat instance set to the end of the specified unit.
+     * Supports method chaining.
+     *
+     * @param {string} unit - The unit ('day', 'month', 'year').
+     * @returns {Kenat} A new Kenat instance.
+     */
+    endOf(unit: 'day' | 'month' | 'year'): Kenat {
+        switch (unit) {
+            case 'day': {
+                // End of day is the same date with time set to 23:59
+                const endOfDay = new Kenat(`${this.ethiopian.year}/${this.ethiopian.month}/${this.ethiopian.day}`);
+                endOfDay.time = new Time(12, 0, 'night'); // 6:00 PM Gregorian
+                return endOfDay;
+            }
+            case 'month': {
+                const lastDay = getEthiopianDaysInMonth(this.ethiopian.year, this.ethiopian.month);
+                const endOfMonth = new Kenat(`${this.ethiopian.year}/${this.ethiopian.month}/${lastDay}`);
+                if (this.time) {
+                    endOfMonth.time = this.time;
+                }
+                return endOfMonth;
+            }
+            case 'year': {
+                const lastDayOfPagume = getEthiopianDaysInMonth(this.ethiopian.year, 13);
+                const endOfYear = new Kenat(`${this.ethiopian.year}/13/${lastDayOfPagume}`);
+                if (this.time) {
+                    endOfYear.time = this.time;
+                }
+                return endOfYear;
+            }
+            default:
+                throw new Error(`Invalid unit: ${unit}. Use 'day', 'month', or 'year'`);
+        }
+    }
+
+    /**
+     * Returns a new Kenat instance set to the first day of the current month.
+     * Maintains backward compatibility.
+     * @returns {Kenat} A new Kenat instance.
+     */
+    startOfMonth(): Kenat {
+        return this.startOf('month');
+    }
+
+    /**
+     * Returns a new Kenat instance set to the last day of the current month.
+     * Maintains backward compatibility.
+     * @returns {Kenat} A new Kenat instance.
+     */
+    endOfMonth(): Kenat {
+        return this.endOf('month');
+    }
+
+    /**
+     * Checks if the current Ethiopian year is a leap year.
+     * @returns {boolean} True if it is a leap year.
+     */
+    isLeapYear(): boolean {
+        return isEthiopianLeapYear(this.ethiopian.year);
+    }
+
+    /**
+     * Returns the weekday number for the current date.
+     * @returns {number} The day of the week (0 for Sunday, 6 for Saturday).
+     */
+    weekday(): number {
+        return getWeekday(this.ethiopian);
+    }
+
+    // --- Distance helpers ---
+    /**
+     * Returns a breakdown of distance from this date to another date.
+     * @param {Kenat|{year:number,month:number,day:number}|string|Date} other - target date
+     * @param {{units?: ('years'|'months'|'days')[], output?: 'object'|'string', lang?: 'english'|'amharic'}} [options]
+     * @returns {Object|string}
+     */
+    distanceTo(other: Kenat | EthiopianDate | string | Date, options: DistanceOptions = {}): DiffBreakdown | string {
+        const target = Kenat._coerceToKenat(other);
+        const breakdown = diffBreakdown(target.getEthiopian(), this.getEthiopian(), { units: options.units || ['years', 'months', 'days'] });
+        if ((options.output || 'object') === 'string') {
+            return Kenat.formatDistance(breakdown, options);
+        }
+        return breakdown;
+    }
+
+    /**
+     * Returns a breakdown of distance from today to this date.
+     */
+    distanceFromToday(options: DistanceOptions = {}): DiffBreakdown | string {
+        const today = new Kenat();
+        return today.distanceTo(this, options);
+    }
+
+    /**
+     * Returns distance from today to the specified holiday occurrence.
+     * @param {string} holidayKey
+     * @param {{direction?: 'auto'|'future'|'past', units?: ('years'|'months'|'days')[], output?: 'object'|'string', lang?: 'english'|'amharic'}} [options]
+     */
+    static distanceToHoliday(holidayKey: string, options: DistanceToHolidayOptions = {}): DiffBreakdown | string {
+        const today = new Kenat();
+        const next = Kenat._getHolidayOccurrence(holidayKey, today.getEthiopian(), 'next');
+        const prev = Kenat._getHolidayOccurrence(holidayKey, today.getEthiopian(), 'prev');
+        const direction = options.direction || 'auto';
+
+        let target = next;
+        if (direction === 'past') target = prev;
+        if (direction === 'auto') {
+            const dNext = Math.abs(diffInDays(next.getEthiopian(), today.getEthiopian()));
+            const dPrev = Math.abs(diffInDays(prev.getEthiopian(), today.getEthiopian()));
+            target = dNext <= dPrev ? next : prev;
+        }
+
+        return today.distanceTo(target, options);
+    }
+
+    /**
+     * Formats a breakdown result to human string like "1 year 2 months 5 days".
+     */
+    static formatDistance(breakdown: DiffBreakdown, options: DistanceOptions = {}): string {
+        const lang = options.lang || 'english';
+        const parts: string[] = [];
+        const units = options.units || ['years', 'months', 'days'];
+        const labelsEn: Record<DiffUnit, string> = { years: 'year', months: 'month', days: 'day' };
+        const labelsAm: Record<DiffUnit, string> = { years: 'ዓመት', months: 'ወር', days: 'ቀን' };
+        const labels = lang === 'amharic' ? labelsAm : labelsEn;
+        const plural = (n: number, k: DiffUnit) => lang === 'amharic' ? labels[k] : (n === 1 ? labels[k] : labels[k] + 's');
+        if (units.includes('years') && typeof breakdown.years === 'number') parts.push(`${breakdown.years} ${plural(breakdown.years, 'years')}`);
+        if (units.includes('months') && typeof breakdown.months === 'number') parts.push(`${breakdown.months} ${plural(breakdown.months, 'months')}`);
+        if (units.includes('days') && typeof breakdown.days === 'number') parts.push(`${breakdown.days} ${plural(breakdown.days, 'days')}`);
+        const base = parts.length ? parts.join(' ') : `0 ${plural(0, units[units.length - 1])}`;
+        if (lang === 'amharic') {
+            return `${base}`;
+        }
+        return base;
+    }
+
+    // --- internal helpers ---
+    static _coerceToKenat(input: Kenat | EthiopianDate | string | Date): Kenat {
+        if (input instanceof Kenat) return input;
+        if (input instanceof Date) return new Kenat(input);
+        if (typeof input === 'string') return new Kenat(input);
+        if (input && typeof input === 'object' && 'year' in input && 'month' in input && 'day' in input) return new Kenat(input);
+        throw new Error('Unsupported date input');
+    }
+
+    static _getHolidayOccurrence(holidayKey: string, refEth: EthiopianDate, which: 'next' | 'prev'): Kenat {
+        const thisYear = getHoliday(holidayKey, refEth.year);
+        const prevYear = getHoliday(holidayKey, refEth.year - 1);
+        const nextYear = getHoliday(holidayKey, refEth.year + 1);
+        const candidates = [thisYear, prevYear, nextYear].filter((h): h is Holiday => Boolean(h)).map(h => new Kenat(h.ethiopian));
+        const ref = new Kenat(refEth);
+        const sorted = candidates.sort((a, b) => diffInDays(a.getEthiopian(), ref.getEthiopian()) - diffInDays(b.getEthiopian(), ref.getEthiopian()));
+        if (which === 'prev') {
+            const past = candidates.filter(c => diffInDays(c.getEthiopian(), ref.getEthiopian()) <= 0).sort((a, b) => Math.abs(diffInDays(b.getEthiopian(), ref.getEthiopian())) - Math.abs(diffInDays(a.getEthiopian(), ref.getEthiopian())));
+            return past[0] || sorted[0];
+        }
+        const future = candidates.filter(c => diffInDays(c.getEthiopian(), ref.getEthiopian()) >= 0).sort((a, b) => Math.abs(diffInDays(a.getEthiopian(), ref.getEthiopian())) - Math.abs(diffInDays(b.getEthiopian(), ref.getEthiopian())));
+        return future[0] || sorted[0];
+    }
+}

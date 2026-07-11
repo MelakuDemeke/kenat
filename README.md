@@ -81,11 +81,11 @@ npm install kenat
 
 ### Requirements
 
-Kenat is published as a pure **ESM** package (`"type": "module"`) with no runtime dependencies. Use `import` syntax; if your project is CommonJS, use a dynamic `import()`.
+Node.js 18 or later. Kenat ships zero runtime dependencies and both module formats — `import` (ESM) and `require()` (CJS) both work, so there's no need for a dynamic `import()` workaround in CommonJS projects. A minified browser build (`dist/index.global.js`, global `Kenat`) is also published for plain `<script>` tag / CDN use via [unpkg](https://unpkg.com/kenat/).
 
 ### TypeScript Support
 
-Kenat includes full TypeScript definitions. No additional type packages needed!
+Kenat is written in TypeScript and ships its own `.d.ts` declarations — no additional type packages needed, and the types are guaranteed to match the implementation since they're generated from the same source, not hand-maintained separately.
 
 ```ts
 import Kenat from 'kenat';
@@ -547,9 +547,10 @@ For detailed method signatures and advanced usage, refer to the [full documentat
    ```bash
    git checkout -b feature/your-feature
    ```
-3. Write your changes and add tests in the `/tests` directory.
-4. Run `npm test` to ensure everything passes.
-5. Open a Pull Request with your improvements or bug fix.
+3. Write your changes (in `src/*.ts`) and add tests in the `/tests` directory.
+4. Run `npm run typecheck` and `npm test` to ensure everything passes.
+5. If you're changing anything in `examples/`, run `npm run build` first — the examples import from `dist/`, not `src/`.
+6. Open a Pull Request with your improvements or bug fix.
 
 ---
 
