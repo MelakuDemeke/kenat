@@ -1,6 +1,6 @@
 {
   "name": "kenat",
-  "version": "3.2.0",
+  "version": "4.0.0",
   "description": "A JavaScript library for the Ethiopian calendar with date and time support.",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
