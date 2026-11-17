@@ -65,7 +65,7 @@
   "bugs": {
     "url": "https://github.com/MelakuDemeke/kenat/issues"
   },
-  "homepage": "https://www.kenat.systems/",
+  "homepage": "https://kenat.et",
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/node": "^26.1.0",
