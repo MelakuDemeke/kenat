@@ -535,7 +535,7 @@ new Kenat(new Date())         // Gregorian Date object
 - `monthNames` - Month name arrays in multiple languages (includes an English `gregorian` set)
 - `FastingKeys` - Fasting period keys
 
-For detailed method signatures and advanced usage, refer to the [full documentation](https://www.kenat.systems/).
+For detailed method signatures and advanced usage, refer to the [full documentation](https://kenat.et/doc).
 
 ---
 
@@ -558,7 +558,7 @@ For detailed method signatures and advanced usage, refer to the [full documentat
 
 **Melaku Demeke**
 - [GitHub](https://github.com/MelakuDemeke) ・ [LinkedIn](https://linkedin.com/in/melakudemeke)
-- [Website](https://www.kenat.systems/) ・ [NPM Package](https://www.npmjs.com/package/kenat)
+- [Website](https://kenat.et) ・ [NPM Package](https://www.npmjs.com/package/kenat)
 
 ### Acknowledgments
 
