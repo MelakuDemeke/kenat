@@ -3,8 +3,21 @@ import {
     monthDayFromDayOfYear,
     isEthiopianLeapYear,
     isGregorianLeapYear,
-    getEthiopianDaysInMonth
+    getEthiopianDaysInMonth,
+    getEthiopianNewYearForGregorian
 } from "../src/utils.js";
+
+describe('getEthiopianNewYearForGregorian', () => {
+    test('uses the Ethiopian leap cycle across Gregorian century years', () => {
+        expect(getEthiopianNewYearForGregorian(1895)).toEqual({ gregorianYear: 1895, month: 9, day: 11 });
+        expect(getEthiopianNewYearForGregorian(1899)).toEqual({ gregorianYear: 1899, month: 9, day: 11 });
+        expect(getEthiopianNewYearForGregorian(1900)).toEqual({ gregorianYear: 1900, month: 9, day: 11 });
+        expect(getEthiopianNewYearForGregorian(2023)).toEqual({ gregorianYear: 2023, month: 9, day: 12 });
+        expect(getEthiopianNewYearForGregorian(2024)).toEqual({ gregorianYear: 2024, month: 9, day: 11 });
+        expect(getEthiopianNewYearForGregorian(2099)).toEqual({ gregorianYear: 2099, month: 9, day: 12 });
+        expect(getEthiopianNewYearForGregorian(2100)).toEqual({ gregorianYear: 2100, month: 9, day: 12 });
+    });
+});
 
 
 describe('dayOfYear', () => {
