@@ -167,13 +167,8 @@ export function isValidEthiopianDate(year: number, month: number, day: number): 
  */
 export function getEthiopianNewYearForGregorian(gYear: number): { gregorianYear: number; month: number; day: number } {
     validateNumericInputs('getEthiopianNewYearForGregorian', { gYear });
-    const prevGYear = gYear - 1;
-    const newYearDay = isGregorianLeapYear(prevGYear) ? 12 : 11;
-    return {
-        gregorianYear: gYear,
-        month: 9,
-        day: newYearDay
-    };
+    // Meskerem 1 that falls in September of gYear starts Ethiopian year gYear - 7.
+    return getGregorianDateOfEthiopianNewYear(gYear - 7);
 }
 
 /**
