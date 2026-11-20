@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write # required for npm provenance
+      id-token: write # required for npm trusted publishing and provenance
 
     steps:
       - name: Checkout code
@@ -28,6 +28,10 @@ jobs:
         with:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
+
+      # Trusted publishing (OIDC) needs npm >= 11.5.1; Node 22 ships npm 10.
+      - name: Update npm
+        run: npm install -g npm@latest
 
       - name: Install dependencies
         run: npm ci
@@ -50,7 +54,9 @@ jobs:
             exit 1
           fi
 
+      # Authenticates via npm trusted publishing (GitHub OIDC, id-token: write
+      # above), so no NPM_TOKEN and no 2FA one-time password are needed.
+      # Configure it on npmjs.com: package kenat -> Settings -> Trusted
+      # publishing -> GitHub Actions, repo MelakuDemeke/kenat, workflow release.yml.
       - name: Publish to npm
         run: npm publish --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
