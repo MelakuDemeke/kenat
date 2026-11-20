@@ -1,6 +1,6 @@
 import { InvalidEthiopianDateError, InvalidGregorianDateError } from './errors/errorHandler.js'
 import { getGregorianDateOfEthiopianNewYear, validateNumericInputs } from './utils.js';
-import { dayOfYear, monthDayFromDayOfYear, isGregorianLeapYear, isEthiopianLeapYear } from './utils.js';
+import { isEthiopianLeapYear } from './utils.js';
 import type { EthiopianDate, GregorianDate } from './types.js';
 
 /**
@@ -29,18 +29,9 @@ export function toGC(ethYear: number, ethMonth: number, ethDay: number): Gregori
   // 3. Perform conversion
   const newYear = getGregorianDateOfEthiopianNewYear(ethYear)
   const daysSinceNewYear = (ethMonth - 1) * 30 + ethDay - 1
-  const newYearDOY = dayOfYear(newYear.gregorianYear, newYear.month, newYear.day)
-  let gregorianDOY = newYearDOY + daysSinceNewYear
-  let gregorianYear = newYear.gregorianYear
-  const yearLength = isGregorianLeapYear(gregorianYear) ? 366 : 365
-
-  if (gregorianDOY > yearLength) {
-    gregorianDOY -= yearLength
-    gregorianYear += 1
-  }
-
-  const { month, day } = monthDayFromDayOfYear(gregorianYear, gregorianDOY)
-  return { year: gregorianYear, month, day }
+  const date = new Date(0)
+  date.setUTCFullYear(newYear.gregorianYear, newYear.month - 1, newYear.day + daysSinceNewYear)
+  return { year: date.getUTCFullYear(), month: date.getUTCMonth() + 1, day: date.getUTCDate() }
 }
 
 

@@ -1,5 +1,6 @@
 import { toEC, toGC } from "../src/conversions.js";
 import { InvalidGregorianDateError } from "../src/errors/errorHandler.js";
+import { getGregorianDateOfEthiopianNewYear } from "../src/utils.js";
 
 describe('Ethiopian to Gregorian conversion', () => {
 
@@ -147,5 +148,41 @@ describe('Gregorian to Ethiopian conversion', () => {
     test('Gregorian to Ethiopian: Leap Pagume (September 11, 2015)', () => {
         const result = toEC(2023, 9, 11);
         expect(result).toEqual({ year: 2015, month: 13, day: 6 });
+    });
+});
+describe('toGC across Gregorian century years (1900, 2100)', () => {
+    test('Yekatit 23, 1888 (Battle of Adwa) -> March 1, 1896', () => {
+        expect(toGC(1888, 6, 23)).toEqual({ year: 1896, month: 3, day: 1 });
+    });
+
+    test('Pagume 6, 2091 and Meskerem 1, 2092 are different days', () => {
+        expect(toGC(2091, 13, 6)).toEqual({ year: 2099, month: 9, day: 11 });
+        expect(toGC(2092, 1, 1)).toEqual({ year: 2099, month: 9, day: 12 });
+    });
+
+    test('Meskerem 1, 2093 -> September 12, 2100', () => {
+        expect(toGC(2093, 1, 1)).toEqual({ year: 2100, month: 9, day: 12 });
+    });
+
+    test('Ethiopian new year in the 1880s, 1890s and 1900', () => {
+        expect(getGregorianDateOfEthiopianNewYear(1888)).toEqual({ gregorianYear: 1895, month: 9, day: 11 });
+        expect(getGregorianDateOfEthiopianNewYear(1876)).toEqual({ gregorianYear: 1883, month: 9, day: 11 });
+        expect(getGregorianDateOfEthiopianNewYear(1892)).toEqual({ gregorianYear: 1899, month: 9, day: 11 });
+        expect(getGregorianDateOfEthiopianNewYear(1893)).toEqual({ gregorianYear: 1900, month: 9, day: 11 });
+    });
+
+    test('toGC(toEC(date)) returns the same date for every day toEC supports', () => {
+        const oneDay = 86400000;
+        const bad: string[] = [];
+        for (let t = Date.UTC(1900, 0, 1); t <= Date.UTC(2100, 11, 31); t += oneDay) {
+            const d = new Date(t);
+            const g = { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate() };
+            const e = toEC(g.year, g.month, g.day);
+            const back = toGC(e.year, e.month, e.day);
+            if (back.year !== g.year || back.month !== g.month || back.day !== g.day) {
+                bad.push(`${g.year}-${g.month}-${g.day}`);
+            }
+        }
+        expect(bad).toEqual([]);
     });
 });

@@ -185,7 +185,11 @@ export function getEthiopianNewYearForGregorian(gYear: number): { gregorianYear:
  */
 export function getGregorianDateOfEthiopianNewYear(ethiopianYear: number): { gregorianYear: number; month: number; day: number } {
     validateNumericInputs('getGregorianDateOfEthiopianNewYear', { ethiopianYear });
-    const gregorianYear = ethiopianYear + 7;
-    const newYearDay = isGregorianLeapYear(gregorianYear + 1) ? 12 : 11;
-    return { gregorianYear, month: 9, day: newYearDay };
+    // Count days from Meskerem 1, 1964 (September 12, 1971). Every Ethiopian
+    // year has 365 days plus a 6th Pagume day when (year + 1) % 4 === 0, with
+    // no century exception, so the Gregorian date of Meskerem 1 drifts by a day
+    // at each Gregorian century year that is not a leap year (1900, 2100, ...).
+    const days = 365 * (ethiopianYear - 1964) + Math.floor(ethiopianYear / 4) - Math.floor(1964 / 4);
+    const date = new Date(Date.UTC(1971, 8, 12) + days * 86400000);
+    return { gregorianYear: date.getUTCFullYear(), month: date.getUTCMonth() + 1, day: date.getUTCDate() };
 }
