@@ -1,6 +1,6 @@
 # Kenat / ቀናት ![NPM Version](https://img.shields.io/npm/v/kenat)
 
-![banner](assets/img/kenatBanner.png)
+![Kenat / ቀናት — Ethiopian calendar library for TypeScript](assets/img/kenat-banner.png)
 
 ![Build Status](https://github.com/MelakuDemeke/kenat/actions/workflows/test.yml/badge.svg?branch=main)
 ![npm bundle size](https://img.shields.io/bundlephobia/min/kenat)
