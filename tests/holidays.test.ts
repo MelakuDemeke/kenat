@@ -1,5 +1,6 @@
 import { getHolidaysInMonth, getHoliday } from '../src/holidays.js';
 import { getMovableHoliday } from '../src/bahireHasab.js';
+import { toGC } from '../src/conversions.js';
 import { InvalidInputTypeError } from '../src/errors/errorHandler.js';
 import { UnknownHolidayError } from '../src/errors/errorHandler.js';
 
@@ -26,6 +27,34 @@ describe('Holiday Calculation', () => {
 
             expect(siklet).toBeDefined();
             expect(siklet!.ethiopian.day).toBe(25);
+        });
+    });
+
+    describe('Genna (Ethiopian Christmas)', () => {
+        test('is on Tahsas 29 (January 7) in most years', () => {
+            const genna = getHoliday('gena', 2015)!;
+            expect(genna.ethiopian).toEqual({ year: 2015, month: 4, day: 29 });
+            expect(toGC(2015, 4, 29)).toEqual({ year: 2023, month: 1, day: 7 });
+        });
+
+        test('is on Tahsas 28 (January 7) in the year after a leap year', () => {
+            // 2015 E.C. has Pagume 6, so 2016 starts on September 12 and
+            // Tahsas 29, 2016 is January 8, 2024. Genna was on January 7, 2024.
+            const genna = getHoliday('gena', 2016)!;
+            expect(genna.ethiopian).toEqual({ year: 2016, month: 4, day: 28 });
+            expect(toGC(2016, 4, 28)).toEqual({ year: 2024, month: 1, day: 7 });
+        });
+
+        test('always falls on January 7 for 1900-2099', () => {
+            for (let year = 1893; year <= 2091; year++) {
+                const { month, day } = getHoliday('gena', year)!.ethiopian;
+                expect(toGC(year, month, day)).toEqual({ year: year + 8, month: 1, day: 7 });
+            }
+        });
+
+        test('is listed under Tahsas 28 by getHolidaysInMonth in 2016', () => {
+            const genna = getHolidaysInMonth(2016, 4).find(h => h.key === 'gena');
+            expect(genna!.ethiopian.day).toBe(28);
         });
     });
 

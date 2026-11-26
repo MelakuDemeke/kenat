@@ -5,7 +5,7 @@ import {
     keyToTewsakMap,
     movableHolidays,
 } from "./constants.js";
-import { validateNumericInputs } from "./utils.js";
+import { isEthiopianLeapYear, validateNumericInputs } from "./utils.js";
 import {
     InvalidInputTypeError,
 } from "./errors/errorHandler.js";
@@ -62,6 +62,15 @@ const fixedHolidays: Record<string, FixedHoliday> = {
         tags: [HolidayTags.PUBLIC, HolidayTags.STATE],
     },
 };
+
+// Genna stays on Julian December 25 (Gregorian January 7). After a leap year
+// (Pagume 6), the new year starts a day later, so Genna moves to Tahsas 28.
+function fixedHolidayDay(holidayKey: string, ethYear: number, rules: FixedHoliday): number {
+    if (holidayKey === "gena" && isEthiopianLeapYear(ethYear - 1)) {
+        return rules.day - 1;
+    }
+    return rules.day;
+}
 
 function findAllIslamicOccurrences(ethiopianYear: number, hijriMonth: number, hijriDay: number): IslamicOccurrence[] {
     const startGregorianYear = toGC(ethiopianYear, 1, 1).year;
@@ -198,7 +207,7 @@ export function getHoliday(holidayKey: string, ethYear: number, options: { lang?
             movable: false,
             name,
             description,
-            ethiopian: { year: ethYear, month: rules.month, day: rules.day },
+            ethiopian: { year: ethYear, month: rules.month, day: fixedHolidayDay(holidayKey, ethYear, rules) },
         };
     }
 
